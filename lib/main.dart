@@ -35,7 +35,7 @@ class MyApp extends StatelessWidget {
       ),
 
       // 1. La pantalla que se verá apenas abra la app
-      initialRoute: '/',
+      initialRoute: '/login',
 
       // 2. El "Mapa" de navegación hacia tus nuevas carpetas
       routes: {
