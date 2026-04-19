@@ -10,7 +10,7 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage>
     with SingleTickerProviderStateMixin {
-  // LÓGICA DE ANIMACIÓN
+  // --- LÓGICA DE ANIMACIÓN RECUPERADA ---
   late AnimationController _controller;
   late Animation<double> _pulseAnimation;
 
@@ -45,215 +45,185 @@ class _LoginPageState extends State<LoginPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF060B0C),
+      // Usamos el color gris-negro profundo para que no sea negro puro
+      backgroundColor: const Color(0xFF101415),
       body: Stack(
         children: [
-          // Fondo de cuadrícula
+          // 1. FONDO DE CUADRÍCULA (Ahora ocupa toda la pantalla realmente)
           Positioned.fill(
-            child: IgnorePointer(child: CustomPaint(painter: GridPainter())),
+            child: IgnorePointer(
+              child: CustomPaint(painter: GridPainter()),
+            ),
           ),
 
           SafeArea(
-            child: Center(
-              child: SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 25,
-                  vertical: 30,
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // --- RECUADRO CENTRAL ---
-                    Container(
-                      constraints: const BoxConstraints(maxWidth: 400),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 25,
-                        vertical: 40,
-                      ),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF0A0F10).withOpacity(0.8),
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(
-                          color: Colors.white.withOpacity(0.05),
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              // Padding lateral para que los elementos no toquen el borde físico
+              padding: const EdgeInsets.symmetric(horizontal: 30),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const SizedBox(height: 60),
+
+                  // 2. LOGO ANIMADO (Recuperado y centrado)
+                  Center(
+                    child: ScaleTransition(
+                      scale: _pulseAnimation,
+                      child: Image.asset(
+                        'assets/images/mobilelock-logo.png',
+                        height: 110, // Un poco más grande para que luzca
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) =>
+                            const Icon(
+                          Icons.shield,
+                          color: Color(0xFF00FFA3),
+                          size: 80,
                         ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.5),
-                            blurRadius: 20,
-                            spreadRadius: 2,
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        children: [
-                          // LOGO ANIMADO
-                          ScaleTransition(
-                            scale: _pulseAnimation,
-                            child: Image.asset(
-                              'assets/images/mobilelock-logo.png',
-                              height: 90,
-                              fit: BoxFit.contain,
-                              errorBuilder: (context, error, stackTrace) =>
-                                  const Icon(
-                                    Icons.shield,
-                                    color: Color(0xFF00FFA3),
-                                    size: 70,
-                                  ),
-                            ),
-                          ),
-                          const SizedBox(height: 25),
-
-                          const Text(
-                            'MOBILELOCK AI',
-                            style: TextStyle(
-                              color: Color(0xFF00FFA3),
-                              fontSize: 28,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 1.5,
-                              shadows: [
-                                Shadow(
-                                  color: Color(0xFF00FFA3),
-                                  blurRadius: 15,
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 45),
-
-                          // CAMPOS DE TEXTO
-                          _buildLabel(
-                            'Correo electrónico',
-                            Icons.email_outlined,
-                          ),
-                          _buildTextField(
-                            _emailController,
-                            'jlopez@example.com',
-                            false,
-                          ),
-
-                          const SizedBox(height: 25),
-
-                          _buildLabel('Contraseña', Icons.lock_outline),
-                          _buildTextField(
-                            _passwordController,
-                            '********',
-                            true,
-                          ),
-
-                          const SizedBox(height: 35),
-
-                          // BOTÓN ACCEDER
-                          Container(
-                            width: double.infinity,
-                            height: 55,
-                            decoration: BoxDecoration(
-                              boxShadow: [
-                                BoxShadow(
-                                  color: const Color(
-                                    0xFF00FFA3,
-                                  ).withOpacity(0.3),
-                                  blurRadius: 15,
-                                  offset: const Offset(0, 5),
-                                ),
-                              ],
-                            ),
-                            child: ElevatedButton(
-                              onPressed: () {
-                                isLoggedIn = true;
-
-                                // CAPTURAMOS EL CORREO DEL TEXTFIELD
-                                currentEmail = _emailController.text.isNotEmpty
-                                    ? _emailController.text
-                                    : "jlopez@example.com";
-
-                                // --- CORRECCIÓN AQUÍ ---
-                                // Como en el login no pedimos el nombre,
-                                // podemos usar una lógica: Si el correo es el de "Juan", ponemos Juan.
-                                // Si no, ponemos un nombre genérico o lo que el usuario escribió en el prefijo del correo.
-                                if (currentEmail == "jlopez@example.com") {
-                                  currentName = "Juan López";
-                                } else if (currentEmail.contains('@')) {
-                                  // Esto saca el nombre del correo (ej: de "amador@mail.com" saca "amador")
-                                  currentName = currentEmail.split('@')[0];
-                                } else {
-                                  currentName = "Usuario MobileLock";
-                                }
-
-                                Navigator.pushNamedAndRemoveUntil(
-                                  context,
-                                  '/dashboard',
-                                  (route) => false,
-                                );
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF00FFA3),
-                                foregroundColor: Colors.black,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(15),
-                                ),
-                                elevation: 0,
-                              ),
-                              child: const Text(
-                                'ACCEDER',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  letterSpacing: 1.2,
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          const SizedBox(height: 15),
-
-                          // BOTÓN CREAR CUENTA
-                          OutlinedButton(
-                            onPressed: () =>
-                                Navigator.pushNamed(context, '/register'),
-                            style: OutlinedButton.styleFrom(
-                              minimumSize: const Size(double.infinity, 55),
-                              side: BorderSide(
-                                color: Colors.white.withOpacity(0.1),
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(15),
-                              ),
-                            ),
-                            child: const Text(
-                              'Crear cuenta nueva',
-                              style: TextStyle(color: Colors.white70),
-                            ),
-                          ),
-
-                          const SizedBox(height: 25),
-
-                          // VOLVER AL INICIO
-                          TextButton(
-                            onPressed: () => Navigator.pushNamed(context, '/'),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  Icons.arrow_back,
-                                  color: Colors.white.withOpacity(0.2),
-                                  size: 14,
-                                ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  'Volver al inicio',
-                                  style: TextStyle(
-                                    color: Colors.white.withOpacity(0.2),
-                                    fontSize: 13,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                  
+                  const SizedBox(height: 25),
+
+                  // 3. TÍTULO NEÓN
+                  const Text(
+                    'MOBILELOCK AI',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Color(0xFF00FFA3),
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 2.0,
+                      shadows: [
+                        Shadow(
+                          color: Color(0xFF00FFA3),
+                          blurRadius: 15,
+                        ),
+                      ],
+                    ),
+                  ),
+                  
+                  const SizedBox(height: 50),
+
+                  // 4. FORMULARIO (Sin el recuadro contenedor, directo sobre el fondo)
+                  _buildLabel('Correo electrónico', Icons.email_outlined),
+                  _buildTextField(
+                    _emailController,
+                    'jlopez@example.com',
+                    false,
+                  ),
+
+                  const SizedBox(height: 25),
+
+                  _buildLabel('Contraseña', Icons.lock_outline),
+                  _buildTextField(
+                    _passwordController,
+                    '********',
+                    true,
+                  ),
+
+                  const SizedBox(height: 40),
+
+                  // 5. BOTÓN ACCEDER (Sólido Neón)
+                  Container(
+                    height: 55,
+                    decoration: BoxDecoration(
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF00FFA3).withOpacity(0.3),
+                          blurRadius: 15,
+                          offset: const Offset(0, 5),
+                        ),
+                      ],
+                    ),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        // Mantenemos tu lógica de navegación
+                        isLoggedIn = true;
+                        currentEmail = _emailController.text.isNotEmpty
+                            ? _emailController.text
+                            : "jlopez@example.com";
+
+                        if (currentEmail == "jlopez@example.com") {
+                          currentName = "Juan López";
+                        } else if (currentEmail.contains('@')) {
+                          currentName = currentEmail.split('@')[0];
+                        } else {
+                          currentName = "Usuario MobileLock";
+                        }
+
+                        Navigator.pushNamedAndRemoveUntil(
+                          context,
+                          '/dashboard',
+                          (route) => false,
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF00FFA3),
+                        foregroundColor: Colors.black,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: const Text(
+                        'ACCEDER',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // 6. BOTÓN CREAR CUENTA (Transparente)
+                  OutlinedButton(
+                    onPressed: () =>
+                        Navigator.pushNamed(context, '/register'),
+                    style: OutlinedButton.styleFrom(
+                      minimumSize: const Size(double.infinity, 55),
+                      side: BorderSide(
+                        color: Colors.white.withOpacity(0.1),
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                    ),
+                    child: const Text(
+                      'Crear cuenta nueva',
+                      style: TextStyle(color: Colors.white70),
+                    ),
+                  ),
+
+                  const SizedBox(height: 25),
+
+                  // 7. VOLVER AL INICIO
+                  TextButton(
+                    onPressed: () => Navigator.pushNamed(context, '/'),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.arrow_back,
+                          color: Colors.white.withOpacity(0.2),
+                          size: 14,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Volver al inicio',
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.2),
+                            fontSize: 13,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                ],
               ),
             ),
           ),
@@ -261,6 +231,8 @@ class _LoginPageState extends State<LoginPage>
       ),
     );
   }
+
+  // --- MANTENEMOS TUS HELPER WIDGETS ---
 
   Widget _buildLabel(String text, IconData icon) {
     return Padding(
@@ -285,7 +257,7 @@ class _LoginPageState extends State<LoginPage>
   ) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.4),
+        color: const Color(0xFF1A1F21), // Color surface suave
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.white.withOpacity(0.05)),
       ),
@@ -317,16 +289,19 @@ class _LoginPageState extends State<LoginPage>
   }
 }
 
+// Pintor de cuadrícula para toda la pantalla
 class GridPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
       ..color = Colors.white.withOpacity(0.02)
       ..strokeWidth = 1.0;
-    for (double i = 0; i < size.width; i += 40)
+    for (double i = 0; i < size.width; i += 40) {
       canvas.drawLine(Offset(i, 0), Offset(i, size.height), paint);
-    for (double i = 0; i < size.height; i += 40)
+    }
+    for (double i = 0; i < size.height; i += 40) {
       canvas.drawLine(Offset(0, i), Offset(size.width, i), paint);
+    }
   }
 
   @override
