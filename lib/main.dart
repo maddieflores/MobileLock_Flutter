@@ -22,22 +22,33 @@ class MyApp extends StatelessWidget {
       title: 'MobileLock AI',
       debugShowCheckedModeBanner: false,
 
-      // Aplicamos un tema oscuro global para que combine con tu interfaz
+      // --- AQUÍ ESTÁN LOS CAMBIOS DE COLOR ---
       theme: ThemeData(
-        brightness: Brightness.dark,
-        colorScheme: ColorScheme.dark(
-          primary: const Color(
-            0xFF00FFA3,
-          ), // Esto aplica el verde a más componentes
-          surface: const Color(0xFF14191A),
+        brightness: Brightness.dark, // Mantenemos el modo oscuro base
+        
+        colorScheme: const ColorScheme.dark(
+          primary: Color(0xFF00FFA3), // Tu verde neón característico
+          
+          // Nuevo color para las TARJETAS y CONTENEDORES (Un gris muy oscuro)
+          surface: Color(0xFF1A1F21), // <--- CAMBIO AQUÍ (Gris pizarra oscuro)
+          
+          // Color para el texto sobre la superficie
+          onSurface: Colors.white,
         ),
-        scaffoldBackgroundColor: const Color(0xFF0A0E0F),
+
+        // Nuevo color de FONDO GENERAL de la app
+        scaffoldBackgroundColor: const Color(0xFF101415), // <--- CAMBIO AQUÍ (Gris-negro profundo)
+        
+        // OPCIONAL: También puedes personalizar el AppBar si usas uno por defecto
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Color(0xFF101415),
+          elevation: 0,
+        ),
       ),
+      // ----------------------------------------
 
-      // 1. La pantalla que se verá apenas abra la app
-      initialRoute: '/login',
+      initialRoute: '/login', 
 
-      // 2. El "Mapa" de navegación hacia tus nuevas carpetas
       routes: {
         '/': (context) => const WelcomePage(),
         '/login': (context) => const LoginPage(),
