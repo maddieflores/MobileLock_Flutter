@@ -1,3 +1,4 @@
+import '../../../services/api_service.dart';
 import 'package:flutter/material.dart';
 import '../Profile/profile_page.dart';
 
@@ -10,9 +11,11 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage>
     with SingleTickerProviderStateMixin {
-  // --- LÓGICA DE ANIMACIÓN RECUPERADA ---
   late AnimationController _controller;
   late Animation<double> _pulseAnimation;
+
+  // SERVICIO API AGREGADO
+  final ApiService _apiService = ApiService();
 
   // CONTROLADORES
   final TextEditingController _emailController = TextEditingController();
@@ -138,26 +141,33 @@ class _LoginPageState extends State<LoginPage>
                       ],
                     ),
                     child: ElevatedButton(
-                      onPressed: () {
-                        // Mantenemos tu lógica de navegación
-                        isLoggedIn = true;
-                        currentEmail = _emailController.text.isNotEmpty
-                            ? _emailController.text
-                            : "jlopez@example.com";
-
-                        if (currentEmail == "jlopez@example.com") {
-                          currentName = "Juan López";
-                        } else if (currentEmail.contains('@')) {
-                          currentName = currentEmail.split('@')[0];
-                        } else {
-                          currentName = "Usuario MobileLock";
-                        }
-
-                        Navigator.pushNamedAndRemoveUntil(
-                          context,
-                          '/dashboard',
-                          (route) => false,
+                      onPressed: () async {
+                        // REEMPLAZO EXACTO LÓGICA MOCK POR LÓGICA DE BACKEND
+                        final response = await _apiService.login(
+                          _emailController.text,
+                          _passwordController.text
                         );
+
+                        if (mounted) {
+                          if (response != null && response.statusCode == 200) {
+                            
+                            // --- GUARDAMOS EL TOKEN Y LA SESIÓN ---
+                            isLoggedIn = true;
+                            globalToken = response.data['access']; // <--- GUARDANDO LA LLAVE AQUÍ
+                            currentEmail = _emailController.text;
+                            // ------------------------------------------------
+
+                            Navigator.pushNamedAndRemoveUntil(
+                              context,
+                              '/dashboard',
+                              (route) => false,
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text("Error: Credenciales incorrectas")),
+                            );
+                          }
+                        }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF00FFA3),
@@ -289,7 +299,6 @@ class _LoginPageState extends State<LoginPage>
   }
 }
 
-// Pintor de cuadrícula para toda la pantalla
 class GridPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
