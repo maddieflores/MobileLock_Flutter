@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import '../../../services/api_service.dart'; // Importamos el servicio
 
 // --- MODELO DE DATOS PARA DISPOSITIVOS ---
-// Definido aquí para que sea accesible globalmente en toda la app
 class DeviceModel {
   final String ownerEmail;
   final String model;
@@ -17,13 +17,13 @@ class DeviceModel {
 }
 
 // --- VARIABLES GLOBALES DE SESIÓN ---
-// Estas variables mantienen los datos vivos mientras la app esté abierta
 bool isLoggedIn = false;
+String globalToken = ""; // NUEVO: Guarda el Token JWT
 String currentEmail = "invitado@mail.com";
-String currentName = "Usuario";
+String currentName = "Cargando datos..."; // Cambiado para el primer impacto
+String currentPlan = "Cargando plan..."; // NUEVO: Para guardar el plan
 
 // --- LISTA GLOBAL DE DISPOSITIVOS ---
-// Aquí se guardarán todos los equipos sin borrarse al navegar
 List<DeviceModel> globalDevices = [];
 
 class ProfilePage extends StatefulWidget {
@@ -35,6 +35,51 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   final String userSince = "Abril 2026";
+  bool _isLoading = true; // Controla el estado de carga
+
+  @override
+  void initState() {
+    super.initState();
+    // Si estamos logueados, descargamos los datos reales del backend
+    if (isLoggedIn && globalToken.isNotEmpty) {
+      _fetchUserData();
+    } else {
+      _isLoading = false;
+    }
+  }
+
+  // NUEVO: Función para descargar los datos con el Token
+  Future<void> _fetchUserData() async {
+    final apiService = ApiService();
+    final response = await apiService.getUserProfile(globalToken);
+
+    if (mounted) {
+      if (response != null && response.statusCode == 200) {
+        setState(() {
+          final data = response.data;
+          
+          // Extraemos los datos basándonos en tu base de datos
+          String nombres = data['nombres'] ?? data['first_name'] ?? "";
+          String apPaterno = data['apellido_paterno'] ?? data['last_name'] ?? "";
+          String apMaterno = data['apellido_materno'] ?? "";
+
+          // Unimos todo en el nombre completo
+          currentName = "$nombres $apPaterno $apMaterno".trim();
+          if (currentName.isEmpty) currentName = "Usuario MobileLock";
+
+          // Extraemos el plan
+          currentPlan = data['plan'] ?? "FREE • ACTIVO";
+          _isLoading = false;
+        });
+      } else {
+        setState(() {
+          currentName = "Usuario MobileLock";
+          currentPlan = "FREE • ACTIVO";
+          _isLoading = false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,11 +87,9 @@ class _ProfilePageState extends State<ProfilePage> {
       backgroundColor: const Color(0xFF060B0C),
       body: Stack(
         children: [
-          // Fondo de cuadrícula decorativa
           Positioned.fill(
             child: IgnorePointer(child: CustomPaint(painter: GridPainter())),
           ),
-
           SafeArea(
             child: Align(
               alignment: Alignment.topCenter,
@@ -57,7 +100,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     Expanded(
                       child: !isLoggedIn
                           ? _buildEmptyState()
-                          : _buildProfileContent(),
+                          : (_isLoading ? _buildLoading() : _buildProfileContent()),
                     ),
                     _buildBottomNav(context),
                   ],
@@ -67,6 +110,13 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
         ],
       ),
+    );
+  }
+
+  // --- ANIMACIÓN DE CARGA ---
+  Widget _buildLoading() {
+    return const Center(
+      child: CircularProgressIndicator(color: Color(0xFF00FFA3)),
     );
   }
 
@@ -204,13 +254,13 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _buildSectionHeader(String title) => Text(
-    title,
-    style: const TextStyle(
-      color: Colors.white,
-      fontSize: 18,
-      fontWeight: FontWeight.bold,
-    ),
-  );
+        title,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+        ),
+      );
 
   Widget _buildInfoCard() {
     return Container(
@@ -223,12 +273,16 @@ class _ProfilePageState extends State<ProfilePage> {
       child: Column(
         children: [
           _buildInfoItem(
+            Icons.verified_user_outlined,
+            'Estado del Plan',
+            currentPlan, // AHORA MUESTRA EL PLAN REAL DE LA BASE DE DATOS
+          ),
+          const Divider(color: Colors.white10, height: 25),
+          _buildInfoItem(
             Icons.calendar_today_outlined,
             'Miembro desde',
             userSince,
           ),
-          const Divider(color: Colors.white10, height: 25),
-          _buildInfoItem(Icons.security_outlined, 'Nivel de Seguridad', 'Alto'),
         ],
       ),
     );
@@ -339,10 +393,9 @@ class _ProfilePageState extends State<ProfilePage> {
         onPressed: () {
           setState(() {
             isLoggedIn = false;
+            globalToken = ""; // BORRAMOS EL TOKEN AL SALIR
             currentName = "Usuario";
             currentEmail = "invitado@mail.com";
-            // Nota: globalDevices NO se borra aquí para que otros usuarios
-            // mantengan sus datos al re-entrar.
           });
           Navigator.pushNamedAndRemoveUntil(
             context,
@@ -396,10 +449,12 @@ class GridPainter extends CustomPainter {
     final paint = Paint()
       ..color = Colors.white.withOpacity(0.03)
       ..strokeWidth = 1.0;
-    for (double i = 0; i < size.width; i += 40)
+    for (double i = 0; i < size.width; i += 40) {
       canvas.drawLine(Offset(i, 0), Offset(i, size.height), paint);
-    for (double i = 0; i < size.height; i += 40)
+    }
+    for (double i = 0; i < size.height; i += 40) {
       canvas.drawLine(Offset(0, i), Offset(size.width, i), paint);
+    }
   }
 
   @override
