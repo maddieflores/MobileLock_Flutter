@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-// IMPORTANTE: Ruta correcta para acceder a las variables globales
+import '../../../services/api_service.dart';
 import '../Profile/profile_page.dart';
 
 class DevicesPage extends StatefulWidget {
@@ -10,26 +10,42 @@ class DevicesPage extends StatefulWidget {
 }
 
 class _DevicesPageState extends State<DevicesPage> {
+  bool _isLoading = true;
+  List<dynamic> _myDevices = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchDevices();
+  }
+
+  Future<void> _fetchDevices() async {
+    if (isLoggedIn && globalToken.isNotEmpty) {
+      final apiService = ApiService();
+      final response = await apiService.getUserDevices(globalToken);
+
+      if (mounted) {
+        if (response != null && response.statusCode == 200) {
+          setState(() {
+            _myDevices = response.data;
+            _isLoading = false;
+          });
+        } else {
+          setState(() => _isLoading = false);
+        }
+      }
+    } else {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    // FILTRADO DINÁMICO:
-    // Buscamos en la lista GLOBAL solo los dispositivos que coincidan con el correo actual
-    final List<DeviceModel> userDevices = globalDevices
-        .where(
-          (device) =>
-              device.ownerEmail.trim().toLowerCase() ==
-              currentEmail.trim().toLowerCase(),
-        )
-        .toList();
-
     return Scaffold(
       backgroundColor: const Color(0xFF060B0C),
       body: Stack(
         children: [
-          Positioned.fill(
-            child: IgnorePointer(child: CustomPaint(painter: GridPainter())),
-          ),
-
+          Positioned.fill(child: CustomPaint(painter: GridPainter())),
           SafeArea(
             child: Align(
               alignment: Alignment.topCenter,
@@ -37,21 +53,18 @@ class _DevicesPageState extends State<DevicesPage> {
                 constraints: const BoxConstraints(maxWidth: 420),
                 child: Column(
                   children: [
-                    _buildHeader(context),
-
+                    const SizedBox(height: 20),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: _buildHeader(context),
+                    ),
+                    const SizedBox(height: 30),
                     Expanded(
-                      child: userDevices.isEmpty
-                          ? _buildEmptyState()
-                          : ListView.builder(
-                              physics: const BouncingScrollPhysics(),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 20,
-                                vertical: 10,
-                              ),
-                              itemCount: userDevices.length,
-                              itemBuilder: (context, index) =>
-                                  _buildDeviceCard(userDevices[index]),
-                            ),
+                      child: _isLoading
+                          ? const Center(child: CircularProgressIndicator(color: Color(0xFF00FFA3)))
+                          : _myDevices.isEmpty
+                              ? _buildEmptyState()
+                              : _buildDevicesList(),
                     ),
                   ],
                 ),
@@ -63,96 +76,40 @@ class _DevicesPageState extends State<DevicesPage> {
     );
   }
 
-  // --- INTERFAZ CUANDO NO HAY DISPOSITIVOS ---
-  Widget _buildEmptyState() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(40.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(25),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.white.withOpacity(0.02),
-              ),
-              child: Icon(
-                Icons.phonelink_off_rounded,
-                size: 80,
-                color: Colors.white.withOpacity(0.05),
-              ),
-            ),
-            const SizedBox(height: 25),
-            const Text(
-              'No hay dispositivos',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              'Aún no has registrado ningún equipo bajo la cuenta:\n$currentEmail',
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                color: Colors.white38,
-                fontSize: 13,
-                height: 1.5,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // --- ENCABEZADO CON EL BOTÓN "+" A LA DERECHA ---
   Widget _buildHeader(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.all(20),
-      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.03),
+        color: const Color(0xFF0E1415),
         borderRadius: BorderRadius.circular(25),
-        border: Border.all(color: Colors.white.withOpacity(0.08)),
+        border: Border.all(color: Colors.white.withOpacity(0.05)),
       ),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white),
-            onPressed: () => Navigator.pop(context),
-          ),
-          const SizedBox(width: 5),
-          const Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
+          Row(
             children: [
-              Text(
-                'Mis',
-                style: TextStyle(color: Color(0xFF00FFA3), fontSize: 14),
+              IconButton(
+                icon: const Icon(Icons.arrow_back, color: Colors.white),
+                onPressed: () => Navigator.pop(context),
               ),
-              Text(
-                'Dispositivos',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  shadows: [Shadow(color: Color(0xFF00FFA3), blurRadius: 10)],
-                ),
+              const SizedBox(width: 5),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: const [
+                  Text('Mis', style: TextStyle(color: Color(0xFF00FFA3), fontSize: 12, fontWeight: FontWeight.bold)),
+                  Text('Dispositivos', style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold, shadows: [Shadow(color: Color(0xFF00FFA3), blurRadius: 10)])),
+                ],
               ),
             ],
           ),
-          const Spacer(),
-          // Botón alineado a la derecha
           Container(
             decoration: BoxDecoration(
-              color: const Color(0xFF00FFA3).withOpacity(0.1),
-              borderRadius: BorderRadius.circular(15),
+              color: const Color(0xFF1A2426),
+              borderRadius: BorderRadius.circular(12),
             ),
             child: IconButton(
-              icon: const Icon(Icons.add, color: Color(0xFF00FFA3), size: 28),
+              icon: const Icon(Icons.add, color: Color(0xFF00FFA3)),
               onPressed: () => Navigator.pushNamed(context, '/register_device'),
             ),
           ),
@@ -161,54 +118,100 @@ class _DevicesPageState extends State<DevicesPage> {
     );
   }
 
-  Widget _buildDeviceCard(DeviceModel device) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 20),
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: const Color(0xFF0E1415),
-        borderRadius: BorderRadius.circular(25),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
-      ),
-      child: Row(
+  Widget _buildEmptyState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: const Color(0xFF00FFA3).withOpacity(0.1),
-              borderRadius: BorderRadius.circular(15),
-            ),
-            child: const Icon(
-              Icons.phone_android,
-              color: Color(0xFF00FFA3),
-              size: 30,
-            ),
+            padding: const EdgeInsets.all(30),
+            decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withOpacity(0.02), border: Border.all(color: Colors.white.withOpacity(0.05))),
+            child: Icon(Icons.phonelink_erase_rounded, size: 80, color: Colors.white.withOpacity(0.1)),
           ),
-          const SizedBox(width: 15),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  device.model,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'IMEI: ${device.imei}',
-                  style: const TextStyle(color: Colors.white54, fontSize: 12),
-                ),
-                Text(
-                  device.hardware,
-                  style: const TextStyle(color: Colors.white38, fontSize: 11),
-                ),
-              ],
-            ),
+          const SizedBox(height: 30),
+          const Text('No hay dispositivos', style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 15),
+          Text('Aún no has registrado ningún equipo bajo la cuenta:\n$currentEmail', textAlign: TextAlign.center, style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 14, height: 1.5)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDevicesList() {
+    return ListView.builder(
+      physics: const BouncingScrollPhysics(),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      itemCount: _myDevices.length,
+      itemBuilder: (context, index) {
+        var device = _myDevices[index];
+        String deviceName = device['marca_modelo'] ?? 'Dispositivo Móvil';
+        String deviceImei = device['hash_imei'] ?? 'IMEI Desconocido';
+        String deviceHardware = device['hash_adn_hardware'] ?? 'HASH_DESCONOCIDO';
+
+        return Container(
+          margin: const EdgeInsets.only(bottom: 20),
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: const Color(0xFF131D1F),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: Colors.white.withOpacity(0.05)),
           ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center, // Centrado vertical para que el icono se vea mejor
+            children: [
+              // --- ICONO FORMATO DASHBOARD ---
+              Container(
+                width: 55,
+                height: 55,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF00FFA3).withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: const Icon(
+                  Icons.smartphone_rounded,
+                  color: Color(0xFF00FFA3),
+                  size: 28,
+                ),
+              ),
+              const SizedBox(width: 15),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(deviceName, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                    const SizedBox(height: 4),
+                    Text('IMEI: $deviceImei', style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 11)),
+                    Text('Hardware: $deviceHardware', style: TextStyle(color: Colors.white.withOpacity(0.3), fontSize: 10), overflow: TextOverflow.ellipsis),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 10),
+              Column(
+                children: [
+                  _buildActionButton('Editar', const Color(0xFFFFC107), Icons.edit_outlined),
+                  const SizedBox(height: 8),
+                  _buildActionButton('Eliminar', const Color(0xFFFF4B4B), Icons.delete_outline),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildActionButton(String label, Color color, IconData icon) {
+    return Container(
+      width: 90,
+      height: 32,
+      decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(8)),
+      alignment: Alignment.center,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, size: 14, color: color == const Color(0xFFFFC107) ? Colors.black : Colors.white),
+          const SizedBox(width: 4),
+          Text(label, style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: color == const Color(0xFFFFC107) ? Colors.black : Colors.white)),
         ],
       ),
     );
@@ -218,15 +221,11 @@ class _DevicesPageState extends State<DevicesPage> {
 class GridPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.white.withOpacity(0.03)
-      ..strokeWidth = 1.0;
-    for (double i = 0; i < size.width; i += 40)
-      canvas.drawLine(Offset(i, 0), Offset(i, size.height), paint);
-    for (double i = 0; i < size.height; i += 40)
-      canvas.drawLine(Offset(0, i), Offset(size.width, i), paint);
+    final paint = Paint()..color = Colors.white.withOpacity(0.03)..strokeWidth = 1.0;
+    const double step = 40.0;
+    for (double i = 0; i < size.width; i += step) canvas.drawLine(Offset(i, 0), Offset(i, size.height), paint);
+    for (double i = 0; i < size.height; i += step) canvas.drawLine(Offset(0, i), Offset(size.width, i), paint);
   }
-
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

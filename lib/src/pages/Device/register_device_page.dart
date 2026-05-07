@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../../services/api_service.dart'; // Importamos la API
+import '../Profile/profile_page.dart'; // Importamos el globalToken
 
 class RegisterDevicePage extends StatefulWidget {
   const RegisterDevicePage({super.key});
@@ -129,8 +131,52 @@ class _RegisterDevicePageState extends State<RegisterDevicePage> {
                               ),
                               const SizedBox(width: 15),
                               Expanded(
-                                child: _buildPrimaryButton('Registrar', () {
-                                  Navigator.pop(context);
+                                child: _buildPrimaryButton('Registrar', () async {
+                                  // --- LÓGICA DE REGISTRO ---
+                                  final marca = _modelController.text.trim();
+                                  final imei = _imeiController.text.trim();
+                                  final hw = _hardwareIdController.text.trim();
+
+                                  // 1. Validamos que no estén vacíos
+                                  if (marca.isEmpty || imei.isEmpty || hw.isEmpty) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text('Por favor, completa todos los campos'), backgroundColor: Colors.redAccent),
+                                    );
+                                    return;
+                                  }
+
+                                  // Mensaje de carga opcional
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text('Registrando equipo...'), duration: Duration(seconds: 1)),
+                                  );
+
+                                  // 2. Enviamos a Django
+                                  final apiService = ApiService();
+                                  final response = await apiService.registerDevice(globalToken, marca, imei, hw);
+
+                                  if (mounted) {
+                                    if (response != null && (response.statusCode == 200 || response.statusCode == 201)) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(content: Text('¡Equipo registrado con éxito!'), backgroundColor: Colors.green),
+                                      );
+                                      // 3. Volvemos al Dashboard o Mis Dispositivos
+                                      Navigator.pop(context);
+                                    } else {
+                                      // --- LECTURA MEJORADA DEL ERROR DE DJANGO ---
+                                      String mensajeError = 'No se pudo registrar el dispositivo';
+                                      if (response?.data != null && response?.data is Map) {
+                                        // Leemos específicamente la llave "detail" que manda tu views.py
+                                        mensajeError = response?.data['detail'] ?? response?.data.toString();
+                                      }
+                                      
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: Text(mensajeError), 
+                                          backgroundColor: Colors.redAccent
+                                        ),
+                                      );
+                                    }
+                                  }
                                 }),
                               ),
                             ],
@@ -148,7 +194,7 @@ class _RegisterDevicePageState extends State<RegisterDevicePage> {
     );
   }
 
-  // --- WIDGETS DE ESTILO ---
+  // --- WIDGETS DE ESTILO (INTACTOS) ---
 
   Widget _buildLabel(String text) {
     return Padding(
@@ -261,10 +307,12 @@ class GridPainter extends CustomPainter {
     final paint = Paint()
       ..color = Colors.white.withOpacity(0.03)
       ..strokeWidth = 1.0;
-    for (double i = 0; i < size.width; i += 40)
+    for (double i = 0; i < size.width; i += 40) {
       canvas.drawLine(Offset(i, 0), Offset(i, size.height), paint);
-    for (double i = 0; i < size.height; i += 40)
+    }
+    for (double i = 0; i < size.height; i += 40) {
       canvas.drawLine(Offset(0, i), Offset(size.width, i), paint);
+    }
   }
 
   @override
