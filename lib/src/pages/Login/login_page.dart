@@ -48,34 +48,28 @@ class _LoginPageState extends State<LoginPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Usamos el color gris-negro profundo para que no sea negro puro
       backgroundColor: const Color(0xFF101415),
       body: Stack(
         children: [
-          // 1. FONDO DE CUADRÍCULA (Ahora ocupa toda la pantalla realmente)
           Positioned.fill(
             child: IgnorePointer(
               child: CustomPaint(painter: GridPainter()),
             ),
           ),
-
           SafeArea(
             child: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
-              // Padding lateral para que los elementos no toquen el borde físico
               padding: const EdgeInsets.symmetric(horizontal: 30),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const SizedBox(height: 60),
-
-                  // 2. LOGO ANIMADO (Recuperado y centrado)
                   Center(
                     child: ScaleTransition(
                       scale: _pulseAnimation,
                       child: Image.asset(
                         'assets/images/mobilelock-logo.png',
-                        height: 110, // Un poco más grande para que luzca
+                        height: 110,
                         fit: BoxFit.contain,
                         errorBuilder: (context, error, stackTrace) =>
                             const Icon(
@@ -86,10 +80,7 @@ class _LoginPageState extends State<LoginPage>
                       ),
                     ),
                   ),
-                  
                   const SizedBox(height: 25),
-
-                  // 3. TÍTULO NEÓN
                   const Text(
                     'MOBILELOCK AI',
                     textAlign: TextAlign.center,
@@ -106,35 +97,27 @@ class _LoginPageState extends State<LoginPage>
                       ],
                     ),
                   ),
-                  
                   const SizedBox(height: 50),
-
-                  // 4. FORMULARIO (Sin el recuadro contenedor, directo sobre el fondo)
                   _buildLabel('Correo electrónico', Icons.email_outlined),
                   _buildTextField(
                     _emailController,
                     'jlopez@example.com',
                     false,
                   ),
-
                   const SizedBox(height: 25),
-
                   _buildLabel('Contraseña', Icons.lock_outline),
                   _buildTextField(
                     _passwordController,
                     '********',
                     true,
                   ),
-
                   const SizedBox(height: 40),
-
-                  // 5. BOTÓN ACCEDER (Sólido Neón)
                   Container(
                     height: 55,
                     decoration: BoxDecoration(
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFF00FFA3).withOpacity(0.3),
+                          color: const Color(0xFF00FFA3).withValues(alpha: 0.3),
                           blurRadius: 15,
                           offset: const Offset(0, 5),
                         ),
@@ -142,20 +125,16 @@ class _LoginPageState extends State<LoginPage>
                     ),
                     child: ElevatedButton(
                       onPressed: () async {
-                        // REEMPLAZO EXACTO LÓGICA MOCK POR LÓGICA DE BACKEND
                         final response = await _apiService.login(
                           _emailController.text,
-                          _passwordController.text
+                          _passwordController.text,
                         );
 
                         if (mounted) {
                           if (response != null && response.statusCode == 200) {
-                            
-                            // --- GUARDAMOS EL TOKEN Y LA SESIÓN ---
                             isLoggedIn = true;
-                            globalToken = response.data['access']; // <--- GUARDANDO LA LLAVE AQUÍ
+                            globalToken = response.data['access'];
                             currentEmail = _emailController.text;
-                            // ------------------------------------------------
 
                             Navigator.pushNamedAndRemoveUntil(
                               context,
@@ -164,7 +143,8 @@ class _LoginPageState extends State<LoginPage>
                             );
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text("Error: Credenciales incorrectas")),
+                              const SnackBar(
+                                  content: Text("Error: Credenciales incorrectas")),
                             );
                           }
                         }
@@ -186,17 +166,14 @@ class _LoginPageState extends State<LoginPage>
                       ),
                     ),
                   ),
-
                   const SizedBox(height: 20),
-
-                  // 6. BOTÓN CREAR CUENTA (Transparente)
                   OutlinedButton(
                     onPressed: () =>
                         Navigator.pushNamed(context, '/register'),
                     style: OutlinedButton.styleFrom(
                       minimumSize: const Size(double.infinity, 55),
                       side: BorderSide(
-                        color: Colors.white.withOpacity(0.1),
+                        color: Colors.white.withValues(alpha: 0.1),
                       ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15),
@@ -207,10 +184,7 @@ class _LoginPageState extends State<LoginPage>
                       style: TextStyle(color: Colors.white70),
                     ),
                   ),
-
                   const SizedBox(height: 25),
-
-                  // 7. VOLVER AL INICIO
                   TextButton(
                     onPressed: () => Navigator.pushNamed(context, '/'),
                     child: Row(
@@ -218,14 +192,14 @@ class _LoginPageState extends State<LoginPage>
                       children: [
                         Icon(
                           Icons.arrow_back,
-                          color: Colors.white.withOpacity(0.2),
+                          color: Colors.white.withValues(alpha: 0.2),
                           size: 14,
                         ),
                         const SizedBox(width: 8),
                         Text(
                           'Volver al inicio',
                           style: TextStyle(
-                            color: Colors.white.withOpacity(0.2),
+                            color: Colors.white.withValues(alpha: 0.2),
                             fontSize: 13,
                           ),
                         ),
@@ -242,13 +216,12 @@ class _LoginPageState extends State<LoginPage>
     );
   }
 
-  // --- MANTENEMOS TUS HELPER WIDGETS ---
-
   Widget _buildLabel(String text, IconData icon) {
     return Padding(
       padding: const EdgeInsets.only(left: 5, bottom: 8),
       child: Row(
         children: [
+          // Corregido: Quitamos el const porque 'icon' es dinámico
           Icon(icon, color: const Color(0xFF00FFA3), size: 16),
           const SizedBox(width: 8),
           Text(
@@ -267,9 +240,9 @@ class _LoginPageState extends State<LoginPage>
   ) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF1A1F21), // Color surface suave
+        color: const Color(0xFF1A1F21),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: TextField(
         controller: controller,
@@ -303,7 +276,7 @@ class GridPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.white.withOpacity(0.02)
+      ..color = Colors.white.withValues(alpha: 0.02)
       ..strokeWidth = 1.0;
     for (double i = 0; i < size.width; i += 40) {
       canvas.drawLine(Offset(i, 0), Offset(i, size.height), paint);

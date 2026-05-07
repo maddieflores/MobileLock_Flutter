@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../services/api_service.dart'; // <--- 1. IMPORTAMOS EL SERVICIO
+import '../../../services/api_service.dart';
 import '../Profile/profile_page.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -14,10 +14,8 @@ class _RegisterPageState extends State<RegisterPage>
   late AnimationController _controller;
   late Animation<double> _pulseAnimation;
 
-  // <--- 2. INICIALIZAMOS EL SERVICIO
   final ApiService _apiService = ApiService();
 
-  // CONTROLADORES
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNamePController = TextEditingController();
   final TextEditingController _lastNameMController = TextEditingController();
@@ -139,14 +137,13 @@ class _RegisterPageState extends State<RegisterPage>
                   const SizedBox(height: 12),
                   _buildPasswordField(),
                   const SizedBox(height: 40),
-
-                  // <--- 3. BOTÓN CON LÓGICA REAL DE BACKEND
                   Container(
                     height: 55,
                     decoration: BoxDecoration(
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFF00FFA3).withOpacity(0.3),
+                          // CAMBIO: withValues en lugar de withOpacity
+                          color: const Color(0xFF00FFA3).withValues(alpha: 0.3),
                           blurRadius: 15,
                           offset: const Offset(0, 5),
                         ),
@@ -154,9 +151,10 @@ class _RegisterPageState extends State<RegisterPage>
                     ),
                     child: ElevatedButton(
                       onPressed: () async {
-                        // Mostramos un indicador visual rápido (opcional)
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text("Creando cuenta..."), duration: Duration(seconds: 1)),
+                          const SnackBar(
+                              content: Text("Creando cuenta..."),
+                              duration: Duration(seconds: 1)),
                         );
 
                         final response = await _apiService.register(
@@ -168,20 +166,22 @@ class _RegisterPageState extends State<RegisterPage>
                         );
 
                         if (mounted) {
-                          // 201 significa "Created" en convenciones REST
-                          if (response != null && (response.statusCode == 200 || response.statusCode == 201)) {
+                          if (response != null &&
+                              (response.statusCode == 200 ||
+                                  response.statusCode == 201)) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
-                                content: Text("¡Cuenta creada con éxito! Inicia sesión."),
+                                content: Text(
+                                    "¡Cuenta creada con éxito! Inicia sesión."),
                                 backgroundColor: Colors.green,
                               ),
                             );
-                            Navigator.pop(context); // Regresa al Login
+                            Navigator.pop(context);
                           } else {
-                            // Si falla, mostramos el error de Django
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                content: Text("Error: ${response?.data ?? 'No se pudo crear la cuenta'}"),
+                                content: Text(
+                                    "Error: ${response?.data ?? 'No se pudo crear la cuenta'}"),
                                 backgroundColor: Colors.red,
                               ),
                             );
@@ -206,7 +206,6 @@ class _RegisterPageState extends State<RegisterPage>
                       ),
                     ),
                   ),
-
                   const SizedBox(height: 20),
                   TextButton(
                     onPressed: () => Navigator.pop(context),
@@ -255,12 +254,15 @@ class _RegisterPageState extends State<RegisterPage>
       decoration: BoxDecoration(
         color: const Color(0xFF1A1F21),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        border: Border.all(
+            // CAMBIO: withValues en lugar de withOpacity
+            color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: TextField(
         controller: controller,
         style: const TextStyle(color: Colors.white),
         decoration: InputDecoration(
+          // Quitamos const de aquí porque 'icon' es dinámico
           prefixIcon: Icon(icon, color: const Color(0xFF00FFA3), size: 18),
           hintText: hint,
           hintStyle: const TextStyle(color: Colors.white12, fontSize: 14),
@@ -276,7 +278,9 @@ class _RegisterPageState extends State<RegisterPage>
       decoration: BoxDecoration(
         color: const Color(0xFF1A1F21),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        border: Border.all(
+            // CAMBIO: withValues en lugar de withOpacity
+            color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: TextField(
         controller: _passwordController,
@@ -310,7 +314,8 @@ class GridPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.white.withOpacity(0.02)
+      // CAMBIO: withValues en lugar de withOpacity
+      ..color = Colors.white.withValues(alpha: 0.02)
       ..strokeWidth = 1.0;
     for (double i = 0; i < size.width; i += 40) {
       canvas.drawLine(Offset(i, 0), Offset(i, size.height), paint);

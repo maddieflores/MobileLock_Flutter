@@ -15,13 +15,11 @@ class _WelcomePageState extends State<WelcomePage>
   @override
   void initState() {
     super.initState();
-    // 1. Configuramos el controlador de la animación (duración de 2 segundos)
     _controller = AnimationController(
       duration: const Duration(seconds: 2),
       vsync: this,
-    )..repeat(reverse: true); // Esto hace que suba y baje infinitamente
+    )..repeat(reverse: true);
 
-    // 2. Definimos el movimiento (de 0 a 15 píxeles)
     _animation = Tween<double>(
       begin: 0,
       end: 15,
@@ -30,7 +28,7 @@ class _WelcomePageState extends State<WelcomePage>
 
   @override
   void dispose() {
-    _controller.dispose(); // Importante cerrar el controlador al salir
+    _controller.dispose();
     super.dispose();
   }
 
@@ -60,20 +58,20 @@ class _WelcomePageState extends State<WelcomePage>
                             vertical: 8,
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.05),
+                            color: Colors.white.withValues(alpha: 0.05),
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(color: Colors.white10),
                           ),
-                          child: Row(
+                          child: const Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Icon(
+                              Icon(
                                 Icons.shield,
                                 color: Color(0xFF00FFA3),
                                 size: 28,
                               ),
-                              const SizedBox(width: 10),
-                              const Text(
+                              SizedBox(width: 10),
+                              Text(
                                 'MobileLock AI',
                                 style: TextStyle(
                                   color: Colors.white,
@@ -87,15 +85,11 @@ class _WelcomePageState extends State<WelcomePage>
 
                         const SizedBox(height: 50),
 
-                        // --- AQUÍ ESTÁ LA ANIMACIÓN ---
                         AnimatedBuilder(
                           animation: _animation,
                           builder: (context, child) {
                             return Transform.translate(
-                              offset: Offset(
-                                0,
-                                -_animation.value,
-                              ), // Mueve la imagen hacia arriba
+                              offset: Offset(0, -_animation.value),
                               child: Stack(
                                 alignment: Alignment.center,
                                 children: [
@@ -106,9 +100,7 @@ class _WelcomePageState extends State<WelcomePage>
                                       shape: BoxShape.circle,
                                       boxShadow: [
                                         BoxShadow(
-                                          color: const Color(
-                                            0xFF00FFA3,
-                                          ).withOpacity(0.15),
+                                          color: const Color(0xFF00FFA3).withValues(alpha: 0.15),
                                           blurRadius: 100,
                                           spreadRadius: 20,
                                         ),
@@ -119,13 +111,12 @@ class _WelcomePageState extends State<WelcomePage>
                                     'assets/images/phone-mobilelockai.png',
                                     height: 280,
                                     fit: BoxFit.contain,
-                                    errorBuilder:
-                                        (context, error, stackTrace) =>
-                                            const Icon(
-                                              Icons.phonelink_lock_rounded,
-                                              size: 120,
-                                              color: Colors.cyanAccent,
-                                            ),
+                                    errorBuilder: (context, error, stackTrace) =>
+                                        const Icon(
+                                      Icons.phonelink_lock_rounded,
+                                      size: 120,
+                                      color: Colors.cyanAccent,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -133,7 +124,6 @@ class _WelcomePageState extends State<WelcomePage>
                           },
                         ),
 
-                        // ------------------------------
                         const SizedBox(height: 40),
 
                         RichText(
@@ -196,9 +186,7 @@ class _WelcomePageState extends State<WelcomePage>
                                 decoration: BoxDecoration(
                                   boxShadow: [
                                     BoxShadow(
-                                      color: const Color(
-                                        0xFF00FFA3,
-                                      ).withOpacity(0.3),
+                                      color: const Color(0xFF00FFA3).withValues(alpha: 0.3),
                                       blurRadius: 15,
                                       offset: const Offset(0, 5),
                                     ),
@@ -235,9 +223,7 @@ class _WelcomePageState extends State<WelcomePage>
                                     Navigator.pushNamed(context, '/login'),
                                 style: OutlinedButton.styleFrom(
                                   side: const BorderSide(color: Colors.white12),
-                                  backgroundColor: Colors.white.withOpacity(
-                                    0.02,
-                                  ),
+                                  backgroundColor: Colors.white.withValues(alpha: 0.02),
                                   padding: const EdgeInsets.symmetric(
                                     vertical: 20,
                                   ),
@@ -277,7 +263,7 @@ class _WelcomePageState extends State<WelcomePage>
       decoration: BoxDecoration(
         color: const Color(0xFF0E1415),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: Column(
         children: [
@@ -287,7 +273,7 @@ class _WelcomePageState extends State<WelcomePage>
               color: const Color(0xFF1A2426),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: const Color(0xFF00FFA3).withOpacity(0.2),
+                color: const Color(0xFF00FFA3).withValues(alpha: 0.2),
               ),
             ),
             child: Icon(icon, color: const Color(0xFF00FFA3), size: 30),
@@ -317,7 +303,7 @@ class GridPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.white.withOpacity(0.03)
+      ..color = Colors.white.withValues(alpha: 0.03)
       ..strokeWidth = 1.0;
 
     const double step = 40.0;

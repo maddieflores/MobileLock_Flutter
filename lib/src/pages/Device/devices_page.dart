@@ -82,7 +82,7 @@ class _DevicesPageState extends State<DevicesPage> {
       decoration: BoxDecoration(
         color: const Color(0xFF0E1415),
         borderRadius: BorderRadius.circular(25),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -94,9 +94,9 @@ class _DevicesPageState extends State<DevicesPage> {
                 onPressed: () => Navigator.pop(context),
               ),
               const SizedBox(width: 5),
-              Column(
+              const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
+                children: [
                   Text('Mis', style: TextStyle(color: Color(0xFF00FFA3), fontSize: 12, fontWeight: FontWeight.bold)),
                   Text('Dispositivos', style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold, shadows: [Shadow(color: Color(0xFF00FFA3), blurRadius: 10)])),
                 ],
@@ -125,13 +125,21 @@ class _DevicesPageState extends State<DevicesPage> {
         children: [
           Container(
             padding: const EdgeInsets.all(30),
-            decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withOpacity(0.02), border: Border.all(color: Colors.white.withOpacity(0.05))),
-            child: Icon(Icons.phonelink_erase_rounded, size: 80, color: Colors.white.withOpacity(0.1)),
+            decoration: BoxDecoration(
+                shape: BoxShape.circle, 
+                color: Colors.white.withValues(alpha: 0.02), 
+                border: Border.all(color: Colors.white.withValues(alpha: 0.05))
+            ),
+            child: Icon(Icons.phonelink_erase_rounded, size: 80, color: Colors.white.withValues(alpha: 0.1)),
           ),
           const SizedBox(height: 30),
           const Text('No hay dispositivos', style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
           const SizedBox(height: 15),
-          Text('Aún no has registrado ningún equipo bajo la cuenta:\n$currentEmail', textAlign: TextAlign.center, style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 14, height: 1.5)),
+          Text(
+            'Aún no has registrado ningún equipo bajo la cuenta:\n$currentEmail', 
+            textAlign: TextAlign.center, 
+            style: TextStyle(color: Colors.white.withValues(alpha: 0.4), fontSize: 14, height: 1.5)
+          ),
         ],
       ),
     );
@@ -154,17 +162,16 @@ class _DevicesPageState extends State<DevicesPage> {
           decoration: BoxDecoration(
             color: const Color(0xFF131D1F),
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Colors.white.withOpacity(0.05)),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
           ),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center, // Centrado vertical para que el icono se vea mejor
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // --- ICONO FORMATO DASHBOARD ---
               Container(
                 width: 55,
                 height: 55,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF00FFA3).withOpacity(0.15),
+                  color: const Color(0xFF00FFA3).withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: const Icon(
@@ -180,8 +187,8 @@ class _DevicesPageState extends State<DevicesPage> {
                   children: [
                     Text(deviceName, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
                     const SizedBox(height: 4),
-                    Text('IMEI: $deviceImei', style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 11)),
-                    Text('Hardware: $deviceHardware', style: TextStyle(color: Colors.white.withOpacity(0.3), fontSize: 10), overflow: TextOverflow.ellipsis),
+                    Text('IMEI: $deviceImei', style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 11)),
+                    Text('Hardware: $deviceHardware', style: TextStyle(color: Colors.white.withValues(alpha: 0.3), fontSize: 10), overflow: TextOverflow.ellipsis),
                   ],
                 ),
               ),
@@ -201,6 +208,9 @@ class _DevicesPageState extends State<DevicesPage> {
   }
 
   Widget _buildActionButton(String label, Color color, IconData icon) {
+    // Definimos el color del texto/icono una sola vez para evitar repetición
+    final Color contentColor = color == const Color(0xFFFFC107) ? Colors.black : Colors.white;
+    
     return Container(
       width: 90,
       height: 32,
@@ -209,9 +219,9 @@ class _DevicesPageState extends State<DevicesPage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: 14, color: color == const Color(0xFFFFC107) ? Colors.black : Colors.white),
+          Icon(icon, size: 14, color: contentColor),
           const SizedBox(width: 4),
-          Text(label, style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: color == const Color(0xFFFFC107) ? Colors.black : Colors.white)),
+          Text(label, style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: contentColor)),
         ],
       ),
     );
@@ -221,10 +231,14 @@ class _DevicesPageState extends State<DevicesPage> {
 class GridPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()..color = Colors.white.withOpacity(0.03)..strokeWidth = 1.0;
+    final paint = Paint()..color = Colors.white.withValues(alpha: 0.03)..strokeWidth = 1.0;
     const double step = 40.0;
-    for (double i = 0; i < size.width; i += step) canvas.drawLine(Offset(i, 0), Offset(i, size.height), paint);
-    for (double i = 0; i < size.height; i += step) canvas.drawLine(Offset(0, i), Offset(size.width, i), paint);
+    for (double i = 0; i < size.width; i += step) {
+      canvas.drawLine(Offset(i, 0), Offset(i, size.height), paint);
+    }
+    for (double i = 0; i < size.height; i += step) {
+      canvas.drawLine(Offset(0, i), Offset(size.width, i), paint);
+    }
   }
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;

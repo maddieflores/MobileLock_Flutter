@@ -40,7 +40,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                 constraints: const BoxConstraints(maxWidth: 420),
                 child: Column(
                   children: [
-                    // --- CABECERA (Fuera del recuadro) ---
+                    // --- CABECERA ---
                     Padding(
                       padding: const EdgeInsets.all(20),
                       child: Row(
@@ -82,16 +82,15 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                           Container(
                             padding: const EdgeInsets.all(25),
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(
-                                0.03,
-                              ), // Fondo sutil
+                              // CAMBIO: withValues
+                              color: Colors.white.withValues(alpha: 0.03), 
                               borderRadius: BorderRadius.circular(30),
                               border: Border.all(
-                                color: Colors.white.withOpacity(0.08),
+                                color: Colors.white.withValues(alpha: 0.08),
                               ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.2),
+                                  color: Colors.black.withValues(alpha: 0.2),
                                   blurRadius: 20,
                                   spreadRadius: 2,
                                 ),
@@ -150,16 +149,14 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                                 ),
                                 const SizedBox(height: 45),
 
-                                // BOTÓN DENTRO DEL RECUADRO
+                                // BOTÓN ACTUALIZAR
                                 Container(
                                   width: double.infinity,
                                   height: 55,
                                   decoration: BoxDecoration(
                                     boxShadow: [
                                       BoxShadow(
-                                        color: const Color(
-                                          0xFF00FFA3,
-                                        ).withOpacity(0.3),
+                                        color: const Color(0xFF00FFA3).withValues(alpha: 0.3),
                                         blurRadius: 15,
                                         offset: const Offset(0, 5),
                                       ),
@@ -167,13 +164,9 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                                   ),
                                   child: ElevatedButton(
                                     onPressed: () {
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
+                                      ScaffoldMessenger.of(context).showSnackBar(
                                         const SnackBar(
-                                          content: Text(
-                                            'Contraseña actualizada',
-                                          ),
+                                          content: Text('Contraseña actualizada'),
                                         ),
                                       );
                                       Navigator.pop(context);
@@ -251,7 +244,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
         fillColor: const Color(0xFF0E1415),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(15),
-          borderSide: BorderSide(color: Colors.white.withOpacity(0.05)),
+          borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.05)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(15),
@@ -266,12 +259,14 @@ class GridPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.white.withOpacity(0.03)
+      ..color = Colors.white.withValues(alpha: 0.03)
       ..strokeWidth = 1.0;
-    for (double i = 0; i < size.width; i += 40)
+    for (double i = 0; i < size.width; i += 40) {
       canvas.drawLine(Offset(i, 0), Offset(i, size.height), paint);
-    for (double i = 0; i < size.height; i += 40)
+    }
+    for (double i = 0; i < size.height; i += 40) {
       canvas.drawLine(Offset(0, i), Offset(size.width, i), paint);
+    }
   }
 
   @override

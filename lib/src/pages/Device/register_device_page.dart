@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../services/api_service.dart'; // Importamos la API
-import '../Profile/profile_page.dart'; // Importamos el globalToken
+import '../../../services/api_service.dart'; 
+import '../Profile/profile_page.dart'; 
 
 class RegisterDevicePage extends StatefulWidget {
   const RegisterDevicePage({super.key});
@@ -13,6 +13,14 @@ class _RegisterDevicePageState extends State<RegisterDevicePage> {
   final TextEditingController _modelController = TextEditingController();
   final TextEditingController _imeiController = TextEditingController();
   final TextEditingController _hardwareIdController = TextEditingController();
+
+  @override
+  void dispose() {
+    _modelController.dispose();
+    _imeiController.dispose();
+    _hardwareIdController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,18 +42,17 @@ class _RegisterDevicePageState extends State<RegisterDevicePage> {
                     vertical: 20,
                   ),
                   children: [
-                    // --- RECUADRO PRINCIPAL (GLASS CONTAINER) ---
                     Container(
                       padding: const EdgeInsets.all(25),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.03), // Fondo cristal
+                        color: Colors.white.withValues(alpha: 0.03), 
                         borderRadius: BorderRadius.circular(30),
                         border: Border.all(
-                          color: Colors.white.withOpacity(0.08),
+                          color: Colors.white.withValues(alpha: 0.08),
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
+                            color: Colors.black.withValues(alpha: 0.2),
                             blurRadius: 20,
                             offset: const Offset(0, 10),
                           ),
@@ -54,7 +61,6 @@ class _RegisterDevicePageState extends State<RegisterDevicePage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // CABECERA DENTRO DEL RECUADRO
                           Row(
                             children: [
                               IconButton(
@@ -86,13 +92,12 @@ class _RegisterDevicePageState extends State<RegisterDevicePage> {
                           Text(
                             'Introduce los detalles técnicos de tu equipo para activar la protección de MobileLock AI.',
                             style: TextStyle(
-                              color: Colors.white.withOpacity(0.5),
+                              color: Colors.white.withValues(alpha: 0.5),
                               fontSize: 13,
                             ),
                           ),
                           const SizedBox(height: 35),
 
-                          // FORMULARIO
                           _buildLabel('Marca y modelo'),
                           _buildTextField(
                             _modelController,
@@ -120,7 +125,6 @@ class _RegisterDevicePageState extends State<RegisterDevicePage> {
 
                           const SizedBox(height: 40),
 
-                          // BOTONES
                           Row(
                             children: [
                               Expanded(
@@ -132,40 +136,42 @@ class _RegisterDevicePageState extends State<RegisterDevicePage> {
                               const SizedBox(width: 15),
                               Expanded(
                                 child: _buildPrimaryButton('Registrar', () async {
-                                  // --- LÓGICA DE REGISTRO ---
                                   final marca = _modelController.text.trim();
                                   final imei = _imeiController.text.trim();
                                   final hw = _hardwareIdController.text.trim();
 
-                                  // 1. Validamos que no estén vacíos
                                   if (marca.isEmpty || imei.isEmpty || hw.isEmpty) {
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(content: Text('Por favor, completa todos los campos'), backgroundColor: Colors.redAccent),
+                                      const SnackBar(
+                                        content: Text('Por favor, completa todos los campos'), 
+                                        backgroundColor: Colors.redAccent
+                                      ),
                                     );
                                     return;
                                   }
 
-                                  // Mensaje de carga opcional
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('Registrando equipo...'), duration: Duration(seconds: 1)),
+                                    const SnackBar(
+                                      content: Text('Registrando equipo...'), 
+                                      duration: Duration(seconds: 1)
+                                    ),
                                   );
 
-                                  // 2. Enviamos a Django
                                   final apiService = ApiService();
                                   final response = await apiService.registerDevice(globalToken, marca, imei, hw);
 
                                   if (mounted) {
                                     if (response != null && (response.statusCode == 200 || response.statusCode == 201)) {
                                       ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(content: Text('¡Equipo registrado con éxito!'), backgroundColor: Colors.green),
+                                        const SnackBar(
+                                          content: Text('¡Equipo registrado con éxito!'), 
+                                          backgroundColor: Colors.green
+                                        ),
                                       );
-                                      // 3. Volvemos al Dashboard o Mis Dispositivos
                                       Navigator.pop(context);
                                     } else {
-                                      // --- LECTURA MEJORADA DEL ERROR DE DJANGO ---
                                       String mensajeError = 'No se pudo registrar el dispositivo';
                                       if (response?.data != null && response?.data is Map) {
-                                        // Leemos específicamente la llave "detail" que manda tu views.py
                                         mensajeError = response?.data['detail'] ?? response?.data.toString();
                                       }
                                       
@@ -194,8 +200,6 @@ class _RegisterDevicePageState extends State<RegisterDevicePage> {
     );
   }
 
-  // --- WIDGETS DE ESTILO (INTACTOS) ---
-
   Widget _buildLabel(String text) {
     return Padding(
       padding: const EdgeInsets.only(left: 5, bottom: 8),
@@ -219,7 +223,7 @@ class _RegisterDevicePageState extends State<RegisterDevicePage> {
       decoration: BoxDecoration(
         color: const Color(0xFF0E1415),
         borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: TextField(
         controller: controller,
@@ -227,7 +231,7 @@ class _RegisterDevicePageState extends State<RegisterDevicePage> {
         decoration: InputDecoration(
           hintText: hint,
           hintStyle: TextStyle(
-            color: Colors.white.withOpacity(0.2),
+            color: Colors.white.withValues(alpha: 0.2),
             fontSize: 13,
           ),
           prefixIcon: Icon(icon, color: const Color(0xFF00FFA3), size: 18),
@@ -248,7 +252,7 @@ class _RegisterDevicePageState extends State<RegisterDevicePage> {
         borderRadius: BorderRadius.circular(15),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF00CEE6).withOpacity(0.3),
+            color: const Color(0xFF00CEE6).withValues(alpha: 0.3),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -286,7 +290,7 @@ class _RegisterDevicePageState extends State<RegisterDevicePage> {
         onPressed: onTap,
         style: OutlinedButton.styleFrom(
           backgroundColor: const Color(0xFF1A2123),
-          side: BorderSide(color: Colors.white.withOpacity(0.05)),
+          side: BorderSide(color: Colors.white.withValues(alpha: 0.05)),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
           ),
@@ -305,7 +309,7 @@ class GridPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.white.withOpacity(0.03)
+      ..color = Colors.white.withValues(alpha: 0.03)
       ..strokeWidth = 1.0;
     for (double i = 0; i < size.width; i += 40) {
       canvas.drawLine(Offset(i, 0), Offset(i, size.height), paint);

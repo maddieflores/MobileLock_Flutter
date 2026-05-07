@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../services/api_service.dart'; // Importamos el servicio
+import '../../../services/api_service.dart';
 
 // --- MODELO DE DATOS PARA DISPOSITIVOS ---
 class DeviceModel {
@@ -18,10 +18,10 @@ class DeviceModel {
 
 // --- VARIABLES GLOBALES DE SESIÓN ---
 bool isLoggedIn = false;
-String globalToken = ""; // NUEVO: Guarda el Token JWT
+String globalToken = ""; 
 String currentEmail = "invitado@mail.com";
-String currentName = "Cargando datos..."; // Cambiado para el primer impacto
-String currentPlan = "Cargando plan..."; // NUEVO: Para guardar el plan
+String currentName = "Cargando datos..."; 
+String currentPlan = "Cargando plan..."; 
 
 // --- LISTA GLOBAL DE DISPOSITIVOS ---
 List<DeviceModel> globalDevices = [];
@@ -35,12 +35,11 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   final String userSince = "Abril 2026";
-  bool _isLoading = true; // Controla el estado de carga
+  bool _isLoading = true; 
 
   @override
   void initState() {
     super.initState();
-    // Si estamos logueados, descargamos los datos reales del backend
     if (isLoggedIn && globalToken.isNotEmpty) {
       _fetchUserData();
     } else {
@@ -48,7 +47,6 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  // NUEVO: Función para descargar los datos con el Token
   Future<void> _fetchUserData() async {
     final apiService = ApiService();
     final response = await apiService.getUserProfile(globalToken);
@@ -58,16 +56,13 @@ class _ProfilePageState extends State<ProfilePage> {
         setState(() {
           final data = response.data;
           
-          // Extraemos los datos basándonos en tu base de datos
           String nombres = data['nombres'] ?? data['first_name'] ?? "";
           String apPaterno = data['apellido_paterno'] ?? data['last_name'] ?? "";
           String apMaterno = data['apellido_materno'] ?? "";
 
-          // Unimos todo en el nombre completo
           currentName = "$nombres $apPaterno $apMaterno".trim();
           if (currentName.isEmpty) currentName = "Usuario MobileLock";
 
-          // Extraemos el plan
           currentPlan = data['plan'] ?? "FREE • ACTIVO";
           _isLoading = false;
         });
@@ -113,14 +108,12 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  // --- ANIMACIÓN DE CARGA ---
   Widget _buildLoading() {
     return const Center(
       child: CircularProgressIndicator(color: Color(0xFF00FFA3)),
     );
   }
 
-  // --- INTERFAZ CUANDO NO HAY SESIÓN ---
   Widget _buildEmptyState() {
     return Center(
       child: Padding(
@@ -132,13 +125,13 @@ class _ProfilePageState extends State<ProfilePage> {
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.white.withOpacity(0.02),
-                border: Border.all(color: Colors.white.withOpacity(0.05)),
+                color: Colors.white.withValues(alpha: 0.02),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
               ),
               child: Icon(
                 Icons.lock_person_outlined,
                 size: 80,
-                color: Colors.white.withOpacity(0.1),
+                color: Colors.white.withValues(alpha: 0.1),
               ),
             ),
             const SizedBox(height: 30),
@@ -155,7 +148,7 @@ class _ProfilePageState extends State<ProfilePage> {
               'Debes iniciar sesión en MobileLock AI para gestionar tu cuenta.',
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: Colors.white.withOpacity(0.4),
+                color: Colors.white.withValues(alpha: 0.4),
                 fontSize: 14,
                 height: 1.5,
               ),
@@ -182,7 +175,6 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  // --- INTERFAZ CON SESIÓN ACTIVA ---
   Widget _buildProfileContent() {
     return ListView(
       physics: const BouncingScrollPhysics(),
@@ -219,15 +211,15 @@ class _ProfilePageState extends State<ProfilePage> {
     return Container(
       padding: const EdgeInsets.all(25),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.03),
+        color: Colors.white.withValues(alpha: 0.03),
         borderRadius: BorderRadius.circular(25),
-        border: Border.all(color: Colors.white.withOpacity(0.08)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
       ),
       child: Column(
         children: [
           CircleAvatar(
             radius: 40,
-            backgroundColor: Colors.black.withOpacity(0.3),
+            backgroundColor: Colors.black.withValues(alpha: 0.3),
             child: const Icon(Icons.person, color: Color(0xFF00FFA3), size: 50),
           ),
           const SizedBox(height: 15),
@@ -244,7 +236,7 @@ class _ProfilePageState extends State<ProfilePage> {
           Text(
             currentEmail,
             style: TextStyle(
-              color: Colors.white.withOpacity(0.6),
+              color: Colors.white.withValues(alpha: 0.6),
               fontSize: 14,
             ),
           ),
@@ -268,14 +260,14 @@ class _ProfilePageState extends State<ProfilePage> {
       decoration: BoxDecoration(
         color: const Color(0xFF0E1415),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: Column(
         children: [
           _buildInfoItem(
             Icons.verified_user_outlined,
             'Estado del Plan',
-            currentPlan, // AHORA MUESTRA EL PLAN REAL DE LA BASE DE DATOS
+            currentPlan, 
           ),
           const Divider(color: Colors.white10, height: 25),
           _buildInfoItem(
@@ -295,7 +287,7 @@ class _ProfilePageState extends State<ProfilePage> {
         const SizedBox(width: 15),
         Text(
           label,
-          style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 14),
+          style: TextStyle(color: Colors.white.withValues(alpha: 0.6), fontSize: 14),
         ),
         const Spacer(),
         Text(
@@ -328,7 +320,7 @@ class _ProfilePageState extends State<ProfilePage> {
             decoration: BoxDecoration(
               color: const Color(0xFF0E1415),
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: Colors.white.withOpacity(0.05)),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
             ),
             child: Row(
               children: [
@@ -356,7 +348,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       Text(
                         subtitle,
                         style: TextStyle(
-                          color: Colors.white.withOpacity(0.4),
+                          color: Colors.white.withValues(alpha: 0.4),
                           fontSize: 12,
                         ),
                       ),
@@ -365,7 +357,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
                 Icon(
                   Icons.arrow_forward_ios_rounded,
-                  color: Colors.white.withOpacity(0.2),
+                  color: Colors.white.withValues(alpha: 0.2),
                   size: 16,
                 ),
               ],
@@ -383,7 +375,7 @@ class _ProfilePageState extends State<ProfilePage> {
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF00FFA3).withOpacity(0.3),
+            color: const Color(0xFF00FFA3).withValues(alpha: 0.3),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -393,7 +385,7 @@ class _ProfilePageState extends State<ProfilePage> {
         onPressed: () {
           setState(() {
             isLoggedIn = false;
-            globalToken = ""; // BORRAMOS EL TOKEN AL SALIR
+            globalToken = ""; 
             currentName = "Usuario";
             currentEmail = "invitado@mail.com";
           });
@@ -447,7 +439,7 @@ class GridPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.white.withOpacity(0.03)
+      ..color = Colors.white.withValues(alpha: 0.03)
       ..strokeWidth = 1.0;
     for (double i = 0; i < size.width; i += 40) {
       canvas.drawLine(Offset(i, 0), Offset(i, size.height), paint);

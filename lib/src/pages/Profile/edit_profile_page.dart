@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'profile_page.dart'; // IMPORTANTE: Para usar currentName y currentEmail
+import 'profile_page.dart';
 
 class EditProfilePage extends StatefulWidget {
   const EditProfilePage({super.key});
@@ -48,7 +48,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
           Positioned.fill(
             child: IgnorePointer(child: CustomPaint(painter: GridPainter())),
           ),
-
           SafeArea(
             child: Center(
               child: SingleChildScrollView(
@@ -60,7 +59,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // --- ENCABEZADO PERSONALIZADO (FLECHA + TÍTULO JUNTOS) ---
                     Padding(
                       padding: const EdgeInsets.only(bottom: 20),
                       child: Row(
@@ -94,8 +92,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         ],
                       ),
                     ),
-
-                    // --- RECUADRO DE DATOS ---
                     Container(
                       constraints: const BoxConstraints(maxWidth: 400),
                       padding: const EdgeInsets.symmetric(
@@ -103,10 +99,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         vertical: 40,
                       ),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF0A0F10).withOpacity(0.8),
+                        color: const Color(0xFF0A0F10).withValues(alpha: 0.8),
                         borderRadius: BorderRadius.circular(25),
                         border: Border.all(
-                          color: Colors.white.withOpacity(0.05),
+                          color: Colors.white.withValues(alpha: 0.05),
                         ),
                       ),
                       child: Column(
@@ -115,7 +111,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                             children: [
                               CircleAvatar(
                                 radius: 50,
-                                backgroundColor: Colors.black.withOpacity(0.3),
+                                backgroundColor: Colors.black.withValues(alpha: 0.3),
                                 child: const Icon(
                                   Icons.person,
                                   color: Color(0xFF00FFA3),
@@ -141,46 +137,37 @@ class _EditProfilePageState extends State<EditProfilePage> {
                             ],
                           ),
                           const SizedBox(height: 40),
-
                           _buildLabel('Nombre(s)'),
                           _buildTextField(
                             _firstNameController,
                             Icons.person_outline,
                           ),
                           const SizedBox(height: 15),
-
                           _buildLabel('Apellido Paterno'),
                           _buildTextField(
                             _lastNamePController,
                             Icons.person_outline,
                           ),
                           const SizedBox(height: 15),
-
                           _buildLabel('Apellido Materno'),
                           _buildTextField(
                             _lastNameMController,
                             Icons.person_outline,
                           ),
                           const SizedBox(height: 15),
-
                           _buildLabel('Correo electrónico'),
                           _buildTextField(
                             _emailController,
                             Icons.email_outlined,
                           ),
-
                           const SizedBox(height: 40),
-
-                          // --- BOTÓN GUARDAR (RESTAURADO A SÓLIDO NEÓN IGUAL A LA IMAGEN) ---
                           Container(
                             width: double.infinity,
                             height: 55,
                             decoration: BoxDecoration(
                               boxShadow: [
                                 BoxShadow(
-                                  color: const Color(
-                                    0xFF00FFA3,
-                                  ).withOpacity(0.3), // Brillo neón
+                                  color: const Color(0xFF00FFA3).withValues(alpha: 0.3),
                                   blurRadius: 15,
                                   offset: const Offset(0, 5),
                                 ),
@@ -202,15 +189,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                 Navigator.pop(context);
                               },
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(
-                                  0xFF00FFA3,
-                                ), // Fondo neón sólido
-                                foregroundColor: Colors.black, // Texto negro
+                                backgroundColor: const Color(0xFF00FFA3),
+                                foregroundColor: Colors.black,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(15),
                                 ),
-                                elevation:
-                                    0, // Elevación 0 para controlar el brillo con el Container
+                                elevation: 0,
                               ),
                               child: const Text(
                                 'GUARDAR CAMBIOS',
@@ -254,9 +238,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
   Widget _buildTextField(TextEditingController controller, IconData icon) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.4),
+        color: Colors.black.withValues(alpha: 0.4),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: TextField(
         controller: controller,
@@ -278,12 +262,14 @@ class GridPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.white.withOpacity(0.02)
+      ..color = Colors.white.withValues(alpha: 0.02)
       ..strokeWidth = 1.0;
-    for (double i = 0; i < size.width; i += 40)
+    for (double i = 0; i < size.width; i += 40) {
       canvas.drawLine(Offset(i, 0), Offset(i, size.height), paint);
-    for (double i = 0; i < size.height; i += 40)
+    }
+    for (double i = 0; i < size.height; i += 40) {
       canvas.drawLine(Offset(0, i), Offset(size.width, i), paint);
+    }
   }
 
   @override

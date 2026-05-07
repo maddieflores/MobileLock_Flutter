@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../services/api_service.dart';
-import '../Profile/profile_page.dart'; // Para acceder a globalToken e isLoggedIn
+import '../Profile/profile_page.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -12,9 +12,8 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage> {
   int _selectedIndex = 0;
   
-  // --- VARIABLES PARA LOS DISPOSITIVOS ---
   bool _isLoading = true;
-  List<dynamic> _myDevices = []; // Aquí guardaremos los equipos de NeonDB
+  List<dynamic> _myDevices = []; 
 
   @override
   void initState() {
@@ -22,7 +21,6 @@ class _DashboardPageState extends State<DashboardPage> {
     _fetchDevices();
   }
 
-  // --- FUNCIÓN PARA TRAER LOS DISPOSITIVOS DE NEONDB ---
   Future<void> _fetchDevices() async {
     if (isLoggedIn && globalToken.isNotEmpty) {
       final apiService = ApiService();
@@ -31,7 +29,6 @@ class _DashboardPageState extends State<DashboardPage> {
       if (mounted) {
         if (response != null && response.statusCode == 200) {
           setState(() {
-            // Asignamos la lista que nos devuelve Django
             _myDevices = response.data;
             _isLoading = false;
           });
@@ -50,7 +47,6 @@ class _DashboardPageState extends State<DashboardPage> {
       backgroundColor: const Color(0xFF060B0C),
       body: Stack(
         children: [
-          // 1. Fondo decorativo de cuadrícula
           Positioned.fill(child: CustomPaint(painter: GridPainter())),
 
           SafeArea(
@@ -60,7 +56,6 @@ class _DashboardPageState extends State<DashboardPage> {
                 constraints: const BoxConstraints(maxWidth: 420),
                 child: Column(
                   children: [
-                    // Contenido principal con Scroll
                     Expanded(
                       child: ListView(
                         physics: const BouncingScrollPhysics(),
@@ -69,15 +64,15 @@ class _DashboardPageState extends State<DashboardPage> {
                           vertical: 20,
                         ),
                         children: [
-                          // --- RECUADRO SUPERIOR (CABECERA) ---
                           Container(
                             width: double.infinity,
                             padding: const EdgeInsets.all(20),
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.03),
+                              // CAMBIO: withValues
+                              color: Colors.white.withValues(alpha: 0.03),
                               borderRadius: BorderRadius.circular(25),
                               border: Border.all(
-                                color: Colors.white.withOpacity(0.08),
+                                color: Colors.white.withValues(alpha: 0.08),
                               ),
                             ),
                             child: Row(
@@ -89,7 +84,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                     Text(
                                       'Bienvenido de nuevo',
                                       style: TextStyle(
-                                        color: Colors.white.withOpacity(0.5),
+                                        color: Colors.white.withValues(alpha: 0.5),
                                         fontSize: 13,
                                       ),
                                     ),
@@ -116,7 +111,6 @@ class _DashboardPageState extends State<DashboardPage> {
 
                           const SizedBox(height: 20),
 
-                          // --- SECCIÓN DINÁMICA: ESTADO DE VINCULACIÓN ---
                           if (_isLoading)
                             const Padding(
                               padding: EdgeInsets.all(40.0),
@@ -131,18 +125,16 @@ class _DashboardPageState extends State<DashboardPage> {
 
                           const SizedBox(height: 30),
 
-                          // --- SECCIÓN: MIS DISPOSITIVOS ---
                           _buildSectionHeader(
                             'Gestión de Equipos',
-                            'Añadir equipo', // Nuevo texto
-                            onActionTap: () => Navigator.pushNamed(context, '/register_device'), // Acción
+                            'Añadir equipo',
+                            onActionTap: () => Navigator.pushNamed(context, '/register_device'), 
                           ),
                           const SizedBox(height: 15),
                           _buildDeviceAccessCard(),
 
                           const SizedBox(height: 30),
 
-                          // --- SECCIÓN: ACCIONES RÁPIDAS (COMPLETA) ---
                           _buildSectionHeader(
                             'Acciones rápidas',
                             'Acceso inmediato',
@@ -172,7 +164,6 @@ class _DashboardPageState extends State<DashboardPage> {
 
                           const SizedBox(height: 30),
 
-                          // --- SECCIÓN: ACTIVIDAD RECIENTE ---
                           _buildSectionHeader('Actividad reciente', ''),
                           const SizedBox(height: 15),
 
@@ -183,13 +174,12 @@ class _DashboardPageState extends State<DashboardPage> {
                               color: const Color(0xFF0E1415),
                               borderRadius: BorderRadius.circular(25),
                               border: Border.all(
-                                color: Colors.white.withOpacity(0.05),
+                                color: Colors.white.withValues(alpha: 0.05),
                               ),
                             ),
                             child: Column(
                               children: [
                                 _buildActivityItem(
-                                  // --- CONTADOR DINÁMICO ---
                                   'Total de dispositivos registrados: ${_myDevices.length}',
                                   'Actualizado ahora',
                                 ),
@@ -225,8 +215,6 @@ class _DashboardPageState extends State<DashboardPage> {
                         ],
                       ),
                     ),
-
-                    // Barra de navegación fija
                     _buildBottomNav(),
                   ],
                 ),
@@ -238,15 +226,9 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  // --- WIDGETS DE APOYO ---
-
-// ===========================================================================
-  // LA TARJETA QUE MUESTRA TUS XIAOMI (CON IMEI VERTICAL Y ESCUDO BLOCKCHAIN)
-  // ===========================================================================
   Widget _buildActiveDevicesList() {
     return Column(
       children: _myDevices.asMap().entries.map((entry) {
-        
         int index = entry.key; 
         var device = entry.value; 
 
@@ -266,10 +248,10 @@ class _DashboardPageState extends State<DashboardPage> {
               end: Alignment.bottomRight,
             ),
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: const Color(0xFF00FFA3).withOpacity(0.3)),
+            border: Border.all(color: const Color(0xFF00FFA3).withValues(alpha: 0.3)),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF00FFA3).withOpacity(0.05),
+                color: const Color(0xFF00FFA3).withValues(alpha: 0.05),
                 blurRadius: 15,
                 offset: const Offset(0, 5),
               ),
@@ -278,13 +260,12 @@ class _DashboardPageState extends State<DashboardPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // 1. Encabezado con Icono y Nombre
               Row(
                 children: [
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF00FFA3).withOpacity(0.1),
+                      color: const Color(0xFF00FFA3).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: const Icon(Icons.smartphone_rounded, color: Color(0xFF00FFA3)),
@@ -297,7 +278,7 @@ class _DashboardPageState extends State<DashboardPage> {
                         Text(
                           etiquetaDispositivo, 
                           style: TextStyle(
-                            color: Colors.white.withOpacity(0.5),
+                            color: Colors.white.withValues(alpha: 0.5),
                             fontSize: 10,
                           ),
                         ),
@@ -315,9 +296,9 @@ class _DashboardPageState extends State<DashboardPage> {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF00FFA3).withOpacity(0.1),
+                      color: const Color(0xFF00FFA3).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: const Color(0xFF00FFA3).withOpacity(0.5)),
+                      border: Border.all(color: const Color(0xFF00FFA3).withValues(alpha: 0.5)),
                     ),
                     child: const Row(
                       children: [
@@ -338,14 +319,13 @@ class _DashboardPageState extends State<DashboardPage> {
               ),
               const SizedBox(height: 20),
               
-              // 2. Columna VERTICAL de IMEI y Hardware ID (Para mejor lectura)
               Column(
                 children: [
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.03),
+                      color: Colors.white.withValues(alpha: 0.03),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Text(
@@ -358,7 +338,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     width: double.infinity,
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.03),
+                      color: Colors.white.withValues(alpha: 0.03),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Text(
@@ -370,16 +350,15 @@ class _DashboardPageState extends State<DashboardPage> {
               ),
               const SizedBox(height: 15),
               
-              // 3. Pie de la tarjeta: Certificado Blockchain (MÁS LIMPIO, TIPO WEB)
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
                 decoration: BoxDecoration(
                   color: const Color(0xFF1A1F21),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Row(
+                child: const Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: const [
+                  children: [
                     Text(
                       'Certificado Blockchain',
                       style: TextStyle(
@@ -388,7 +367,6 @@ class _DashboardPageState extends State<DashboardPage> {
                         fontSize: 13,
                       ),
                     ),
-                    // Escudo similar a tu imagen web
                     Icon(
                       Icons.verified_user_outlined, 
                       color: Color(0xFF00FFA3), 
@@ -403,7 +381,6 @@ class _DashboardPageState extends State<DashboardPage> {
       }).toList(),
     );
   }
-  // ===========================================================================
 
   Widget _buildDeviceAccessCard() {
     return InkWell(
@@ -414,10 +391,10 @@ class _DashboardPageState extends State<DashboardPage> {
         decoration: BoxDecoration(
           color: const Color(0xFF0E1415),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: const Color(0xFF00FFA3).withOpacity(0.2)),
+          border: Border.all(color: const Color(0xFF00FFA3).withValues(alpha: 0.2)),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF00FFA3).withOpacity(0.05),
+              color: const Color(0xFF00FFA3).withValues(alpha: 0.05),
               blurRadius: 15,
             ),
           ],
@@ -427,7 +404,7 @@ class _DashboardPageState extends State<DashboardPage> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: const Color(0xFF00FFA3).withOpacity(0.1),
+                color: const Color(0xFF00FFA3).withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(15),
               ),
               child: const Icon(
@@ -472,7 +449,7 @@ class _DashboardPageState extends State<DashboardPage> {
       decoration: BoxDecoration(
         color: const Color(0xFF0E1415),
         borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: const Icon(
         Icons.notifications_none_rounded,
@@ -488,19 +465,19 @@ class _DashboardPageState extends State<DashboardPage> {
       decoration: BoxDecoration(
         color: const Color(0xFF0E1415),
         borderRadius: BorderRadius.circular(30),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: Column(
         children: [
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.03),
+              color: Colors.white.withValues(alpha: 0.03),
               shape: BoxShape.circle,
             ),
             child: Icon(
               Icons.phonelink_erase_rounded,
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white.withValues(alpha: 0.2),
               size: 40,
             ),
           ),
@@ -518,7 +495,7 @@ class _DashboardPageState extends State<DashboardPage> {
             'Vincula tu smartphone para empezar a protegerlo con MobileLock AI',
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: Colors.white.withOpacity(0.4),
+              color: Colors.white.withValues(alpha: 0.4),
               fontSize: 13,
             ),
           ),
@@ -544,7 +521,7 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-Widget _buildSectionHeader(String title, String actionText, {VoidCallback? onActionTap}) {
+  Widget _buildSectionHeader(String title, String actionText, {VoidCallback? onActionTap}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -558,21 +535,20 @@ Widget _buildSectionHeader(String title, String actionText, {VoidCallback? onAct
         ),
         if (actionText.isNotEmpty)
           InkWell(
-            onTap: onActionTap, // <--- Ahora es clickeable
+            onTap: onActionTap, 
             borderRadius: BorderRadius.circular(20),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               child: Row(
                 children: [
-                  if (title == 'Gestión de Equipos') // Solo mostramos el '+' en esta sección
+                  if (title == 'Gestión de Equipos') 
                     const Icon(Icons.add_circle_outline, color: Color(0xFF00FFA3), size: 14),
                   if (title == 'Gestión de Equipos')
                     const SizedBox(width: 4),
                   Text(
                     actionText,
                     style: TextStyle(
-                      // Si es Gestión de equipos brilla en neón, sino se queda atenuado
-                      color: title == 'Gestión de Equipos' ? const Color(0xFF00FFA3) : Colors.white.withOpacity(0.3),
+                      color: title == 'Gestión de Equipos' ? const Color(0xFF00FFA3) : Colors.white.withValues(alpha: 0.3),
                       fontSize: 12,
                       fontWeight: title == 'Gestión de Equipos' ? FontWeight.bold : FontWeight.normal,
                     ),
@@ -597,7 +573,7 @@ Widget _buildSectionHeader(String title, String actionText, {VoidCallback? onAct
       decoration: BoxDecoration(
         color: const Color(0xFF0E1415),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: Row(
         children: [
@@ -605,7 +581,7 @@ Widget _buildSectionHeader(String title, String actionText, {VoidCallback? onAct
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: isWarning
-                  ? Colors.redAccent.withOpacity(0.1)
+                  ? Colors.redAccent.withValues(alpha: 0.1)
                   : const Color(0xFF1A2426),
               borderRadius: BorderRadius.circular(12),
             ),
@@ -630,7 +606,7 @@ Widget _buildSectionHeader(String title, String actionText, {VoidCallback? onAct
                 Text(
                   subtitle,
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.4),
+                    color: Colors.white.withValues(alpha: 0.4),
                     fontSize: 12,
                   ),
                 ),
@@ -666,7 +642,7 @@ Widget _buildSectionHeader(String title, String actionText, {VoidCallback? onAct
               Text(
                 subtitle,
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.3),
+                  color: Colors.white.withValues(alpha: 0.3),
                   fontSize: 11,
                 ),
               ),
@@ -686,7 +662,7 @@ Widget _buildSectionHeader(String title, String actionText, {VoidCallback? onAct
           child: Container(
             decoration: BoxDecoration(
               border: Border(
-                top: BorderSide(color: Colors.white.withOpacity(0.05)),
+                top: BorderSide(color: Colors.white.withValues(alpha: 0.05)),
               ),
             ),
             child: BottomNavigationBar(
@@ -732,7 +708,7 @@ class GridPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.white.withOpacity(0.03)
+      ..color = Colors.white.withValues(alpha: 0.03)
       ..strokeWidth = 1.0;
     const double step = 40.0;
     for (double i = 0; i < size.width; i += step) {

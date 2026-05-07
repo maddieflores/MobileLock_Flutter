@@ -22,30 +22,22 @@ class MyApp extends StatelessWidget {
       title: 'MobileLock AI',
       debugShowCheckedModeBanner: false,
 
-      // --- AQUÍ ESTÁN LOS CAMBIOS DE COLOR ---
       theme: ThemeData(
-        brightness: Brightness.dark, // Mantenemos el modo oscuro base
+        brightness: Brightness.dark, 
         
         colorScheme: const ColorScheme.dark(
-          primary: Color(0xFF00FFA3), // Tu verde neón característico
-          
-          // Nuevo color para las TARJETAS y CONTENEDORES (Un gris muy oscuro)
-          surface: Color(0xFF1A1F21), // <--- CAMBIO AQUÍ (Gris pizarra oscuro)
-          
-          // Color para el texto sobre la superficie
+          primary: Color(0xFF00FFA3), 
+          surface: Color(0xFF1A1F21), 
           onSurface: Colors.white,
         ),
 
-        // Nuevo color de FONDO GENERAL de la app
-        scaffoldBackgroundColor: const Color(0xFF101415), // <--- CAMBIO AQUÍ (Gris-negro profundo)
+        scaffoldBackgroundColor: const Color(0xFF101415), 
         
-        // OPCIONAL: También puedes personalizar el AppBar si usas uno por defecto
         appBarTheme: const AppBarTheme(
           backgroundColor: Color(0xFF101415),
           elevation: 0,
         ),
       ),
-      // ----------------------------------------
 
       initialRoute: '/login', 
 
@@ -58,7 +50,7 @@ class MyApp extends StatelessWidget {
         '/edit_profile': (context) => const EditProfilePage(),
         '/change_password': (context) => const ChangePasswordPage(),
         '/devices': (context) => const DevicesPage(),
-        '/register_device': (context) => device.RegisterDevicePage(),
+        '/register_device': (context) => const device.RegisterDevicePage(),
       },
     );
   }
