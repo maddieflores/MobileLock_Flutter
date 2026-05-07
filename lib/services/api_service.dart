@@ -2,10 +2,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart'; 
 
 class ApiService {
-  // Detecta automáticamente: usa 127.0.0.1 en la Web y 10.0.2.2 en el emulador
-  static final String _baseUrl = kIsWeb 
-      ? 'http://127.0.0.1:8000/api' 
-      : 'http://10.0.2.2:8000/api'; 
+  
+  static final String _baseUrl = 'http://192.168.0.7:8000/api';  //colocar la ip de su red cuando trabaje
 
   final Dio _dio = Dio(
     BaseOptions(
@@ -19,6 +17,9 @@ class ApiService {
     ),
   );
 
+  // =======================================================
+  // --- LOGIN ---
+  // =======================================================
   Future<Response?> login(String username, String password) async {
     try {
       final response = await _dio.post(
@@ -35,20 +36,77 @@ class ApiService {
     }
   }
 
-  // --- NUEVA FUNCIÓN PARA OBTENER LOS DATOS DEL PERFIL ---
+  // =======================================================
+  // --- REGISTRO DE USUARIO ---
+  // =======================================================
+  Future<Response?> register(String correo, String password, String nombres, String apPaterno, String apMaterno) async {
+    try {
+      final response = await _dio.post(
+        '/users/auth/register/', 
+        data: {
+          'correo_electronico': correo,
+          'password': password,
+          'nombres': nombres,
+          'apellido_paterno': apPaterno,
+          'apellido_materno': apMaterno,
+        },
+      );
+      return response;
+    } on DioException catch (e) {
+      print("Error en registro: ${e.response?.data ?? e.message}");
+      return e.response; 
+    }
+  }
+
+  // =======================================================
+  // --- PERFIL DE USUARIO ---
+  // =======================================================
   Future<Response?> getUserProfile(String token) async {
     try {
-      // Ponemos el Token en la cabecera para que Django nos reconozca
       _dio.options.headers['Authorization'] = 'Bearer $token';
-      // Llamamos a la ruta exacta de tu urls.py
       return await _dio.get('/users/profile/get/');
     } on DioException catch (e) {
       print("Error al obtener perfil: ${e.response?.data ?? e.message}");
       return e.response;
     }
   }
-  // -------------------------------------------------------
 
+  // =======================================================
+  // --- LISTA DE DISPOSITIVOS (DASHBOARD) ---
+  // =======================================================
+  Future<Response?> getUserDevices(String token) async {
+    try {
+      _dio.options.headers['Authorization'] = 'Bearer $token';
+      return await _dio.get('/devices/list/');
+    } on DioException catch (e) {
+      print("Error al obtener dispositivos: ${e.response?.data ?? e.message}");
+      return e.response;
+    }
+  }
+
+  // =======================================================
+  // --- REGISTRAR NUEVO DISPOSITIVO ---
+  // =======================================================
+  Future<Response?> registerDevice(String token, String marcaModelo, String imei, String hardware) async {
+    try {
+      _dio.options.headers['Authorization'] = 'Bearer $token';
+      return await _dio.post(
+        '/devices/create/', // Ruta de tu views.py
+        data: {
+          'marca_modelo': marcaModelo,
+          'hash_imei': imei,
+          'hash_adn_hardware': hardware,
+        },
+      );
+    } on DioException catch (e) {
+      print("Error al registrar equipo: ${e.response?.data ?? e.message}");
+      return e.response;
+    }
+  }
+
+  // =======================================================
+  // --- FUNCIÓN GENÉRICA ---
+  // =======================================================
   Future<Response?> getDatos(String endpoint) async {
     try {
       return await _dio.get(endpoint);

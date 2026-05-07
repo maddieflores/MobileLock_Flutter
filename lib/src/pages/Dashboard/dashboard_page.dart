@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../../services/api_service.dart';
+import '../Profile/profile_page.dart'; // Para acceder a globalToken e isLoggedIn
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -9,6 +11,38 @@ class DashboardPage extends StatefulWidget {
 
 class _DashboardPageState extends State<DashboardPage> {
   int _selectedIndex = 0;
+  
+  // --- VARIABLES PARA LOS DISPOSITIVOS ---
+  bool _isLoading = true;
+  List<dynamic> _myDevices = []; // Aquí guardaremos los equipos de NeonDB
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchDevices();
+  }
+
+  // --- FUNCIÓN PARA TRAER LOS DISPOSITIVOS DE NEONDB ---
+  Future<void> _fetchDevices() async {
+    if (isLoggedIn && globalToken.isNotEmpty) {
+      final apiService = ApiService();
+      final response = await apiService.getUserDevices(globalToken);
+
+      if (mounted) {
+        if (response != null && response.statusCode == 200) {
+          setState(() {
+            // Asignamos la lista que nos devuelve Django
+            _myDevices = response.data;
+            _isLoading = false;
+          });
+        } else {
+          setState(() => _isLoading = false);
+        }
+      }
+    } else {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -82,15 +116,26 @@ class _DashboardPageState extends State<DashboardPage> {
 
                           const SizedBox(height: 20),
 
-                          // CARD: ESTADO DE VINCULACIÓN
-                          _buildEmptyDeviceCard(),
+                          // --- SECCIÓN DINÁMICA: ESTADO DE VINCULACIÓN ---
+                          if (_isLoading)
+                            const Padding(
+                              padding: EdgeInsets.all(40.0),
+                              child: Center(
+                                child: CircularProgressIndicator(color: Color(0xFF00FFA3)),
+                              ),
+                            )
+                          else if (_myDevices.isEmpty)
+                            _buildEmptyDeviceCard()
+                          else
+                            _buildActiveDevicesList(),
 
                           const SizedBox(height: 30),
 
                           // --- SECCIÓN: MIS DISPOSITIVOS ---
                           _buildSectionHeader(
                             'Gestión de Equipos',
-                            'Ver todos',
+                            'Añadir equipo', // Nuevo texto
+                            onActionTap: () => Navigator.pushNamed(context, '/register_device'), // Acción
                           ),
                           const SizedBox(height: 15),
                           _buildDeviceAccessCard(),
@@ -144,7 +189,8 @@ class _DashboardPageState extends State<DashboardPage> {
                             child: Column(
                               children: [
                                 _buildActivityItem(
-                                  'Total de dispositivos registrados: 0',
+                                  // --- CONTADOR DINÁMICO ---
+                                  'Total de dispositivos registrados: ${_myDevices.length}',
                                   'Actualizado ahora',
                                 ),
                                 const Padding(
@@ -155,7 +201,9 @@ class _DashboardPageState extends State<DashboardPage> {
                                   ),
                                 ),
                                 _buildActivityItem(
-                                  'Aún no tienes dispositivos registrados',
+                                  _myDevices.isNotEmpty 
+                                      ? 'Dispositivos sincronizados' 
+                                      : 'Aún no tienes dispositivos registrados',
                                   'Sistema',
                                 ),
                                 const Padding(
@@ -191,6 +239,171 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   // --- WIDGETS DE APOYO ---
+
+// ===========================================================================
+  // LA TARJETA QUE MUESTRA TUS XIAOMI (CON IMEI VERTICAL Y ESCUDO BLOCKCHAIN)
+  // ===========================================================================
+  Widget _buildActiveDevicesList() {
+    return Column(
+      children: _myDevices.asMap().entries.map((entry) {
+        
+        int index = entry.key; 
+        var device = entry.value; 
+
+        String deviceName = device['marca_modelo'] ?? 'Dispositivo Móvil';
+        String deviceImei = device['hash_imei'] ?? 'IMEI Desconocido';
+        String deviceHardware = device['hash_adn_hardware'] ?? 'HASH_DESCONOCIDO';
+        
+        String etiquetaDispositivo = (index == 0) ? 'Dispositivo principal' : 'Dispositivo vinculado';
+        
+        return Container(
+          margin: const EdgeInsets.only(bottom: 15),
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [Color(0xFF131D1F), Color(0xFF0E1415)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: const Color(0xFF00FFA3).withOpacity(0.3)),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF00FFA3).withOpacity(0.05),
+                blurRadius: 15,
+                offset: const Offset(0, 5),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // 1. Encabezado con Icono y Nombre
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF00FFA3).withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(Icons.smartphone_rounded, color: Color(0xFF00FFA3)),
+                  ),
+                  const SizedBox(width: 15),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          etiquetaDispositivo, 
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.5),
+                            fontSize: 10,
+                          ),
+                        ),
+                        Text(
+                          deviceName, 
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF00FFA3).withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: const Color(0xFF00FFA3).withOpacity(0.5)),
+                    ),
+                    child: const Row(
+                      children: [
+                        Icon(Icons.shield_rounded, color: Color(0xFF00FFA3), size: 12),
+                        SizedBox(width: 4),
+                        Text(
+                          'Seguro',
+                          style: TextStyle(
+                            color: Color(0xFF00FFA3),
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              
+              // 2. Columna VERTICAL de IMEI y Hardware ID (Para mejor lectura)
+              Column(
+                children: [
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.03),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      'IMEI: $deviceImei',
+                      style: const TextStyle(color: Colors.white70, fontSize: 12),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.03),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      'Hardware ID: $deviceHardware',
+                      style: const TextStyle(color: Colors.white70, fontSize: 12),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 15),
+              
+              // 3. Pie de la tarjeta: Certificado Blockchain (MÁS LIMPIO, TIPO WEB)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF1A1F21),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: const [
+                    Text(
+                      'Certificado Blockchain',
+                      style: TextStyle(
+                        color: Colors.white, 
+                        fontWeight: FontWeight.bold, 
+                        fontSize: 13,
+                      ),
+                    ),
+                    // Escudo similar a tu imagen web
+                    Icon(
+                      Icons.verified_user_outlined, 
+                      color: Color(0xFF00FFA3), 
+                      size: 22,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      }).toList(),
+    );
+  }
+  // ===========================================================================
 
   Widget _buildDeviceAccessCard() {
     return InkWell(
@@ -311,7 +524,6 @@ class _DashboardPageState extends State<DashboardPage> {
           ),
           const SizedBox(height: 25),
           ElevatedButton(
-            // --- CONEXIÓN AQUÍ: Navega a la página de registro ---
             onPressed: () => Navigator.pushNamed(context, '/register_device'),
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF00FFA3),
@@ -332,7 +544,7 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  Widget _buildSectionHeader(String title, String sub) {
+Widget _buildSectionHeader(String title, String actionText, {VoidCallback? onActionTap}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -344,12 +556,29 @@ class _DashboardPageState extends State<DashboardPage> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        if (sub.isNotEmpty)
-          Text(
-            sub,
-            style: TextStyle(
-              color: Colors.white.withOpacity(0.3),
-              fontSize: 11,
+        if (actionText.isNotEmpty)
+          InkWell(
+            onTap: onActionTap, // <--- Ahora es clickeable
+            borderRadius: BorderRadius.circular(20),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              child: Row(
+                children: [
+                  if (title == 'Gestión de Equipos') // Solo mostramos el '+' en esta sección
+                    const Icon(Icons.add_circle_outline, color: Color(0xFF00FFA3), size: 14),
+                  if (title == 'Gestión de Equipos')
+                    const SizedBox(width: 4),
+                  Text(
+                    actionText,
+                    style: TextStyle(
+                      // Si es Gestión de equipos brilla en neón, sino se queda atenuado
+                      color: title == 'Gestión de Equipos' ? const Color(0xFF00FFA3) : Colors.white.withOpacity(0.3),
+                      fontSize: 12,
+                      fontWeight: title == 'Gestión de Equipos' ? FontWeight.bold : FontWeight.normal,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
       ],
