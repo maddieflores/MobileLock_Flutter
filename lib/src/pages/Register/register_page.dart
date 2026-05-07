@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../../services/api_service.dart';
-import '../Profile/profile_page.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -142,7 +141,6 @@ class _RegisterPageState extends State<RegisterPage>
                     decoration: BoxDecoration(
                       boxShadow: [
                         BoxShadow(
-                          // CAMBIO: withValues en lugar de withOpacity
                           color: const Color(0xFF00FFA3).withValues(alpha: 0.3),
                           blurRadius: 15,
                           offset: const Offset(0, 5),
@@ -165,27 +163,28 @@ class _RegisterPageState extends State<RegisterPage>
                           _lastNameMController.text.trim(),
                         );
 
-                        if (mounted) {
-                          if (response != null &&
-                              (response.statusCode == 200 ||
-                                  response.statusCode == 201)) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                    "¡Cuenta creada con éxito! Inicia sesión."),
-                                backgroundColor: Colors.green,
-                              ),
-                            );
-                            Navigator.pop(context);
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                    "Error: ${response?.data ?? 'No se pudo crear la cuenta'}"),
-                                backgroundColor: Colors.red,
-                              ),
-                            );
-                          }
+                        // --- CORRECCIÓN DE ASYNC GAP ---
+                        if (!mounted) return;
+
+                        if (response != null &&
+                            (response.statusCode == 200 ||
+                                response.statusCode == 201)) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                  "¡Cuenta creada con éxito! Inicia sesión."),
+                              backgroundColor: Colors.green,
+                            ),
+                          );
+                          Navigator.pop(context);
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                  "Error: ${response?.data ?? 'No se pudo crear la cuenta'}"),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
                         }
                       },
                       style: ElevatedButton.styleFrom(
@@ -254,15 +253,12 @@ class _RegisterPageState extends State<RegisterPage>
       decoration: BoxDecoration(
         color: const Color(0xFF1A1F21),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-            // CAMBIO: withValues en lugar de withOpacity
-            color: Colors.white.withValues(alpha: 0.05)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: TextField(
         controller: controller,
         style: const TextStyle(color: Colors.white),
         decoration: InputDecoration(
-          // Quitamos const de aquí porque 'icon' es dinámico
           prefixIcon: Icon(icon, color: const Color(0xFF00FFA3), size: 18),
           hintText: hint,
           hintStyle: const TextStyle(color: Colors.white12, fontSize: 14),
@@ -278,9 +274,7 @@ class _RegisterPageState extends State<RegisterPage>
       decoration: BoxDecoration(
         color: const Color(0xFF1A1F21),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-            // CAMBIO: withValues en lugar de withOpacity
-            color: Colors.white.withValues(alpha: 0.05)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: TextField(
         controller: _passwordController,
@@ -314,7 +308,6 @@ class GridPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      // CAMBIO: withValues en lugar de withOpacity
       ..color = Colors.white.withValues(alpha: 0.02)
       ..strokeWidth = 1.0;
     for (double i = 0; i < size.width; i += 40) {
