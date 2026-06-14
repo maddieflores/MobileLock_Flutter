@@ -8,6 +8,8 @@ import 'src/pages/Profile/edit_profile_page.dart';
 import 'src/pages/Profile/change_password_page.dart';
 import 'src/pages/Device/devices_page.dart';
 import 'src/pages/Device/register_device_page.dart' as device;
+import 'src/pages/Device/verify_device_page.dart';
+import 'src/pages/Device/scan_history_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -51,6 +53,8 @@ class MyApp extends StatelessWidget {
         '/change_password': (context) => const ChangePasswordPage(),
         '/devices': (context) => const DevicesPage(),
         '/register_device': (context) => const device.RegisterDevicePage(),
+        '/verify_device': (context) => const VerifyDevicePage(),
+        '/scan_history': (context) => const ScanHistoryPage(),
       },
     );
   }
