@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart'; // <--- Agrega esto para debugPrint
 
 class ApiService {
   
-  static final String _baseUrl = 'http://192.168.0.7:8000/api'; 
+  static final String _baseUrl = 'http://127.0.0.1:8000/api'; 
 
   final Dio _dio = Dio(
     BaseOptions(
@@ -120,6 +120,30 @@ class ApiService {
     } on DioException catch (e) {
       debugPrint("Error en getDatos: ${e.message}");
       return null;
+    }
+  }
+
+  Future<Response?> verifyDevice(String token, {String? imei, String? qrCode}) async {
+    try {
+      _dio.options.headers['Authorization'] = 'Bearer $token';
+      final Map<String, dynamic> queryParameters = {};
+      if (imei != null) queryParameters['imei'] = imei;
+      if (qrCode != null) queryParameters['qr_code'] = qrCode;
+
+      return await _dio.get('/devices/verify/', queryParameters: queryParameters);
+    } on DioException catch (e) {
+      debugPrint("Error al verificar dispositivo: ${e.response?.data ?? e.message}");
+      return e.response;
+    }
+  }
+
+  Future<Response?> getScanHistory(String token) async {
+    try {
+      _dio.options.headers['Authorization'] = 'Bearer $token';
+      return await _dio.get('/devices/scan-history/');
+    } on DioException catch (e) {
+      debugPrint("Error al obtener historial: ${e.response?.data ?? e.message}");
+      return e.response;
     }
   }
 }
