@@ -73,19 +73,43 @@ class ApiService {
     }
   }
 
-  Future<Response?> registerDevice(String token, String marcaModelo, String imei, String hardware) async {
+  Future<Response?> registerDevice(String token, String marcaModelo, String imei, String hardware, {String? imagePath}) async {
     try {
       _dio.options.headers['Authorization'] = 'Bearer $token';
+      
+      Map<String, dynamic> dataMap = {
+        'marca_modelo': marcaModelo,
+        'hash_imei': imei,
+        'hash_adn_hardware': hardware,
+      };
+
+      if (imagePath != null) {
+        dataMap['url_imagen_referencia'] = await MultipartFile.fromFile(imagePath);
+      }
+
+      FormData formData = FormData.fromMap(dataMap);
+
       return await _dio.post(
         '/devices/create/', 
-        data: {
-          'marca_modelo': marcaModelo,
-          'hash_imei': imei,
-          'hash_adn_hardware': hardware,
-        },
+        data: formData,
       );
     } on DioException catch (e) {
       debugPrint("Error al registrar equipo: ${e.response?.data ?? e.message}");
+      return e.response;
+    }
+  }
+
+  Future<Response?> transferDevice(String token, int deviceId, String newOwnerEmail) async {
+    try {
+      _dio.options.headers['Authorization'] = 'Bearer $token';
+      return await _dio.post(
+        '/devices/transfer/$deviceId/',
+        data: {
+          'nuevo_propietario_email': newOwnerEmail,
+        },
+      );
+    } on DioException catch (e) {
+      debugPrint("Error al transferir equipo: ${e.response?.data ?? e.message}");
       return e.response;
     }
   }

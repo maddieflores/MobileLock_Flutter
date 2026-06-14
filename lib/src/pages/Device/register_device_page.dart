@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 import '../../../services/api_service.dart'; 
 import '../Profile/profile_page.dart'; 
+import 'scanner_page.dart';
 
 class RegisterDevicePage extends StatefulWidget {
   const RegisterDevicePage({super.key});
@@ -13,6 +16,18 @@ class _RegisterDevicePageState extends State<RegisterDevicePage> {
   final TextEditingController _modelController = TextEditingController();
   final TextEditingController _imeiController = TextEditingController();
   final TextEditingController _hardwareIdController = TextEditingController();
+  
+  XFile? _imageFile;
+  final ImagePicker _picker = ImagePicker();
+
+  Future<void> _pickImage() async {
+    final XFile? image = await _picker.pickImage(source: ImageSource.camera);
+    if (image != null) {
+      setState(() {
+        _imageFile = image;
+      });
+    }
+  }
 
   @override
   void dispose() {
@@ -112,6 +127,17 @@ class _RegisterDevicePageState extends State<RegisterDevicePage> {
                             _imeiController,
                             '15 dígitos',
                             Icons.fingerprint_rounded,
+                            onSuffixTap: () async {
+                              final code = await Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => const ScannerPage()),
+                              );
+                              if (code != null && code is String) {
+                                setState(() {
+                                  _imeiController.text = code;
+                                });
+                              }
+                            },
                           ),
 
                           const SizedBox(height: 20),
@@ -121,6 +147,42 @@ class _RegisterDevicePageState extends State<RegisterDevicePage> {
                             _hardwareIdController,
                             'ID único del sistema',
                             Icons.developer_board_rounded,
+                          ),
+
+                          const SizedBox(height: 20),
+
+                          _buildLabel('Fotografía del equipo'),
+                          GestureDetector(
+                            onTap: _pickImage,
+                            child: Container(
+                              height: 120,
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF0E1415),
+                                borderRadius: BorderRadius.circular(15),
+                                border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+                              ),
+                              child: _imageFile != null
+                                  ? ClipRRect(
+                                      borderRadius: BorderRadius.circular(15),
+                                      child: Image.file(
+                                        File(_imageFile!.path),
+                                        fit: BoxFit.cover,
+                                        width: double.infinity,
+                                      ),
+                                    )
+                                  : Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Icon(Icons.camera_alt_outlined, color: Colors.white.withValues(alpha: 0.3), size: 30),
+                                        const SizedBox(height: 10),
+                                        Text(
+                                          'Toca para capturar imagen',
+                                          style: TextStyle(color: Colors.white.withValues(alpha: 0.3), fontSize: 13),
+                                        ),
+                                      ],
+                                    ),
+                            ),
                           ),
 
                           const SizedBox(height: 40),
@@ -158,7 +220,13 @@ class _RegisterDevicePageState extends State<RegisterDevicePage> {
                                   );
 
                                   final apiService = ApiService();
-                                  final response = await apiService.registerDevice(globalToken, marca, imei, hw);
+                                  final response = await apiService.registerDevice(
+                                    globalToken, 
+                                    marca, 
+                                    imei, 
+                                    hw,
+                                    imagePath: _imageFile?.path
+                                  );
 
                                   if (mounted) {
                                     if (response != null && (response.statusCode == 200 || response.statusCode == 201)) {
@@ -218,6 +286,7 @@ class _RegisterDevicePageState extends State<RegisterDevicePage> {
     TextEditingController controller,
     String hint,
     IconData icon,
+    {VoidCallback? onSuffixTap}
   ) {
     return Container(
       decoration: BoxDecoration(
@@ -235,6 +304,12 @@ class _RegisterDevicePageState extends State<RegisterDevicePage> {
             fontSize: 13,
           ),
           prefixIcon: Icon(icon, color: const Color(0xFF00FFA3), size: 18),
+          suffixIcon: onSuffixTap != null 
+              ? IconButton(
+                  icon: const Icon(Icons.qr_code_scanner, color: Color(0xFF00CEE6), size: 20),
+                  onPressed: onSuffixTap,
+                )
+              : null,
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(
             vertical: 15,

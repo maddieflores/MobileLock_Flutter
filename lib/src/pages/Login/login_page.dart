@@ -1,4 +1,5 @@
 import '../../../services/api_service.dart';
+import '../../../services/auth_storage.dart';
 import 'package:flutter/material.dart';
 import '../Profile/profile_page.dart';
 
@@ -132,8 +133,11 @@ class _LoginPageState extends State<LoginPage>
 
                         if (mounted) {
                           if (response != null && response.statusCode == 200) {
+                            final token = response.data['access'];
+                            await AuthStorage.saveToken(token, _emailController.text);
+                            
                             isLoggedIn = true;
-                            globalToken = response.data['access'];
+                            globalToken = token;
                             currentEmail = _emailController.text;
 
                             Navigator.pushNamedAndRemoveUntil(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../services/api_service.dart';
+import '../../../services/auth_storage.dart';
 
 // --- MODELO DE DATOS PARA DISPOSITIVOS ---
 class DeviceModel {
@@ -382,7 +383,8 @@ class _ProfilePageState extends State<ProfilePage> {
         ],
       ),
       child: ElevatedButton(
-        onPressed: () {
+        onPressed: () async {
+          await AuthStorage.deleteToken();
           setState(() {
             isLoggedIn = false;
             globalToken = ""; 
