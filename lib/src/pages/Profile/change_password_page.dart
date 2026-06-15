@@ -27,7 +27,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF060B0C),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Stack(
         children: [
           Positioned.fill(
@@ -52,7 +52,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                             ),
                             onPressed: () => Navigator.pop(context),
                           ),
-                          const Text(
+                          Text(
                             'Seguridad',
                             style: TextStyle(
                               color: Colors.white,
@@ -60,7 +60,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                               fontWeight: FontWeight.bold,
                               shadows: [
                                 Shadow(
-                                  color: Color(0xFF00FFA3),
+                                  color: Theme.of(context).colorScheme.primary,
                                   blurRadius: 10,
                                 ),
                               ],
@@ -99,10 +99,10 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text(
+                                Text(
                                   'Actualizar Contraseña',
                                   style: TextStyle(
-                                    color: Color(0xFF00FFA3),
+                                    color: Theme.of(context).colorScheme.primary,
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -156,7 +156,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                                   decoration: BoxDecoration(
                                     boxShadow: [
                                       BoxShadow(
-                                        color: const Color(0xFF00FFA3).withValues(alpha: 0.3),
+                                        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
                                         blurRadius: 15,
                                         offset: const Offset(0, 5),
                                       ),
@@ -172,7 +172,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                                       Navigator.pop(context);
                                     },
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: const Color(0xFF00FFA3),
+                                      backgroundColor: Theme.of(context).colorScheme.primary,
                                       foregroundColor: Colors.black,
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(15),
@@ -225,9 +225,9 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
       obscureText: isObscured,
       style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
-        prefixIcon: const Icon(
+        prefixIcon: Icon(
           Icons.lock_outline,
-          color: Color(0xFF00FFA3),
+          color: Theme.of(context).colorScheme.primary,
           size: 20,
         ),
         suffixIcon: IconButton(
@@ -241,14 +241,14 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
           onPressed: toggleVisibility,
         ),
         filled: true,
-        fillColor: const Color(0xFF0E1415),
+        fillColor: Theme.of(context).colorScheme.surface,
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(15),
           borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.05)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(15),
-          borderSide: const BorderSide(color: Color(0xFF00FFA3), width: 1),
+          borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 1),
         ),
       ),
     );

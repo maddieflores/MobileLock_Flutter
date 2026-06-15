@@ -73,26 +73,26 @@ class _LoginPageState extends State<LoginPage>
                         height: 110,
                         fit: BoxFit.contain,
                         errorBuilder: (context, error, stackTrace) =>
-                            const Icon(
+                            Icon(
                           Icons.shield,
-                          color: Color(0xFF00FFA3),
+                          color: Theme.of(context).colorScheme.primary,
                           size: 80,
                         ),
                       ),
                     ),
                   ),
                   const SizedBox(height: 25),
-                  const Text(
+                  Text(
                     'MOBILELOCK AI',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      color: Color(0xFF00FFA3),
+                      color: Theme.of(context).colorScheme.primary,
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 2.0,
                       shadows: [
                         Shadow(
-                          color: Color(0xFF00FFA3),
+                          color: Theme.of(context).colorScheme.primary,
                           blurRadius: 15,
                         ),
                       ],
@@ -118,7 +118,7 @@ class _LoginPageState extends State<LoginPage>
                     decoration: BoxDecoration(
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFF00FFA3).withValues(alpha: 0.3),
+                          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
                           blurRadius: 15,
                           offset: const Offset(0, 5),
                         ),
@@ -154,7 +154,7 @@ class _LoginPageState extends State<LoginPage>
                         }
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF00FFA3),
+                        backgroundColor: Theme.of(context).colorScheme.primary,
                         foregroundColor: Colors.black,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(15),
@@ -226,7 +226,7 @@ class _LoginPageState extends State<LoginPage>
       child: Row(
         children: [
           // Corregido: Quitamos el const porque 'icon' es dinámico
-          Icon(icon, color: const Color(0xFF00FFA3), size: 16),
+          Icon(icon, color: Theme.of(context).colorScheme.primary, size: 16),
           const SizedBox(width: 8),
           Text(
             text,
@@ -244,7 +244,7 @@ class _LoginPageState extends State<LoginPage>
   ) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF1A1F21),
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),

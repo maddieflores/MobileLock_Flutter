@@ -35,7 +35,7 @@ class _WelcomePageState extends State<WelcomePage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF060B0C),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Stack(
         children: [
           Positioned.fill(child: CustomPaint(painter: GridPainter())),
@@ -62,12 +62,12 @@ class _WelcomePageState extends State<WelcomePage>
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(color: Colors.white10),
                           ),
-                          child: const Row(
+                          child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Icon(
                                 Icons.shield,
-                                color: Color(0xFF00FFA3),
+                                color: Theme.of(context).colorScheme.primary,
                                 size: 28,
                               ),
                               SizedBox(width: 10),
@@ -100,7 +100,7 @@ class _WelcomePageState extends State<WelcomePage>
                                       shape: BoxShape.circle,
                                       boxShadow: [
                                         BoxShadow(
-                                          color: const Color(0xFF00FFA3).withValues(alpha: 0.15),
+                                          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.15),
                                           blurRadius: 100,
                                           spreadRadius: 20,
                                         ),
@@ -128,7 +128,7 @@ class _WelcomePageState extends State<WelcomePage>
 
                         RichText(
                           textAlign: TextAlign.center,
-                          text: const TextSpan(
+                          text: TextSpan(
                             style: TextStyle(
                               fontSize: 32,
                               fontWeight: FontWeight.bold,
@@ -141,7 +141,7 @@ class _WelcomePageState extends State<WelcomePage>
                               ),
                               TextSpan(
                                 text: 'inservibles',
-                                style: TextStyle(color: Color(0xFF00FFA3)),
+                                style: TextStyle(color: Theme.of(context).colorScheme.primary),
                               ),
                             ],
                           ),
@@ -186,7 +186,7 @@ class _WelcomePageState extends State<WelcomePage>
                                 decoration: BoxDecoration(
                                   boxShadow: [
                                     BoxShadow(
-                                      color: const Color(0xFF00FFA3).withValues(alpha: 0.3),
+                                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
                                       blurRadius: 15,
                                       offset: const Offset(0, 5),
                                     ),
@@ -196,7 +196,7 @@ class _WelcomePageState extends State<WelcomePage>
                                   onPressed: () =>
                                       Navigator.pushNamed(context, '/register'),
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: const Color(0xFF00FFA3),
+                                    backgroundColor: Theme.of(context).colorScheme.primary,
                                     foregroundColor: Colors.black,
                                     padding: const EdgeInsets.symmetric(
                                       vertical: 20,
@@ -231,10 +231,10 @@ class _WelcomePageState extends State<WelcomePage>
                                     borderRadius: BorderRadius.circular(15),
                                   ),
                                 ),
-                                child: const Text(
+                                child: Text(
                                   'Iniciar sesión',
                                   style: TextStyle(
-                                    color: Color(0xFF00FFA3),
+                                    color: Theme.of(context).colorScheme.primary,
                                     fontSize: 16,
                                   ),
                                 ),
@@ -259,24 +259,24 @@ class _WelcomePageState extends State<WelcomePage>
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.only(bottom: 20),
-      padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 20),
+      padding: EdgeInsets.symmetric(vertical: 25, horizontal: 20),
       decoration: BoxDecoration(
-        color: const Color(0xFF0E1415),
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: Column(
         children: [
           Container(
-            padding: const EdgeInsets.all(12),
+            padding: EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: const Color(0xFF1A2426),
+              color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: const Color(0xFF00FFA3).withValues(alpha: 0.2),
+                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
               ),
             ),
-            child: Icon(icon, color: const Color(0xFF00FFA3), size: 30),
+            child: Icon(icon, color: Theme.of(context).colorScheme.primary, size: 30),
           ),
           const SizedBox(height: 15),
           Text(

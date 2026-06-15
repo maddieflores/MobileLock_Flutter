@@ -75,33 +75,33 @@ class _RegisterPageState extends State<RegisterPage>
                         height: 90,
                         fit: BoxFit.contain,
                         errorBuilder: (context, error, stackTrace) =>
-                            const Icon(
+                            Icon(
                           Icons.shield_outlined,
-                          color: Color(0xFF00FFA3),
+                          color: Theme.of(context).colorScheme.primary,
                           size: 70,
                         ),
                       ),
                     ),
                   ),
                   const SizedBox(height: 20),
-                  const Text(
+                  Text(
                     'MobileLock',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      color: Color(0xFF00FFA3),
+                      color: Theme.of(context).colorScheme.primary,
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 1.5,
                       shadows: [
-                        Shadow(color: Color(0xFF00FFA3), blurRadius: 15),
+                        Shadow(color: Theme.of(context).colorScheme.primary, blurRadius: 15),
                       ],
                     ),
                   ),
-                  const Center(
+                  Center(
                     child: Text(
                       'Crea tu cuenta AI',
                       style: TextStyle(
-                        color: Color(0xFF00FFA3),
+                        color: Theme.of(context).colorScheme.primary,
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
                       ),
@@ -141,7 +141,7 @@ class _RegisterPageState extends State<RegisterPage>
                     decoration: BoxDecoration(
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFF00FFA3).withValues(alpha: 0.3),
+                          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
                           blurRadius: 15,
                           offset: const Offset(0, 5),
                         ),
@@ -188,7 +188,7 @@ class _RegisterPageState extends State<RegisterPage>
                         }
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF00FFA3),
+                        backgroundColor: Theme.of(context).colorScheme.primary,
                         foregroundColor: Colors.black,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(15),
@@ -233,8 +233,8 @@ class _RegisterPageState extends State<RegisterPage>
         padding: const EdgeInsets.only(left: 5, bottom: 8),
         child: Text(
           text,
-          style: const TextStyle(
-            color: Color(0xFF00FFA3),
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.primary,
             fontSize: 10,
             fontWeight: FontWeight.bold,
             letterSpacing: 1.5,
@@ -251,15 +251,15 @@ class _RegisterPageState extends State<RegisterPage>
   ) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF1A1F21),
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: TextField(
         controller: controller,
-        style: const TextStyle(color: Colors.white),
+        style: TextStyle(color: Colors.white),
         decoration: InputDecoration(
-          prefixIcon: Icon(icon, color: const Color(0xFF00FFA3), size: 18),
+          prefixIcon: Icon(icon, color: Theme.of(context).colorScheme.primary, size: 18),
           hintText: hint,
           hintStyle: const TextStyle(color: Colors.white12, fontSize: 14),
           border: InputBorder.none,
@@ -272,7 +272,7 @@ class _RegisterPageState extends State<RegisterPage>
   Widget _buildPasswordField() {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF1A1F21),
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
@@ -281,9 +281,9 @@ class _RegisterPageState extends State<RegisterPage>
         obscureText: _obscureText,
         style: const TextStyle(color: Colors.white),
         decoration: InputDecoration(
-          prefixIcon: const Icon(
+          prefixIcon: Icon(
             Icons.lock_outline,
-            color: Color(0xFF00FFA3),
+            color: Theme.of(context).colorScheme.primary,
             size: 18,
           ),
           hintText: 'Contraseña segura',

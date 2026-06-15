@@ -63,7 +63,7 @@ class _TransferDevicePageState extends State<TransferDevicePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF060B0C),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text('Transferir Propiedad', style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.transparent,
@@ -78,7 +78,7 @@ class _TransferDevicePageState extends State<TransferDevicePage> {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: const Color(0xFF0E1415),
+                color: Theme.of(context).colorScheme.surface,
                 borderRadius: BorderRadius.circular(15),
                 border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
               ),
@@ -105,7 +105,7 @@ class _TransferDevicePageState extends State<TransferDevicePage> {
             const SizedBox(height: 10),
             Container(
               decoration: BoxDecoration(
-                color: const Color(0xFF0E1415),
+                color: Theme.of(context).colorScheme.surface,
                 borderRadius: BorderRadius.circular(15),
                 border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
               ),
@@ -116,7 +116,7 @@ class _TransferDevicePageState extends State<TransferDevicePage> {
                 decoration: InputDecoration(
                   hintText: 'ejemplo@dominio.com',
                   hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.2)),
-                  prefixIcon: const Icon(Icons.email_outlined, color: Color(0xFF00FFA3), size: 18),
+                  prefixIcon: Icon(Icons.email_outlined, color: Theme.of(context).colorScheme.primary, size: 18),
                   border: InputBorder.none,
                   contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
                 ),

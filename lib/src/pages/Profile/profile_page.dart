@@ -80,7 +80,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF060B0C),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Stack(
         children: [
           Positioned.fill(
@@ -110,8 +110,8 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _buildLoading() {
-    return const Center(
-      child: CircularProgressIndicator(color: Color(0xFF00FFA3)),
+    return Center(
+      child: CircularProgressIndicator(color: Theme.of(context).colorScheme.primary),
     );
   }
 
@@ -158,7 +158,7 @@ class _ProfilePageState extends State<ProfilePage> {
             ElevatedButton(
               onPressed: () => Navigator.pushNamed(context, '/login'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF00FFA3),
+                backgroundColor: Theme.of(context).colorScheme.primary,
                 foregroundColor: Colors.black,
                 minimumSize: const Size(200, 55),
                 shape: RoundedRectangleBorder(
@@ -221,17 +221,17 @@ class _ProfilePageState extends State<ProfilePage> {
           CircleAvatar(
             radius: 40,
             backgroundColor: Colors.black.withValues(alpha: 0.3),
-            child: const Icon(Icons.person, color: Color(0xFF00FFA3), size: 50),
+            child: Icon(Icons.person, color: Theme.of(context).colorScheme.primary, size: 50),
           ),
           const SizedBox(height: 15),
           Text(
             currentName,
             textAlign: TextAlign.center,
-            style: const TextStyle(
+            style: TextStyle(
               color: Colors.white,
               fontSize: 22,
               fontWeight: FontWeight.bold,
-              shadows: [Shadow(color: Color(0xFF00FFA3), blurRadius: 10)],
+              shadows: [Shadow(color: Theme.of(context).colorScheme.primary, blurRadius: 10)],
             ),
           ),
           Text(
@@ -257,9 +257,9 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Widget _buildInfoCard() {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: const Color(0xFF0E1415),
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
@@ -284,7 +284,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget _buildInfoItem(IconData icon, String label, String value) {
     return Row(
       children: [
-        Icon(icon, color: const Color(0xFF00FFA3), size: 18),
+        Icon(icon, color: Theme.of(context).colorScheme.primary, size: 18),
         const SizedBox(width: 15),
         Text(
           label,
@@ -317,21 +317,21 @@ class _ProfilePageState extends State<ProfilePage> {
           onTap: onTap,
           borderRadius: BorderRadius.circular(20),
           child: Container(
-            padding: const EdgeInsets.all(20),
+            padding: EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: const Color(0xFF0E1415),
+              color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(20),
               border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
             ),
             child: Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF1A2426),
+                    color: Theme.of(context).colorScheme.surface,
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(icon, color: const Color(0xFF00FFA3)),
+                  child: Icon(icon, color: Theme.of(context).colorScheme.primary),
                 ),
                 const SizedBox(width: 15),
                 Expanded(
@@ -376,7 +376,7 @@ class _ProfilePageState extends State<ProfilePage> {
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF00FFA3).withValues(alpha: 0.3),
+            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -398,7 +398,7 @@ class _ProfilePageState extends State<ProfilePage> {
           );
         },
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF00FFA3),
+          backgroundColor: Theme.of(context).colorScheme.primary,
           foregroundColor: Colors.black,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
@@ -415,11 +415,11 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Widget _buildBottomNav(BuildContext context) {
     return BottomNavigationBar(
-      backgroundColor: const Color(0xFF060B0C),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       elevation: 0,
       type: BottomNavigationBarType.fixed,
       currentIndex: 3,
-      selectedItemColor: const Color(0xFF00FFA3),
+      selectedItemColor: Theme.of(context).colorScheme.primary,
       unselectedItemColor: Colors.white30,
       onTap: (index) {
         if (index == 0) Navigator.pushReplacementNamed(context, '/dashboard');

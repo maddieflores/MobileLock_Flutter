@@ -50,25 +50,25 @@ class _ScanHistoryPageState extends State<ScanHistoryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF060B0C),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text(
           'Historial de Consultas',
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
         ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF00FFA3)),
+          icon: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.primary),
           onPressed: () => Navigator.pop(context),
         ),
-        backgroundColor: const Color(0xFF0E1415),
+        backgroundColor: Theme.of(context).colorScheme.surface,
         elevation: 0,
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: Color(0xFF00FFA3)))
+          ? Center(child: CircularProgressIndicator(color: Theme.of(context).colorScheme.primary))
           : RefreshIndicator(
               onRefresh: _fetchHistory,
-              color: const Color(0xFF00FFA3),
-              backgroundColor: const Color(0xFF0E1415),
+              color: Theme.of(context).colorScheme.primary,
+              backgroundColor: Theme.of(context).colorScheme.surface,
               child: _history.isEmpty ? _buildEmptyState() : _buildHistoryList(),
             ),
     );
@@ -128,8 +128,8 @@ class _ScanHistoryPageState extends State<ScanHistoryPage> {
         IconData statusIcon;
 
         if (estado == 'LIBRE') {
-          badgeColor = const Color(0xFF1B4D3E).withOpacity(0.15);
-          statusColor = const Color(0xFF00FFA3);
+          badgeColor = Color(0xFF1B4D3E).withOpacity(0.15);
+          statusColor = Theme.of(context).colorScheme.primary;
           statusIcon = Icons.verified_user_outlined;
         } else if (estado == 'ROBADO') {
           badgeColor = const Color(0xFF8B0000).withOpacity(0.12);
@@ -143,9 +143,9 @@ class _ScanHistoryPageState extends State<ScanHistoryPage> {
 
         return Container(
           margin: const EdgeInsets.only(bottom: 16),
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: const Color(0xFF131D1F),
+            color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(20),
             border: Border.all(color: Colors.white.withOpacity(0.04)),
           ),

@@ -47,7 +47,7 @@ class _ScannerPageState extends State<ScannerPage> {
               width: 250,
               height: 250,
               decoration: BoxDecoration(
-                border: Border.all(color: const Color(0xFF00FFA3), width: 3),
+                border: Border.all(color: Theme.of(context).colorScheme.primary, width: 3),
                 borderRadius: BorderRadius.circular(20),
               ),
             ),

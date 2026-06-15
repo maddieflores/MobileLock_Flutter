@@ -75,7 +75,7 @@ class _VerifyDevicePageState extends State<VerifyDevicePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF060B0C),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text(
           'Verificación de Celular',
@@ -86,16 +86,16 @@ class _VerifyDevicePageState extends State<VerifyDevicePage> {
           ),
         ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF00FFA3)),
+          icon: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.primary),
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.history, color: Color(0xFF00FFA3)),
+            icon: Icon(Icons.history, color: Theme.of(context).colorScheme.primary),
             onPressed: () => Navigator.pushNamed(context, '/scan_history'),
           ),
         ],
-        backgroundColor: const Color(0xFF0E1415),
+        backgroundColor: Theme.of(context).colorScheme.surface,
         elevation: 0,
       ),
       body: SingleChildScrollView(
@@ -105,11 +105,11 @@ class _VerifyDevicePageState extends State<VerifyDevicePage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const SizedBox(height: 10),
-              const Text(
+              Text(
                 'Blindaje Digital MobileLock',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: Color(0xFF00FFA3),
+                  color: Theme.of(context).colorScheme.primary,
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 1.2,
@@ -149,10 +149,10 @@ class _VerifyDevicePageState extends State<VerifyDevicePage> {
 
               // Cargando
               if (_isLoading)
-                const Center(
+                Center(
                   child: Padding(
                     padding: EdgeInsets.all(20),
-                    child: CircularProgressIndicator(color: Color(0xFF00FFA3)),
+                    child: CircularProgressIndicator(color: Theme.of(context).colorScheme.primary),
                   ),
                 ),
 
@@ -183,9 +183,9 @@ class _VerifyDevicePageState extends State<VerifyDevicePage> {
 
   Widget _buildImeiBox() {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: const Color(0xFF131D1F),
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(25),
         border: Border.all(color: Colors.white.withOpacity(0.05)),
       ),
@@ -206,12 +206,12 @@ class _VerifyDevicePageState extends State<VerifyDevicePage> {
               hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
               counterText: '',
               filled: true,
-              fillColor: const Color(0xFF0E1415),
+              fillColor: Theme.of(context).colorScheme.surface,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(15),
                 borderSide: BorderSide.none,
               ),
-              prefixIcon: const Icon(Icons.search, color: Color(0xFF00FFA3)),
+              prefixIcon: Icon(Icons.search, color: Theme.of(context).colorScheme.primary),
             ),
             style: const TextStyle(color: Colors.white, letterSpacing: 1.5),
           ),
@@ -225,7 +225,7 @@ class _VerifyDevicePageState extends State<VerifyDevicePage> {
               _verify(imei: _imeiController.text);
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF00FFA3),
+              backgroundColor: Theme.of(context).colorScheme.primary,
               foregroundColor: Colors.black,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
               padding: const EdgeInsets.symmetric(vertical: 16),
@@ -246,7 +246,7 @@ class _VerifyDevicePageState extends State<VerifyDevicePage> {
                 height: 280,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(25),
-                  border: Border.all(color: const Color(0xFF00FFA3), width: 2),
+                  border: Border.all(color: Theme.of(context).colorScheme.primary, width: 2),
                 ),
                 clipBehavior: Clip.hardEdge,
                 child: ClipRRect(
@@ -275,8 +275,8 @@ class _VerifyDevicePageState extends State<VerifyDevicePage> {
           )
         : Container(
             decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFF00FFA3), Color(0xFF00BFFF)],
+              gradient: LinearGradient(
+                colors: [Theme.of(context).colorScheme.primary, Color(0xFF00BFFF)],
               ),
               borderRadius: BorderRadius.circular(20),
             ),
@@ -311,8 +311,8 @@ class _VerifyDevicePageState extends State<VerifyDevicePage> {
     String description;
 
     if (estado == 'LIBRE') {
-      cardColor = const Color(0xFF1B4D3E).withOpacity(0.2);
-      iconColor = const Color(0xFF00FFA3);
+      cardColor = Color(0xFF1B4D3E).withOpacity(0.2);
+      iconColor = Theme.of(context).colorScheme.primary;
       icon = Icons.shield_outlined;
       statusTitle = 'SEGURO - LIBRE';
       description = 'El dispositivo móvil consultado se encuentra limpio, registrado y sin reportes de robo activos.';

@@ -42,7 +42,7 @@ class _DevicesPageState extends State<DevicesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF060B0C),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Stack(
         children: [
           Positioned.fill(child: CustomPaint(painter: GridPainter())),
@@ -61,7 +61,7 @@ class _DevicesPageState extends State<DevicesPage> {
                     const SizedBox(height: 30),
                     Expanded(
                       child: _isLoading
-                          ? const Center(child: CircularProgressIndicator(color: Color(0xFF00FFA3)))
+                          ? Center(child: CircularProgressIndicator(color: Theme.of(context).colorScheme.primary))
                           : _myDevices.isEmpty
                               ? _buildEmptyState()
                               : _buildDevicesList(),
@@ -78,9 +78,9 @@ class _DevicesPageState extends State<DevicesPage> {
 
   Widget _buildHeader(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
       decoration: BoxDecoration(
-        color: const Color(0xFF0E1415),
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(25),
         border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
@@ -94,22 +94,22 @@ class _DevicesPageState extends State<DevicesPage> {
                 onPressed: () => Navigator.pop(context),
               ),
               const SizedBox(width: 5),
-              const Column(
+              Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Mis', style: TextStyle(color: Color(0xFF00FFA3), fontSize: 12, fontWeight: FontWeight.bold)),
-                  Text('Dispositivos', style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold, shadows: [Shadow(color: Color(0xFF00FFA3), blurRadius: 10)])),
+                  Text('Mis', style: TextStyle(color: Theme.of(context).colorScheme.primary, fontSize: 12, fontWeight: FontWeight.bold)),
+                  Text('Dispositivos', style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold, shadows: [Shadow(color: Theme.of(context).colorScheme.primary, blurRadius: 10)])),
                 ],
               ),
             ],
           ),
           Container(
             decoration: BoxDecoration(
-              color: const Color(0xFF1A2426),
+              color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(12),
             ),
             child: IconButton(
-              icon: const Icon(Icons.add, color: Color(0xFF00FFA3)),
+              icon: Icon(Icons.add, color: Theme.of(context).colorScheme.primary),
               onPressed: () => Navigator.pushNamed(context, '/register_device'),
             ),
           ),
@@ -158,9 +158,9 @@ class _DevicesPageState extends State<DevicesPage> {
 
         return Container(
           margin: const EdgeInsets.only(bottom: 20),
-          padding: const EdgeInsets.all(20),
+          padding: EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: const Color(0xFF131D1F),
+            color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(20),
             border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
           ),
@@ -171,12 +171,12 @@ class _DevicesPageState extends State<DevicesPage> {
                 width: 55,
                 height: 55,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF00FFA3).withValues(alpha: 0.15),
+                  color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.smartphone_rounded,
-                  color: Color(0xFF00FFA3),
+                  color: Theme.of(context).colorScheme.primary,
                   size: 28,
                 ),
               ),

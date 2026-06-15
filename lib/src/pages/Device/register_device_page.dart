@@ -40,7 +40,7 @@ class _RegisterDevicePageState extends State<RegisterDevicePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF060B0C),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Stack(
         children: [
           Positioned.fill(child: CustomPaint(painter: GridPainter())),
@@ -85,7 +85,7 @@ class _RegisterDevicePageState extends State<RegisterDevicePage> {
                                 ),
                                 onPressed: () => Navigator.pop(context),
                               ),
-                              const Expanded(
+                              Expanded(
                                 child: Text(
                                   'Registrar dispositivo',
                                   style: TextStyle(
@@ -94,7 +94,7 @@ class _RegisterDevicePageState extends State<RegisterDevicePage> {
                                     fontWeight: FontWeight.bold,
                                     shadows: [
                                       Shadow(
-                                        color: Color(0xFF00FFA3),
+                                        color: Theme.of(context).colorScheme.primary,
                                         blurRadius: 15,
                                       ),
                                     ],
@@ -158,7 +158,7 @@ class _RegisterDevicePageState extends State<RegisterDevicePage> {
                               height: 120,
                               width: double.infinity,
                               decoration: BoxDecoration(
-                                color: const Color(0xFF0E1415),
+                                color: Theme.of(context).colorScheme.surface,
                                 borderRadius: BorderRadius.circular(15),
                                 border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
                               ),
@@ -290,7 +290,7 @@ class _RegisterDevicePageState extends State<RegisterDevicePage> {
   ) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF0E1415),
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(15),
         border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
@@ -303,7 +303,7 @@ class _RegisterDevicePageState extends State<RegisterDevicePage> {
             color: Colors.white.withValues(alpha: 0.2),
             fontSize: 13,
           ),
-          prefixIcon: Icon(icon, color: const Color(0xFF00FFA3), size: 18),
+          prefixIcon: Icon(icon, color: Theme.of(context).colorScheme.primary, size: 18),
           suffixIcon: onSuffixTap != null 
               ? IconButton(
                   icon: const Icon(Icons.qr_code_scanner, color: Color(0xFF00CEE6), size: 20),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../services/api_service.dart';
 import '../Profile/profile_page.dart';
+import '../../../main.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -44,7 +45,7 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF060B0C),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Stack(
         children: [
           Positioned.fill(child: CustomPaint(painter: GridPainter())),
@@ -84,19 +85,19 @@ class _DashboardPageState extends State<DashboardPage> {
                                     Text(
                                       'Bienvenido de nuevo',
                                       style: TextStyle(
-                                        color: Colors.white.withValues(alpha: 0.5),
+                                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
                                         fontSize: 13,
                                       ),
                                     ),
-                                    const Text(
+                                    Text(
                                       'Mi Panel',
                                       style: TextStyle(
-                                        color: Colors.white,
+                                        color: Theme.of(context).colorScheme.onSurface,
                                         fontSize: 26,
                                         fontWeight: FontWeight.bold,
                                         shadows: [
                                           Shadow(
-                                            color: Color(0xFF00FFA3),
+                                            color: Theme.of(context).colorScheme.primary,
                                             blurRadius: 10,
                                           ),
                                         ],
@@ -104,7 +105,35 @@ class _DashboardPageState extends State<DashboardPage> {
                                     ),
                                   ],
                                 ),
-                                _buildNotificationIcon(),
+                                Row(
+                                  children: [
+                                    ValueListenableBuilder<ThemeMode>(
+                                      valueListenable: themeNotifier,
+                                      builder: (context, currentMode, _) {
+                                        final isDark = currentMode == ThemeMode.dark;
+                                        return GestureDetector(
+                                          onTap: () {
+                                            themeNotifier.value = isDark ? ThemeMode.light : ThemeMode.dark;
+                                          },
+                                          child: Container(
+                                            padding: const EdgeInsets.all(12),
+                                            decoration: BoxDecoration(
+                                              color: Theme.of(context).colorScheme.surface,
+                                              borderRadius: BorderRadius.circular(15),
+                                              border: Border.all(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.05)),
+                                            ),
+                                            child: Icon(
+                                              isDark ? Icons.light_mode : Icons.dark_mode,
+                                              color: Theme.of(context).colorScheme.primary,
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                    const SizedBox(width: 8),
+                                    _buildNotificationIcon(),
+                                  ],
+                                ),
                               ],
                             ),
                           ),
@@ -112,10 +141,10 @@ class _DashboardPageState extends State<DashboardPage> {
                           const SizedBox(height: 20),
 
                           if (_isLoading)
-                            const Padding(
+                            Padding(
                               padding: EdgeInsets.all(40.0),
                               child: Center(
-                                child: CircularProgressIndicator(color: Color(0xFF00FFA3)),
+                                child: CircularProgressIndicator(color: Theme.of(context).colorScheme.primary),
                               ),
                             )
                           else if (_myDevices.isEmpty)
@@ -170,9 +199,9 @@ class _DashboardPageState extends State<DashboardPage> {
 
                           Container(
                             width: double.infinity,
-                            padding: const EdgeInsets.all(20),
+                            padding: EdgeInsets.all(20),
                             decoration: BoxDecoration(
-                              color: const Color(0xFF0E1415),
+                              color: Theme.of(context).colorScheme.surface,
                               borderRadius: BorderRadius.circular(25),
                               border: Border.all(
                                 color: Colors.white.withValues(alpha: 0.05),
@@ -243,16 +272,12 @@ class _DashboardPageState extends State<DashboardPage> {
           margin: const EdgeInsets.only(bottom: 15),
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [Color(0xFF131D1F), Color(0xFF0E1415)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
+            color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: const Color(0xFF00FFA3).withValues(alpha: 0.3)),
+            border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3)),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF00FFA3).withValues(alpha: 0.05),
+                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.05),
                 blurRadius: 15,
                 offset: const Offset(0, 5),
               ),
@@ -264,12 +289,12 @@ class _DashboardPageState extends State<DashboardPage> {
               Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(12),
+                    padding: EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF00FFA3).withValues(alpha: 0.1),
+                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Icon(Icons.smartphone_rounded, color: Color(0xFF00FFA3)),
+                    child: Icon(Icons.smartphone_rounded, color: Theme.of(context).colorScheme.primary),
                   ),
                   const SizedBox(width: 15),
                   Expanded(
@@ -297,18 +322,18 @@ class _DashboardPageState extends State<DashboardPage> {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF00FFA3).withValues(alpha: 0.1),
+                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: const Color(0xFF00FFA3).withValues(alpha: 0.5)),
+                      border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5)),
                     ),
-                    child: const Row(
+                    child: Row(
                       children: [
-                        Icon(Icons.shield_rounded, color: Color(0xFF00FFA3), size: 12),
-                        SizedBox(width: 4),
+                        Icon(Icons.shield_rounded, color: Theme.of(context).colorScheme.primary, size: 12),
+                        const SizedBox(width: 4),
                         Text(
                           'Seguro',
                           style: TextStyle(
-                            color: Color(0xFF00FFA3),
+                            color: Theme.of(context).colorScheme.primary,
                             fontSize: 10,
                             fontWeight: FontWeight.bold,
                           ),
@@ -352,12 +377,12 @@ class _DashboardPageState extends State<DashboardPage> {
               const SizedBox(height: 15),
               
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+                padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF1A1F21),
+                  color: Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Row(
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
@@ -370,7 +395,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     ),
                     Icon(
                       Icons.verified_user_outlined, 
-                      color: Color(0xFF00FFA3), 
+                      color: Theme.of(context).colorScheme.primary, 
                       size: 22,
                     ),
                   ],
@@ -388,14 +413,14 @@ class _DashboardPageState extends State<DashboardPage> {
       onTap: () => Navigator.pushNamed(context, '/devices'),
       borderRadius: BorderRadius.circular(20),
       child: Container(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: const Color(0xFF0E1415),
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: const Color(0xFF00FFA3).withValues(alpha: 0.2)),
+          border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2)),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF00FFA3).withValues(alpha: 0.05),
+              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.05),
               blurRadius: 15,
             ),
           ],
@@ -403,14 +428,14 @@ class _DashboardPageState extends State<DashboardPage> {
         child: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: const Color(0xFF00FFA3).withValues(alpha: 0.1),
+                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(15),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.phonelink_setup_rounded,
-                color: Color(0xFF00FFA3),
+                color: Theme.of(context).colorScheme.primary,
               ),
             ),
             const SizedBox(width: 15),
@@ -433,9 +458,9 @@ class _DashboardPageState extends State<DashboardPage> {
                 ],
               ),
             ),
-            const Icon(
+            Icon(
               Icons.arrow_forward_ios_rounded,
-              color: Color(0xFF00FFA3),
+              color: Theme.of(context).colorScheme.primary,
               size: 16,
             ),
           ],
@@ -446,15 +471,15 @@ class _DashboardPageState extends State<DashboardPage> {
 
   Widget _buildNotificationIcon() {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFF0E1415),
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(15),
         border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
-      child: const Icon(
+      child: Icon(
         Icons.notifications_none_rounded,
-        color: Color(0xFF00FFA3),
+        color: Theme.of(context).colorScheme.primary,
       ),
     );
   }
@@ -462,9 +487,9 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget _buildEmptyDeviceCard() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(30),
+      padding: EdgeInsets.all(30),
       decoration: BoxDecoration(
-        color: const Color(0xFF0E1415),
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(30),
         border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
@@ -504,7 +529,7 @@ class _DashboardPageState extends State<DashboardPage> {
           ElevatedButton(
             onPressed: () => Navigator.pushNamed(context, '/register_device'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF00FFA3),
+              backgroundColor: Theme.of(context).colorScheme.primary,
               foregroundColor: Colors.black,
               padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
               shape: RoundedRectangleBorder(
@@ -543,13 +568,13 @@ class _DashboardPageState extends State<DashboardPage> {
               child: Row(
                 children: [
                   if (title == 'Gestión de Equipos') 
-                    const Icon(Icons.add_circle_outline, color: Color(0xFF00FFA3), size: 14),
+                    Icon(Icons.add_circle_outline, color: Theme.of(context).colorScheme.primary, size: 14),
                   if (title == 'Gestión de Equipos')
                     const SizedBox(width: 4),
                   Text(
                     actionText,
                     style: TextStyle(
-                      color: title == 'Gestión de Equipos' ? const Color(0xFF00FFA3) : Colors.white.withValues(alpha: 0.3),
+                      color: title == 'Gestión de Equipos' ? Theme.of(context).colorScheme.primary : Colors.white.withValues(alpha: 0.3),
                       fontSize: 12,
                       fontWeight: title == 'Gestión de Equipos' ? FontWeight.bold : FontWeight.normal,
                     ),
@@ -575,9 +600,9 @@ class _DashboardPageState extends State<DashboardPage> {
         onTap: onTap,
         borderRadius: BorderRadius.circular(20),
         child: Container(
-          padding: const EdgeInsets.all(20),
+          padding: EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: const Color(0xFF0E1415),
+            color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(20),
             border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
           ),
@@ -588,12 +613,12 @@ class _DashboardPageState extends State<DashboardPage> {
                 decoration: BoxDecoration(
                   color: isWarning
                       ? Colors.redAccent.withValues(alpha: 0.1)
-                      : const Color(0xFF1A2426),
+                      : Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
                   icon,
-                  color: isWarning ? Colors.redAccent : const Color(0xFF00FFA3),
+                  color: isWarning ? Colors.redAccent : Theme.of(context).colorScheme.primary,
                 ),
               ),
               const SizedBox(width: 15),
@@ -629,9 +654,9 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget _buildActivityItem(String title, String subtitle) {
     return Row(
       children: [
-        const Icon(
+        Icon(
           Icons.access_time_rounded,
-          color: Color(0xFF00FFA3),
+          color: Theme.of(context).colorScheme.primary,
           size: 18,
         ),
         const SizedBox(width: 15),
@@ -663,7 +688,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
   Widget _buildBottomNav() {
     return Container(
-      color: const Color(0xFF060B0C),
+      color: Theme.of(context).scaffoldBackgroundColor,
       child: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 420),
@@ -678,7 +703,7 @@ class _DashboardPageState extends State<DashboardPage> {
               elevation: 0,
               type: BottomNavigationBarType.fixed,
               currentIndex: _selectedIndex,
-              selectedItemColor: const Color(0xFF00FFA3),
+              selectedItemColor: Theme.of(context).colorScheme.primary,
               unselectedItemColor: Colors.white30,
               selectedFontSize: 12,
               unselectedFontSize: 12,

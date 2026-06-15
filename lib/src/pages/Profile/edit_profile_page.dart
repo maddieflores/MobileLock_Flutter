@@ -42,7 +42,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF060B0C),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Stack(
         children: [
           Positioned.fill(
@@ -75,7 +75,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                             onPressed: () => Navigator.pop(context),
                           ),
                           const SizedBox(width: 15),
-                          const Text(
+                          Text(
                             'Editar Perfil',
                             style: TextStyle(
                               color: Colors.white,
@@ -83,7 +83,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                               fontWeight: FontWeight.bold,
                               shadows: [
                                 Shadow(
-                                  color: Color(0xFF00FFA3),
+                                  color: Theme.of(context).colorScheme.primary,
                                   blurRadius: 10,
                                 ),
                               ],
@@ -112,9 +112,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                               CircleAvatar(
                                 radius: 50,
                                 backgroundColor: Colors.black.withValues(alpha: 0.3),
-                                child: const Icon(
+                                child: Icon(
                                   Icons.person,
-                                  color: Color(0xFF00FFA3),
+                                  color: Theme.of(context).colorScheme.primary,
                                   size: 55,
                                 ),
                               ),
@@ -122,9 +122,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                 bottom: 0,
                                 right: 0,
                                 child: Container(
-                                  padding: const EdgeInsets.all(8),
-                                  decoration: const BoxDecoration(
-                                    color: Color(0xFF00FFA3),
+                                  padding: EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: Theme.of(context).colorScheme.primary,
                                     shape: BoxShape.circle,
                                   ),
                                   child: const Icon(
@@ -167,7 +167,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                             decoration: BoxDecoration(
                               boxShadow: [
                                 BoxShadow(
-                                  color: const Color(0xFF00FFA3).withValues(alpha: 0.3),
+                                  color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
                                   blurRadius: 15,
                                   offset: const Offset(0, 5),
                                 ),
@@ -189,7 +189,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                 Navigator.pop(context);
                               },
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF00FFA3),
+                                backgroundColor: Theme.of(context).colorScheme.primary,
                                 foregroundColor: Colors.black,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(15),
@@ -225,8 +225,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
         padding: const EdgeInsets.only(left: 5, bottom: 8),
         child: Text(
           text,
-          style: const TextStyle(
-            color: Color(0xFF00FFA3),
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.primary,
             fontSize: 12,
             fontWeight: FontWeight.bold,
           ),
@@ -244,9 +244,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
       ),
       child: TextField(
         controller: controller,
-        style: const TextStyle(color: Colors.white),
+        style: TextStyle(color: Colors.white),
         decoration: InputDecoration(
-          prefixIcon: Icon(icon, color: const Color(0xFF00FFA3), size: 18),
+          prefixIcon: Icon(icon, color: Theme.of(context).colorScheme.primary, size: 18),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(
             horizontal: 20,
