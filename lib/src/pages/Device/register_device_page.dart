@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-import '../../../services/api_service.dart'; 
-import '../Profile/profile_page.dart'; 
+import '../../../services/api_service.dart';
+import '../Profile/profile_page.dart';
 import 'scanner_page.dart';
 
 class RegisterDevicePage extends StatefulWidget {
-  const RegisterDevicePage({super.key});
+  final Map<String, dynamic>? deviceToEdit;
+  const RegisterDevicePage({super.key, this.deviceToEdit});
 
   @override
   State<RegisterDevicePage> createState() => _RegisterDevicePageState();
@@ -16,9 +17,20 @@ class _RegisterDevicePageState extends State<RegisterDevicePage> {
   final TextEditingController _modelController = TextEditingController();
   final TextEditingController _imeiController = TextEditingController();
   final TextEditingController _hardwareIdController = TextEditingController();
-  
+
   XFile? _imageFile;
   final ImagePicker _picker = ImagePicker();
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.deviceToEdit != null) {
+      _modelController.text = widget.deviceToEdit!['marca_modelo'] ?? '';
+      _imeiController.text = widget.deviceToEdit!['hash_imei'] ?? '';
+      _hardwareIdController.text =
+          widget.deviceToEdit!['hash_adn_hardware'] ?? '';
+    }
+  }
 
   Future<void> _pickImage() async {
     final XFile? image = await _picker.pickImage(source: ImageSource.camera);
@@ -60,7 +72,7 @@ class _RegisterDevicePageState extends State<RegisterDevicePage> {
                     Container(
                       padding: const EdgeInsets.all(25),
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.03), 
+                        color: Colors.white.withValues(alpha: 0.03),
                         borderRadius: BorderRadius.circular(30),
                         border: Border.all(
                           color: Colors.white.withValues(alpha: 0.08),
@@ -87,14 +99,18 @@ class _RegisterDevicePageState extends State<RegisterDevicePage> {
                               ),
                               Expanded(
                                 child: Text(
-                                  'Registrar dispositivo',
+                                  widget.deviceToEdit != null
+                                      ? 'Editar dispositivo'
+                                      : 'Registrar dispositivo',
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 22,
                                     fontWeight: FontWeight.bold,
                                     shadows: [
                                       Shadow(
-                                        color: Theme.of(context).colorScheme.primary,
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.primary,
                                         blurRadius: 15,
                                       ),
                                     ],
@@ -130,7 +146,9 @@ class _RegisterDevicePageState extends State<RegisterDevicePage> {
                             onSuffixTap: () async {
                               final code = await Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => const ScannerPage()),
+                                MaterialPageRoute(
+                                  builder: (context) => const ScannerPage(),
+                                ),
                               );
                               if (code != null && code is String) {
                                 setState(() {
@@ -160,7 +178,9 @@ class _RegisterDevicePageState extends State<RegisterDevicePage> {
                               decoration: BoxDecoration(
                                 color: Theme.of(context).colorScheme.surface,
                                 borderRadius: BorderRadius.circular(15),
-                                border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+                                border: Border.all(
+                                  color: Colors.white.withValues(alpha: 0.05),
+                                ),
                               ),
                               child: _imageFile != null
                                   ? ClipRRect(
@@ -172,13 +192,25 @@ class _RegisterDevicePageState extends State<RegisterDevicePage> {
                                       ),
                                     )
                                   : Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
-                                        Icon(Icons.camera_alt_outlined, color: Colors.white.withValues(alpha: 0.3), size: 30),
+                                        Icon(
+                                          Icons.camera_alt_outlined,
+                                          color: Colors.white.withValues(
+                                            alpha: 0.3,
+                                          ),
+                                          size: 30,
+                                        ),
                                         const SizedBox(height: 10),
                                         Text(
                                           'Toca para capturar imagen',
-                                          style: TextStyle(color: Colors.white.withValues(alpha: 0.3), fontSize: 13),
+                                          style: TextStyle(
+                                            color: Colors.white.withValues(
+                                              alpha: 0.3,
+                                            ),
+                                            fontSize: 13,
+                                          ),
                                         ),
                                       ],
                                     ),
@@ -197,61 +229,104 @@ class _RegisterDevicePageState extends State<RegisterDevicePage> {
                               ),
                               const SizedBox(width: 15),
                               Expanded(
-                                child: _buildPrimaryButton('Registrar', () async {
-                                  final marca = _modelController.text.trim();
-                                  final imei = _imeiController.text.trim();
-                                  final hw = _hardwareIdController.text.trim();
+                                child: _buildPrimaryButton(
+                                  widget.deviceToEdit != null
+                                      ? 'Actualizar'
+                                      : 'Registrar',
+                                  () async {
+                                    final marca = _modelController.text.trim();
+                                    final imei = _imeiController.text.trim();
+                                    final hw = _hardwareIdController.text
+                                        .trim();
 
-                                  if (marca.isEmpty || imei.isEmpty || hw.isEmpty) {
+                                    if (marca.isEmpty ||
+                                        imei.isEmpty ||
+                                        hw.isEmpty) {
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                            'Por favor, completa todos los campos',
+                                          ),
+                                          backgroundColor: Colors.redAccent,
+                                        ),
+                                      );
+                                      return;
+                                    }
+
+                                    final isEdit = widget.deviceToEdit != null;
+
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text('Por favor, completa todos los campos'), 
-                                        backgroundColor: Colors.redAccent
+                                      SnackBar(
+                                        content: Text(
+                                          isEdit
+                                              ? 'Actualizando equipo...'
+                                              : 'Registrando equipo...',
+                                        ),
+                                        duration: const Duration(seconds: 1),
                                       ),
                                     );
-                                    return;
-                                  }
 
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text('Registrando equipo...'), 
-                                      duration: Duration(seconds: 1)
-                                    ),
-                                  );
+                                    final apiService = ApiService();
+                                    final response = isEdit
+                                        ? await apiService.updateDevice(
+                                            globalToken,
+                                            widget
+                                                .deviceToEdit!['id_dispositivo'],
+                                            marca,
+                                            imei,
+                                            hw,
+                                            imagePath: _imageFile?.path,
+                                          )
+                                        : await apiService.registerDevice(
+                                            globalToken,
+                                            marca,
+                                            imei,
+                                            hw,
+                                            imagePath: _imageFile?.path,
+                                          );
 
-                                  final apiService = ApiService();
-                                  final response = await apiService.registerDevice(
-                                    globalToken, 
-                                    marca, 
-                                    imei, 
-                                    hw,
-                                    imagePath: _imageFile?.path
-                                  );
+                                    if (mounted) {
+                                      if (response != null &&
+                                          (response.statusCode == 200 ||
+                                              response.statusCode == 201)) {
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                              isEdit
+                                                  ? '¡Equipo actualizado con éxito!'
+                                                  : '¡Equipo registrado con éxito!',
+                                            ),
+                                            backgroundColor: Colors.green,
+                                          ),
+                                        );
+                                        Navigator.pop(context);
+                                      } else {
+                                        String mensajeError = isEdit
+                                            ? 'No se pudo actualizar el dispositivo'
+                                            : 'No se pudo registrar el dispositivo';
+                                        if (response?.data != null &&
+                                            response?.data is Map) {
+                                          mensajeError =
+                                              response?.data['detail'] ??
+                                              response?.data.toString();
+                                        }
 
-                                  if (mounted) {
-                                    if (response != null && (response.statusCode == 200 || response.statusCode == 201)) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(
-                                          content: Text('¡Equipo registrado con éxito!'), 
-                                          backgroundColor: Colors.green
-                                        ),
-                                      );
-                                      Navigator.pop(context);
-                                    } else {
-                                      String mensajeError = 'No se pudo registrar el dispositivo';
-                                      if (response?.data != null && response?.data is Map) {
-                                        mensajeError = response?.data['detail'] ?? response?.data.toString();
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          SnackBar(
+                                            content: Text(mensajeError),
+                                            backgroundColor: Colors.redAccent,
+                                          ),
+                                        );
                                       }
-                                      
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(
-                                          content: Text(mensajeError), 
-                                          backgroundColor: Colors.redAccent
-                                        ),
-                                      );
                                     }
-                                  }
-                                }),
+                                  },
+                                ),
                               ),
                             ],
                           ),
@@ -285,9 +360,9 @@ class _RegisterDevicePageState extends State<RegisterDevicePage> {
   Widget _buildTextField(
     TextEditingController controller,
     String hint,
-    IconData icon,
-    {VoidCallback? onSuffixTap}
-  ) {
+    IconData icon, {
+    VoidCallback? onSuffixTap,
+  }) {
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
@@ -303,10 +378,18 @@ class _RegisterDevicePageState extends State<RegisterDevicePage> {
             color: Colors.white.withValues(alpha: 0.2),
             fontSize: 13,
           ),
-          prefixIcon: Icon(icon, color: Theme.of(context).colorScheme.primary, size: 18),
-          suffixIcon: onSuffixTap != null 
+          prefixIcon: Icon(
+            icon,
+            color: Theme.of(context).colorScheme.primary,
+            size: 18,
+          ),
+          suffixIcon: onSuffixTap != null
               ? IconButton(
-                  icon: const Icon(Icons.qr_code_scanner, color: Color(0xFF00CEE6), size: 20),
+                  icon: const Icon(
+                    Icons.qr_code_scanner,
+                    color: Color(0xFF00CEE6),
+                    size: 20,
+                  ),
                   onPressed: onSuffixTap,
                 )
               : null,

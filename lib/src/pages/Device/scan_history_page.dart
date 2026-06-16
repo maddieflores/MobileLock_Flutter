@@ -54,22 +54,35 @@ class _ScanHistoryPageState extends State<ScanHistoryPage> {
       appBar: AppBar(
         title: const Text(
           'Historial de Consultas',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
         ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.primary),
+          icon: Icon(
+            Icons.arrow_back,
+            color: Theme.of(context).colorScheme.primary,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
         backgroundColor: Theme.of(context).colorScheme.surface,
         elevation: 0,
       ),
       body: _isLoading
-          ? Center(child: CircularProgressIndicator(color: Theme.of(context).colorScheme.primary))
+          ? Center(
+              child: CircularProgressIndicator(
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            )
           : RefreshIndicator(
               onRefresh: _fetchHistory,
               color: Theme.of(context).colorScheme.primary,
               backgroundColor: Theme.of(context).colorScheme.surface,
-              child: _history.isEmpty ? _buildEmptyState() : _buildHistoryList(),
+              child: _history.isEmpty
+                  ? _buildEmptyState()
+                  : _buildHistoryList(),
             ),
     );
   }
@@ -90,18 +103,29 @@ class _ScanHistoryPageState extends State<ScanHistoryPage> {
                   color: Colors.white.withOpacity(0.02),
                   border: Border.all(color: Colors.white.withOpacity(0.05)),
                 ),
-                child: Icon(Icons.history_toggle_off_outlined, size: 70, color: Colors.white.withOpacity(0.2)),
+                child: Icon(
+                  Icons.history_toggle_off_outlined,
+                  size: 70,
+                  color: Colors.white.withOpacity(0.2),
+                ),
               ),
               const SizedBox(height: 25),
               const Text(
                 'Sin búsquedas registradas',
-                style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 10),
               Text(
                 'Tus consultas e imágenes QR escaneadas aparecerán aquí.',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 13),
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.4),
+                  fontSize: 13,
+                ),
               ),
             ],
           ),
@@ -120,7 +144,8 @@ class _ScanHistoryPageState extends State<ScanHistoryPage> {
         final tipo = scan['tipo_filtro'] ?? 'IMEI';
         final valor = scan['valor_consultado_ofuscado'] ?? '';
         final estado = scan['resultado_estado'] ?? 'NO_REGISTRADO';
-        final modelo = scan['marca_modelo_detectado'] ?? 'Dispositivo Desconocido';
+        final modelo =
+            scan['marca_modelo_detectado'] ?? 'Dispositivo Desconocido';
         final fecha = scan['fecha_consulta'] ?? '';
 
         Color badgeColor;
@@ -135,6 +160,10 @@ class _ScanHistoryPageState extends State<ScanHistoryPage> {
           badgeColor = const Color(0xFF8B0000).withOpacity(0.12);
           statusColor = const Color(0xFFFF4B4B);
           statusIcon = Icons.gpp_bad_outlined;
+        } else if (estado == 'EXTRAVIADO') {
+          badgeColor = Colors.amber.withOpacity(0.12);
+          statusColor = Colors.amber;
+          statusIcon = Icons.warning_amber_outlined;
         } else {
           badgeColor = const Color(0xFF2E3D40).withOpacity(0.15);
           statusColor = Colors.white60;
@@ -171,24 +200,37 @@ class _ScanHistoryPageState extends State<ScanHistoryPage> {
                   children: [
                     Text(
                       modelo,
-                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       '$tipo: $valor',
-                      style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11),
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.4),
+                        fontSize: 11,
+                      ),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       _formatDate(fecha),
-                      style: TextStyle(color: Colors.white.withOpacity(0.25), fontSize: 10),
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.25),
+                        fontSize: 10,
+                      ),
                     ),
                   ],
                 ),
               ),
               const SizedBox(width: 10),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: badgeColor,
                   borderRadius: BorderRadius.circular(10),
@@ -201,11 +243,15 @@ class _ScanHistoryPageState extends State<ScanHistoryPage> {
                     const SizedBox(width: 4),
                     Text(
                       estado,
-                      style: TextStyle(color: statusColor, fontWeight: FontWeight.bold, fontSize: 10),
+                      style: TextStyle(
+                        color: statusColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 10,
+                      ),
                     ),
                   ],
                 ),
-              )
+              ),
             ],
           ),
         );

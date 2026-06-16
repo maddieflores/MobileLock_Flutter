@@ -42,7 +42,11 @@ class MyApp extends StatelessWidget {
               backgroundColor: Color(0xFFFFFFFF),
               elevation: 0,
               iconTheme: IconThemeData(color: Color(0xFF101533)),
-              titleTextStyle: TextStyle(color: Color(0xFF101533), fontSize: 20, fontWeight: FontWeight.w600),
+              titleTextStyle: TextStyle(
+                color: Color(0xFF101533),
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
           darkTheme: ThemeData(
@@ -58,32 +62,50 @@ class MyApp extends StatelessWidget {
               backgroundColor: Color(0xFF101533),
               elevation: 0,
               iconTheme: IconThemeData(color: Color(0xFFC2C0C5)),
-              titleTextStyle: TextStyle(color: Color(0xFFC2C0C5), fontSize: 20, fontWeight: FontWeight.w600),
+              titleTextStyle: TextStyle(
+                color: Color(0xFFC2C0C5),
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
           themeMode: currentMode,
-          
+
           builder: (context, child) {
             final isDark = Theme.of(context).brightness == Brightness.dark;
             return Container(
               decoration: BoxDecoration(
-                gradient: isDark 
-                  ? const LinearGradient(
-                      colors: [Color(0xFF101533), Color(0xFF083a54), Color(0xFF0c445b), Color(0xFF629bad), Color(0xFF3e0842), Color(0xFF68075b), Color(0xFF920874), Color(0xFFc2c0c5)],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    )
-                  : const LinearGradient(
-                      colors: [Color(0xFF13e8f3), Color(0xFFe01aa9), Color(0xFF655eaf), Color(0xFFa682e8)],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
+                gradient: isDark
+                    ? const LinearGradient(
+                        colors: [
+                          Color(0xFF101533),
+                          Color(0xFF083a54),
+                          Color(0xFF0c445b),
+                          Color(0xFF629bad),
+                          Color(0xFF3e0842),
+                          Color(0xFF68075b),
+                          Color(0xFF920874),
+                          Color(0xFFc2c0c5),
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      )
+                    : const LinearGradient(
+                        colors: [
+                          Color(0xFF13e8f3),
+                          Color(0xFFe01aa9),
+                          Color(0xFF655eaf),
+                          Color(0xFFa682e8),
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
               ),
               child: child,
             );
           },
 
-          initialRoute: '/login', 
+          initialRoute: '/login',
 
           routes: {
             '/': (context) => const WelcomePage(),

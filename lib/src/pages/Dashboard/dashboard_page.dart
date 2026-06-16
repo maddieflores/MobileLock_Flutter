@@ -12,9 +12,9 @@ class DashboardPage extends StatefulWidget {
 
 class _DashboardPageState extends State<DashboardPage> {
   int _selectedIndex = 0;
-  
+
   bool _isLoading = true;
-  List<dynamic> _myDevices = []; 
+  List<dynamic> _myDevices = [];
 
   @override
   void initState() {
@@ -85,19 +85,26 @@ class _DashboardPageState extends State<DashboardPage> {
                                     Text(
                                       'Bienvenido de nuevo',
                                       style: TextStyle(
-                                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSurface
+                                            .withValues(alpha: 0.5),
                                         fontSize: 13,
                                       ),
                                     ),
                                     Text(
                                       'Mi Panel',
                                       style: TextStyle(
-                                        color: Theme.of(context).colorScheme.onSurface,
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onSurface,
                                         fontSize: 26,
                                         fontWeight: FontWeight.bold,
                                         shadows: [
                                           Shadow(
-                                            color: Theme.of(context).colorScheme.primary,
+                                            color: Theme.of(
+                                              context,
+                                            ).colorScheme.primary,
                                             blurRadius: 10,
                                           ),
                                         ],
@@ -110,21 +117,36 @@ class _DashboardPageState extends State<DashboardPage> {
                                     ValueListenableBuilder<ThemeMode>(
                                       valueListenable: themeNotifier,
                                       builder: (context, currentMode, _) {
-                                        final isDark = currentMode == ThemeMode.dark;
+                                        final isDark =
+                                            currentMode == ThemeMode.dark;
                                         return GestureDetector(
                                           onTap: () {
-                                            themeNotifier.value = isDark ? ThemeMode.light : ThemeMode.dark;
+                                            themeNotifier.value = isDark
+                                                ? ThemeMode.light
+                                                : ThemeMode.dark;
                                           },
                                           child: Container(
                                             padding: const EdgeInsets.all(12),
                                             decoration: BoxDecoration(
-                                              color: Theme.of(context).colorScheme.surface,
-                                              borderRadius: BorderRadius.circular(15),
-                                              border: Border.all(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.05)),
+                                              color: Theme.of(
+                                                context,
+                                              ).colorScheme.surface,
+                                              borderRadius:
+                                                  BorderRadius.circular(15),
+                                              border: Border.all(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .onSurface
+                                                    .withValues(alpha: 0.05),
+                                              ),
                                             ),
                                             child: Icon(
-                                              isDark ? Icons.light_mode : Icons.dark_mode,
-                                              color: Theme.of(context).colorScheme.primary,
+                                              isDark
+                                                  ? Icons.light_mode
+                                                  : Icons.dark_mode,
+                                              color: Theme.of(
+                                                context,
+                                              ).colorScheme.primary,
                                             ),
                                           ),
                                         );
@@ -144,7 +166,9 @@ class _DashboardPageState extends State<DashboardPage> {
                             Padding(
                               padding: EdgeInsets.all(40.0),
                               child: Center(
-                                child: CircularProgressIndicator(color: Theme.of(context).colorScheme.primary),
+                                child: CircularProgressIndicator(
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
                               ),
                             )
                           else if (_myDevices.isEmpty)
@@ -157,7 +181,10 @@ class _DashboardPageState extends State<DashboardPage> {
                           _buildSectionHeader(
                             'Gestión de Equipos',
                             'Añadir equipo',
-                            onActionTap: () => Navigator.pushNamed(context, '/register_device'), 
+                            onActionTap: () => Navigator.pushNamed(
+                              context,
+                              '/register_device',
+                            ),
                           ),
                           const SizedBox(height: 15),
                           _buildDeviceAccessCard(),
@@ -179,12 +206,14 @@ class _DashboardPageState extends State<DashboardPage> {
                             'Reportar robo',
                             'Bloquea y avisa con un toque',
                             isWarning: true,
+                            onTap: _showQuickReportBottomSheet,
                           ),
                           _buildActionCard(
                             Icons.verified_user_rounded,
                             'Verificar',
                             'Confirma identidad y certificado',
-                            onTap: () => Navigator.pushNamed(context, '/verify_device'),
+                            onTap: () =>
+                                Navigator.pushNamed(context, '/verify_device'),
                           ),
                           _buildActionCard(
                             Icons.storefront_outlined,
@@ -221,8 +250,8 @@ class _DashboardPageState extends State<DashboardPage> {
                                   ),
                                 ),
                                 _buildActivityItem(
-                                  _myDevices.isNotEmpty 
-                                      ? 'Dispositivos sincronizados' 
+                                  _myDevices.isNotEmpty
+                                      ? 'Dispositivos sincronizados'
                                       : 'Aún no tienes dispositivos registrados',
                                   'Sistema',
                                 ),
@@ -259,25 +288,34 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget _buildActiveDevicesList() {
     return Column(
       children: _myDevices.asMap().entries.map((entry) {
-        int index = entry.key; 
-        var device = entry.value; 
+        int index = entry.key;
+        var device = entry.value;
 
         String deviceName = device['marca_modelo'] ?? 'Dispositivo Móvil';
         String deviceImei = device['hash_imei'] ?? 'IMEI Desconocido';
-        String deviceHardware = device['hash_adn_hardware'] ?? 'HASH_DESCONOCIDO';
-        
-        String etiquetaDispositivo = (index == 0) ? 'Dispositivo principal' : 'Dispositivo vinculado';
-        
+        String deviceHardware =
+            device['hash_adn_hardware'] ?? 'HASH_DESCONOCIDO';
+
+        String etiquetaDispositivo = (index == 0)
+            ? 'Dispositivo principal'
+            : 'Dispositivo vinculado';
+
         return Container(
           margin: const EdgeInsets.only(bottom: 15),
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3)),
+            border: Border.all(
+              color: Theme.of(
+                context,
+              ).colorScheme.primary.withValues(alpha: 0.3),
+            ),
             boxShadow: [
               BoxShadow(
-                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.05),
+                color: Theme.of(
+                  context,
+                ).colorScheme.primary.withValues(alpha: 0.05),
                 blurRadius: 15,
                 offset: const Offset(0, 5),
               ),
@@ -291,10 +329,15 @@ class _DashboardPageState extends State<DashboardPage> {
                   Container(
                     padding: EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: Icon(Icons.smartphone_rounded, color: Theme.of(context).colorScheme.primary),
+                    child: Icon(
+                      Icons.smartphone_rounded,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
                   ),
                   const SizedBox(width: 15),
                   Expanded(
@@ -302,14 +345,14 @@ class _DashboardPageState extends State<DashboardPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          etiquetaDispositivo, 
+                          etiquetaDispositivo,
                           style: TextStyle(
                             color: Colors.white.withValues(alpha: 0.5),
                             fontSize: 10,
                           ),
                         ),
                         Text(
-                          deviceName, 
+                          deviceName,
                           style: const TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
@@ -319,32 +362,11 @@ class _DashboardPageState extends State<DashboardPage> {
                       ],
                     ),
                   ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5)),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(Icons.shield_rounded, color: Theme.of(context).colorScheme.primary, size: 12),
-                        const SizedBox(width: 4),
-                        Text(
-                          'Seguro',
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.primary,
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  _buildDashboardStatusBadge(device['estado'] ?? 'LIBRE'),
                 ],
               ),
               const SizedBox(height: 20),
-              
+
               Column(
                 children: [
                   Container(
@@ -356,7 +378,10 @@ class _DashboardPageState extends State<DashboardPage> {
                     ),
                     child: Text(
                       'IMEI: $deviceImei',
-                      style: const TextStyle(color: Colors.white70, fontSize: 12),
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 12,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -369,13 +394,49 @@ class _DashboardPageState extends State<DashboardPage> {
                     ),
                     child: Text(
                       'Hardware ID: $deviceHardware',
-                      style: const TextStyle(color: Colors.white70, fontSize: 12),
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.03),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Huella IA:',
+                          style: TextStyle(color: Colors.white70, fontSize: 12),
+                        ),
+                        Text(
+                          device['hash_visual'] != null &&
+                                  (device['hash_visual'] as String).isNotEmpty
+                              ? 'Registrada ✅'
+                              : 'Sin Huella ⚠️',
+                          style: TextStyle(
+                            color:
+                                device['hash_visual'] != null &&
+                                    (device['hash_visual'] as String).isNotEmpty
+                                ? const Color(0xFF14B8A6)
+                                : Colors.orange,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 15),
-              
+
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
                 decoration: BoxDecoration(
@@ -388,14 +449,14 @@ class _DashboardPageState extends State<DashboardPage> {
                     Text(
                       'Certificado Blockchain',
                       style: TextStyle(
-                        color: Colors.white, 
-                        fontWeight: FontWeight.bold, 
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
                         fontSize: 13,
                       ),
                     ),
                     Icon(
-                      Icons.verified_user_outlined, 
-                      color: Theme.of(context).colorScheme.primary, 
+                      Icons.verified_user_outlined,
+                      color: Theme.of(context).colorScheme.primary,
                       size: 22,
                     ),
                   ],
@@ -417,10 +478,14 @@ class _DashboardPageState extends State<DashboardPage> {
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2)),
+          border: Border.all(
+            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
+          ),
           boxShadow: [
             BoxShadow(
-              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.05),
+              color: Theme.of(
+                context,
+              ).colorScheme.primary.withValues(alpha: 0.05),
               blurRadius: 15,
             ),
           ],
@@ -430,7 +495,9 @@ class _DashboardPageState extends State<DashboardPage> {
             Container(
               padding: EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                color: Theme.of(
+                  context,
+                ).colorScheme.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(15),
               ),
               child: Icon(
@@ -547,7 +614,11 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  Widget _buildSectionHeader(String title, String actionText, {VoidCallback? onActionTap}) {
+  Widget _buildSectionHeader(
+    String title,
+    String actionText, {
+    VoidCallback? onActionTap,
+  }) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -561,22 +632,29 @@ class _DashboardPageState extends State<DashboardPage> {
         ),
         if (actionText.isNotEmpty)
           InkWell(
-            onTap: onActionTap, 
+            onTap: onActionTap,
             borderRadius: BorderRadius.circular(20),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               child: Row(
                 children: [
-                  if (title == 'Gestión de Equipos') 
-                    Icon(Icons.add_circle_outline, color: Theme.of(context).colorScheme.primary, size: 14),
                   if (title == 'Gestión de Equipos')
-                    const SizedBox(width: 4),
+                    Icon(
+                      Icons.add_circle_outline,
+                      color: Theme.of(context).colorScheme.primary,
+                      size: 14,
+                    ),
+                  if (title == 'Gestión de Equipos') const SizedBox(width: 4),
                   Text(
                     actionText,
                     style: TextStyle(
-                      color: title == 'Gestión de Equipos' ? Theme.of(context).colorScheme.primary : Colors.white.withValues(alpha: 0.3),
+                      color: title == 'Gestión de Equipos'
+                          ? Theme.of(context).colorScheme.primary
+                          : Colors.white.withValues(alpha: 0.3),
                       fontSize: 12,
-                      fontWeight: title == 'Gestión de Equipos' ? FontWeight.bold : FontWeight.normal,
+                      fontWeight: title == 'Gestión de Equipos'
+                          ? FontWeight.bold
+                          : FontWeight.normal,
                     ),
                   ),
                 ],
@@ -618,7 +696,9 @@ class _DashboardPageState extends State<DashboardPage> {
                 ),
                 child: Icon(
                   icon,
-                  color: isWarning ? Colors.redAccent : Theme.of(context).colorScheme.primary,
+                  color: isWarning
+                      ? Colors.redAccent
+                      : Theme.of(context).colorScheme.primary,
                 ),
               ),
               const SizedBox(width: 15),
@@ -684,6 +764,263 @@ class _DashboardPageState extends State<DashboardPage> {
         ),
       ],
     );
+  }
+
+  Widget _buildDashboardStatusBadge(String status) {
+    Color badgeColor;
+    Color textColor;
+    IconData icon;
+    String label;
+
+    if (status == 'LIBRE') {
+      badgeColor = const Color(0xFF10B981).withValues(alpha: 0.15);
+      textColor = const Color(0xFF10B981);
+      icon = Icons.shield_rounded;
+      label = 'Seguro';
+    } else if (status == 'ROBADO') {
+      badgeColor = Colors.red.withValues(alpha: 0.15);
+      textColor = Colors.red;
+      icon = Icons.gpp_bad_rounded;
+      label = 'Robado';
+    } else {
+      badgeColor = Colors.amber.withValues(alpha: 0.15);
+      textColor = Colors.amber;
+      icon = Icons.warning_amber_rounded;
+      label = 'Extraviado';
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: badgeColor,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: textColor.withValues(alpha: 0.5)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: textColor, size: 12),
+          const SizedBox(width: 4),
+          Text(
+            label,
+            style: TextStyle(
+              color: textColor,
+              fontSize: 10,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showQuickReportBottomSheet() {
+    if (_myDevices.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No tienes dispositivos registrados para reportar.'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xFF1c1c2a),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(25),
+          topRight: Radius.circular(25),
+        ),
+      ),
+      builder: (BuildContext bc) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const Text(
+                  'Reportar Robo o Extravío',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  'Selecciona la acción para el equipo correspondiente:',
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.6),
+                    fontSize: 13,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 20),
+                Flexible(
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: _myDevices.length,
+                    itemBuilder: (context, idx) {
+                      final device = _myDevices[idx];
+                      final String deviceName =
+                          device['marca_modelo'] ?? 'Dispositivo';
+                      final String estado = device['estado'] ?? 'LIBRE';
+                      final int deviceId = device['id_dispositivo'];
+
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.02),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: Colors.white.withOpacity(0.05),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    deviceName,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    estado == 'LIBRE'
+                                        ? 'Seguro'
+                                        : (estado == 'ROBADO'
+                                              ? 'Robado'
+                                              : 'Extraviado'),
+                                    style: TextStyle(
+                                      color: estado == 'LIBRE'
+                                          ? const Color(0xFF10B981)
+                                          : (estado == 'ROBADO'
+                                                ? Colors.redAccent
+                                                : Colors.amber),
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Row(
+                              children: [
+                                if (estado == 'LIBRE') ...[
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                      _updateDeviceState(deviceId, 'ROBADO');
+                                    },
+                                    style: TextButton.styleFrom(
+                                      foregroundColor: Colors.redAccent,
+                                    ),
+                                    child: const Text(
+                                      'ROBO',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                      _updateDeviceState(
+                                        deviceId,
+                                        'EXTRAVIADO',
+                                      );
+                                    },
+                                    style: TextButton.styleFrom(
+                                      foregroundColor: Colors.amber,
+                                    ),
+                                    child: const Text(
+                                      'PERDIDO',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ] else ...[
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                      _updateDeviceState(deviceId, 'LIBRE');
+                                    },
+                                    style: TextButton.styleFrom(
+                                      foregroundColor: const Color(0xFF10B981),
+                                    ),
+                                    child: const Text(
+                                      'RECUPERAR',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ],
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(height: 10),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _updateDeviceState(int deviceId, String newState) async {
+    setState(() => _isLoading = true);
+    final apiService = ApiService();
+    final response = await apiService.reportDeviceState(
+      globalToken,
+      deviceId,
+      newState,
+    );
+
+    if (mounted) {
+      if (response != null && response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Estado actualizado a $newState exitosamente ✅'),
+            backgroundColor: const Color(0xFF10B981),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+        _fetchDevices();
+      } else {
+        setState(() => _isLoading = false);
+        final errorMsg =
+            response?.data?['detail'] ?? 'Error al actualizar el estado.';
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorMsg),
+            backgroundColor: Colors.redAccent,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    }
   }
 
   Widget _buildBottomNav() {
