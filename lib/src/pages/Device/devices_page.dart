@@ -13,11 +13,20 @@ class DevicesPage extends StatefulWidget {
 class _DevicesPageState extends State<DevicesPage> {
   bool _isLoading = true;
   List<dynamic> _myDevices = [];
+  final TextEditingController _searchController = TextEditingController();
+  String _selectedStatusFilter = 'TODOS';
 
   @override
   void initState() {
     super.initState();
+    _searchController.addListener(() => setState(() {}));
     _fetchDevices();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   Future<void> _fetchDevices() async {
@@ -59,7 +68,21 @@ class _DevicesPageState extends State<DevicesPage> {
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: _buildHeader(context),
                     ),
-                    const SizedBox(height: 30),
+                    const SizedBox(height: 20),
+                    if (!_isLoading && _myDevices.isNotEmpty) ...[
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: _buildSearchBar(),
+                      ),
+                      const SizedBox(height: 15),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 20),
+                        child: _buildFilterChips(),
+                      ),
+                      const SizedBox(height: 15),
+                    ] else ...[
+                      const SizedBox(height: 10),
+                    ],
                     Expanded(
                       child: _isLoading
                           ? Center(
@@ -69,6 +92,8 @@ class _DevicesPageState extends State<DevicesPage> {
                             )
                           : _myDevices.isEmpty
                           ? _buildEmptyState()
+                          : _getFilteredDevices().isEmpty
+                          ? _buildNoFilteredResultsState()
                           : _buildDevicesList(),
                     ),
                   ],
@@ -189,12 +214,13 @@ class _DevicesPageState extends State<DevicesPage> {
   }
 
   Widget _buildDevicesList() {
+    final filteredList = _getFilteredDevices();
     return ListView.builder(
       physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      itemCount: _myDevices.length,
+      itemCount: filteredList.length,
       itemBuilder: (context, index) {
-        var device = _myDevices[index];
+        var device = filteredList[index];
         String deviceName = device['marca_modelo'] ?? 'Dispositivo Móvil';
         String deviceImei = device['hash_imei'] ?? 'IMEI Desconocido';
         String deviceHardware =
@@ -562,20 +588,191 @@ class _DevicesPageState extends State<DevicesPage> {
             behavior: SnackBarBehavior.floating,
           ),
         );
-        _fetchDevices();
-      } else {
-        setState(() => _isLoading = false);
-        final errorMsg =
-            response?.data?['detail'] ?? 'Error al actualizar el estado.';
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(errorMsg),
-            backgroundColor: Colors.redAccent,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
       }
     }
+  }
+
+  Widget _buildSearchBar() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+      ),
+      child: TextField(
+        controller: _searchController,
+        style: const TextStyle(color: Colors.white),
+        decoration: InputDecoration(
+          hintText: 'Buscar por marca, modelo o IMEI...',
+          hintStyle: TextStyle(
+            color: Colors.white.withValues(alpha: 0.2),
+            fontSize: 13,
+          ),
+          prefixIcon: Icon(
+            Icons.search,
+            color: Theme.of(context).colorScheme.primary,
+            size: 20,
+          ),
+          suffixIcon: _searchController.text.isNotEmpty
+              ? IconButton(
+                  icon: const Icon(
+                    Icons.clear_rounded,
+                    color: Colors.white30,
+                    size: 18,
+                  ),
+                  onPressed: () {
+                    _searchController.clear();
+                  },
+                )
+              : null,
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(
+            vertical: 15,
+            horizontal: 10,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFilterChips() {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      physics: const BouncingScrollPhysics(),
+      child: Row(
+        children: [
+          _buildFilterChip('Todos', 'TODOS', const Color(0xFF00CEE6)),
+          const SizedBox(width: 10),
+          _buildFilterChip('Seguro', 'LIBRE', const Color(0xFF10B981)),
+          const SizedBox(width: 10),
+          _buildFilterChip('Robado', 'ROBADO', Colors.redAccent),
+          const SizedBox(width: 10),
+          _buildFilterChip('Extraviado', 'EXTRAVIADO', Colors.amber),
+          const SizedBox(width: 20),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFilterChip(String label, String value, Color activeColor) {
+    final bool isSelected = _selectedStatusFilter == value;
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedStatusFilter = value;
+        });
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? activeColor.withValues(alpha: 0.15)
+              : Theme.of(context).colorScheme.surface,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: isSelected
+                ? activeColor
+                : Colors.white.withValues(alpha: 0.05),
+            width: isSelected ? 1.5 : 1.0,
+          ),
+        ),
+        child: Row(
+          children: [
+            if (isSelected) ...[
+              Icon(
+                Icons.check,
+                color: activeColor,
+                size: 14,
+              ),
+              const SizedBox(width: 6),
+            ],
+            Text(
+              label,
+              style: TextStyle(
+                color: isSelected ? Colors.white : Colors.white60,
+                fontSize: 12,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  List<dynamic> _getFilteredDevices() {
+    final query = _searchController.text.trim().toLowerCase();
+    return _myDevices.where((device) {
+      final name = (device['marca_modelo'] ?? '').toString().toLowerCase();
+      final imei = (device['hash_imei'] ?? '').toString().toLowerCase();
+      final status = (device['estado'] ?? 'LIBRE').toString();
+
+      final matchesSearch = name.contains(query) || imei.contains(query);
+      final matchesStatus = _selectedStatusFilter == 'TODOS' || status == _selectedStatusFilter;
+
+      return matchesSearch && matchesStatus;
+    }).toList();
+  }
+
+  Widget _buildNoFilteredResultsState() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 40),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white.withValues(alpha: 0.02),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+              ),
+              child: Icon(
+                Icons.search_off_rounded,
+                size: 60,
+                color: Colors.white.withValues(alpha: 0.2),
+              ),
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              'Sin coincidencias',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              'No se encontraron dispositivos que coincidan con la búsqueda o el filtro de estado seleccionado.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.white.withValues(alpha: 0.4),
+                fontSize: 13,
+                height: 1.5,
+              ),
+            ),
+            const SizedBox(height: 20),
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  _searchController.clear();
+                  _selectedStatusFilter = 'TODOS';
+                });
+              },
+              child: Text(
+                'Limpiar filtros',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.primary,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 
