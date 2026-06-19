@@ -843,7 +843,7 @@ class _DashboardPageState extends State<DashboardPage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const Text(
-                  'Reportar Robo o Extravío',
+                  'Reportar Robo',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 20,
@@ -923,33 +923,18 @@ class _DashboardPageState extends State<DashboardPage> {
                               children: [
                                 if (estado == 'LIBRE') ...[
                                   TextButton(
-                                    onPressed: () {
+                                    onPressed: () async {
                                       Navigator.pop(context);
-                                      _updateDeviceState(deviceId, 'ROBADO');
+                                      final verificado = await _showPasswordConfirmationDialog(context);
+                                      if (verificado) {
+                                        _updateDeviceState(deviceId, 'ROBADO');
+                                      }
                                     },
                                     style: TextButton.styleFrom(
                                       foregroundColor: Colors.redAccent,
                                     ),
                                     child: const Text(
                                       'ROBO',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                      _updateDeviceState(
-                                        deviceId,
-                                        'EXTRAVIADO',
-                                      );
-                                    },
-                                    style: TextButton.styleFrom(
-                                      foregroundColor: Colors.amber,
-                                    ),
-                                    child: const Text(
-                                      'PERDIDO',
                                       style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -1023,6 +1008,134 @@ class _DashboardPageState extends State<DashboardPage> {
     }
   }
 
+  Future<bool> _showPasswordConfirmationDialog(BuildContext context) async {
+    final TextEditingController passwordController = TextEditingController();
+    bool isVerifying = false;
+    String? errorMessage;
+
+    final result = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              backgroundColor: const Color(0xFF1c1c2a),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+                side: BorderSide(color: Colors.white.withValues(alpha: 0.08)),
+              ),
+              title: Row(
+                children: [
+                  const Icon(Icons.shield_outlined, color: Colors.redAccent),
+                  const SizedBox(width: 10),
+                  Text(
+                    'Confirmar Reporte de Robo',
+                    style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Para reportar el equipo como ROBADO, introduce tu contraseña de acceso para confirmar tu identidad.',
+                    style: const TextStyle(color: Colors.white70, fontSize: 13),
+                  ),
+                  const SizedBox(height: 20),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF101415),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: errorMessage != null 
+                            ? Colors.redAccent 
+                            : Colors.white.withValues(alpha: 0.05),
+                      ),
+                    ),
+                    child: TextField(
+                      controller: passwordController,
+                      obscureText: true,
+                      style: const TextStyle(color: Colors.white),
+                      decoration: InputDecoration(
+                        hintText: 'Contraseña de seguridad',
+                        hintStyle: TextStyle(
+                          color: Colors.white.withValues(alpha: 0.2),
+                          fontSize: 13,
+                        ),
+                        border: InputBorder.none,
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
+                      ),
+                    ),
+                  ),
+                  if (errorMessage != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8, left: 5),
+                      child: Text(
+                        errorMessage!,
+                        style: const TextStyle(color: Colors.redAccent, fontSize: 11, fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: isVerifying ? null : () => Navigator.pop(context, false),
+                  child: const Text('Cancelar', style: TextStyle(color: Colors.white54)),
+                ),
+                ElevatedButton(
+                  onPressed: isVerifying
+                      ? null
+                      : () async {
+                          final password = passwordController.text.trim();
+                          if (password.isEmpty) {
+                            setState(() {
+                              errorMessage = 'Introduce tu contraseña';
+                            });
+                            return;
+                          }
+                          setState(() {
+                            isVerifying = true;
+                            errorMessage = null;
+                          });
+
+                          final apiService = ApiService();
+                          final response = await apiService.login(currentEmail, password);
+
+                          if (response != null && response.statusCode == 200) {
+                            Navigator.pop(context, true);
+                          } else {
+                            setState(() {
+                              isVerifying = false;
+                              errorMessage = 'Contraseña incorrecta';
+                            });
+                          }
+                        },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.redAccent,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  ),
+                  child: isVerifying
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                        )
+                      : const Text('Confirmar', style: TextStyle(fontWeight: FontWeight.bold)),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+
+    passwordController.dispose();
+    return result ?? false;
+  }
+
   Widget _buildBottomNav() {
     return Container(
       color: Theme.of(context).scaffoldBackgroundColor,
@@ -1044,13 +1157,23 @@ class _DashboardPageState extends State<DashboardPage> {
               unselectedItemColor: Colors.white30,
               selectedFontSize: 12,
               unselectedFontSize: 12,
-              onTap: (index) {
+              onTap: (index) async {
                 if (index == 1) {
                   Navigator.pushNamed(context, '/register_device');
                   return;
                 }
+                if (index == 2) {
+                  _showQuickReportBottomSheet();
+                  return;
+                }
+                if (index == 3) {
+                  final result = await Navigator.pushNamed(context, '/profile');
+                  if (result == 'show_report') {
+                    _showQuickReportBottomSheet();
+                  }
+                  return;
+                }
                 setState(() => _selectedIndex = index);
-                if (index == 3) Navigator.pushNamed(context, '/profile');
               },
               items: const [
                 BottomNavigationBarItem(
@@ -1062,8 +1185,8 @@ class _DashboardPageState extends State<DashboardPage> {
                   label: 'Registrar',
                 ),
                 BottomNavigationBarItem(
-                  icon: Icon(Icons.shield_outlined),
-                  label: 'Seguridad',
+                  icon: Icon(Icons.warning_amber_rounded),
+                  label: 'Reportar Robo',
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(Icons.person_outline),

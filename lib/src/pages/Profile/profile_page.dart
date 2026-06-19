@@ -423,9 +423,11 @@ class _ProfilePageState extends State<ProfilePage> {
       unselectedItemColor: Colors.white30,
       onTap: (index) {
         if (index == 0) {
-          Navigator.pushReplacementNamed(context, '/dashboard');
+          Navigator.pop(context);
         } else if (index == 1) {
           Navigator.pushNamed(context, '/register_device');
+        } else if (index == 2) {
+          Navigator.pop(context, 'show_report');
         }
       },
       items: const [
@@ -435,8 +437,8 @@ class _ProfilePageState extends State<ProfilePage> {
           label: 'Registrar',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.shield_outlined),
-          label: 'Seguridad',
+          icon: Icon(Icons.warning_amber_rounded),
+          label: 'Reportar Robo',
         ),
         BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Perfil'),
       ],
