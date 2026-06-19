@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'package:flutter/services.dart';
 import '../../../services/api_service.dart';
 import '../Profile/profile_page.dart';
 import 'scanner_page.dart';
@@ -14,18 +15,29 @@ class RegisterDevicePage extends StatefulWidget {
 }
 
 class _RegisterDevicePageState extends State<RegisterDevicePage> {
+  final TextEditingController _brandController = TextEditingController();
   final TextEditingController _modelController = TextEditingController();
   final TextEditingController _imeiController = TextEditingController();
   final TextEditingController _hardwareIdController = TextEditingController();
 
   XFile? _imageFile;
   final ImagePicker _picker = ImagePicker();
+  String? _imeiError;
 
   @override
   void initState() {
     super.initState();
+    _imeiController.addListener(_validateImei);
     if (widget.deviceToEdit != null) {
-      _modelController.text = widget.deviceToEdit!['marca_modelo'] ?? '';
+      final String marcaModeloStr = widget.deviceToEdit!['marca_modelo'] ?? '';
+      if (marcaModeloStr.contains(' ')) {
+        final int firstSpaceIndex = marcaModeloStr.indexOf(' ');
+        _brandController.text = marcaModeloStr.substring(0, firstSpaceIndex).trim();
+        _modelController.text = marcaModeloStr.substring(firstSpaceIndex + 1).trim();
+      } else {
+        _brandController.text = marcaModeloStr;
+        _modelController.text = '';
+      }
       _imeiController.text = widget.deviceToEdit!['hash_imei'] ?? '';
       _hardwareIdController.text =
           widget.deviceToEdit!['hash_adn_hardware'] ?? '';
@@ -41,8 +53,26 @@ class _RegisterDevicePageState extends State<RegisterDevicePage> {
     }
   }
 
+  void _validateImei() {
+    final text = _imeiController.text.trim();
+    if (text.isEmpty) {
+      setState(() {
+        _imeiError = null;
+      });
+    } else if (text.length < 15) {
+      setState(() {
+        _imeiError = 'Faltan dígitos (${text.length}/15)';
+      });
+    } else {
+      setState(() {
+        _imeiError = null;
+      });
+    }
+  }
+
   @override
   void dispose() {
+    _brandController.dispose();
     _modelController.dispose();
     _imeiController.dispose();
     _hardwareIdController.dispose();
@@ -129,10 +159,19 @@ class _RegisterDevicePageState extends State<RegisterDevicePage> {
                           ),
                           const SizedBox(height: 35),
 
-                          _buildLabel('Marca y modelo'),
+                          _buildLabel('Marca'),
+                          _buildTextField(
+                            _brandController,
+                            'Ej: Apple, Xiaomi, Samsung',
+                            Icons.branding_watermark_rounded,
+                          ),
+
+                          const SizedBox(height: 20),
+
+                          _buildLabel('Modelo'),
                           _buildTextField(
                             _modelController,
-                            'Ej: iPhone 15 Pro',
+                            'Ej: iPhone 15 Pro, Redmi 12C',
                             Icons.phone_android_rounded,
                           ),
 
@@ -143,6 +182,12 @@ class _RegisterDevicePageState extends State<RegisterDevicePage> {
                             _imeiController,
                             '15 dígitos',
                             Icons.fingerprint_rounded,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                            ],
+                            maxLength: 15,
+                            errorText: _imeiError,
                             onSuffixTap: () async {
                               final code = await Navigator.push(
                                 context,
@@ -234,12 +279,13 @@ class _RegisterDevicePageState extends State<RegisterDevicePage> {
                                       ? 'Actualizar'
                                       : 'Registrar',
                                   () async {
-                                    final marca = _modelController.text.trim();
+                                    final marca = _brandController.text.trim();
+                                    final modelo = _modelController.text.trim();
                                     final imei = _imeiController.text.trim();
-                                    final hw = _hardwareIdController.text
-                                        .trim();
+                                    final hw = _hardwareIdController.text.trim();
 
                                     if (marca.isEmpty ||
+                                        modelo.isEmpty ||
                                         imei.isEmpty ||
                                         hw.isEmpty) {
                                       ScaffoldMessenger.of(
@@ -248,6 +294,27 @@ class _RegisterDevicePageState extends State<RegisterDevicePage> {
                                         const SnackBar(
                                           content: Text(
                                             'Por favor, completa todos los campos',
+                                          ),
+                                          backgroundColor: Colors.redAccent,
+                                        ),
+                                      );
+                                      return;
+                                    }
+
+                                    // Validar que el IMEI tenga exactamente 15 dígitos numéricos
+                                    final imeiRegex = RegExp(r'^\d{15}$');
+                                    if (!imeiRegex.hasMatch(imei)) {
+                                      setState(() {
+                                        _imeiError = imei.isEmpty
+                                            ? 'El IMEI no puede estar vacío'
+                                            : 'El IMEI debe tener exactamente 15 dígitos';
+                                      });
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                            'El IMEI debe tener exactamente 15 dígitos numéricos',
                                           ),
                                           backgroundColor: Colors.redAccent,
                                         ),
@@ -268,20 +335,21 @@ class _RegisterDevicePageState extends State<RegisterDevicePage> {
                                       ),
                                     );
 
+                                    final marcaModeloCompleto = "$marca $modelo";
                                     final apiService = ApiService();
                                     final response = isEdit
                                         ? await apiService.updateDevice(
                                             globalToken,
                                             widget
                                                 .deviceToEdit!['id_dispositivo'],
-                                            marca,
+                                            marcaModeloCompleto,
                                             imei,
                                             hw,
                                             imagePath: _imageFile?.path,
                                           )
                                         : await apiService.registerDevice(
                                             globalToken,
-                                            marca,
+                                            marcaModeloCompleto,
                                             imei,
                                             hw,
                                             imagePath: _imageFile?.path,
@@ -362,44 +430,80 @@ class _RegisterDevicePageState extends State<RegisterDevicePage> {
     String hint,
     IconData icon, {
     VoidCallback? onSuffixTap,
+    TextInputType? keyboardType,
+    List<TextInputFormatter>? inputFormatters,
+    int? maxLength,
+    String? errorText,
   }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
-      ),
-      child: TextField(
-        controller: controller,
-        style: const TextStyle(color: Colors.white),
-        decoration: InputDecoration(
-          hintText: hint,
-          hintStyle: TextStyle(
-            color: Colors.white.withValues(alpha: 0.2),
-            fontSize: 13,
+    final bool hasError = errorText != null;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            borderRadius: BorderRadius.circular(15),
+            border: Border.all(
+              color: hasError
+                  ? Colors.redAccent
+                  : Colors.white.withValues(alpha: 0.05),
+              width: hasError ? 1.5 : 1.0,
+            ),
           ),
-          prefixIcon: Icon(
-            icon,
-            color: Theme.of(context).colorScheme.primary,
-            size: 18,
-          ),
-          suffixIcon: onSuffixTap != null
-              ? IconButton(
-                  icon: const Icon(
-                    Icons.qr_code_scanner,
-                    color: Color(0xFF00CEE6),
-                    size: 20,
-                  ),
-                  onPressed: onSuffixTap,
-                )
-              : null,
-          border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(
-            vertical: 15,
-            horizontal: 10,
+          child: TextField(
+            controller: controller,
+            keyboardType: keyboardType,
+            inputFormatters: inputFormatters,
+            maxLength: maxLength,
+            buildCounter: (
+              BuildContext context, {
+              required int currentLength,
+              required bool isFocused,
+              required int? maxLength,
+            }) => null,
+            style: const TextStyle(color: Colors.white),
+            decoration: InputDecoration(
+              hintText: hint,
+              hintStyle: TextStyle(
+                color: Colors.white.withValues(alpha: 0.2),
+                fontSize: 13,
+              ),
+              prefixIcon: Icon(
+                icon,
+                color: hasError ? Colors.redAccent : Theme.of(context).colorScheme.primary,
+                size: 18,
+              ),
+              suffixIcon: onSuffixTap != null
+                  ? IconButton(
+                      icon: const Icon(
+                        Icons.qr_code_scanner,
+                        color: Color(0xFF00CEE6),
+                        size: 20,
+                      ),
+                      onPressed: onSuffixTap,
+                    )
+                  : null,
+              border: InputBorder.none,
+              contentPadding: const EdgeInsets.symmetric(
+                vertical: 15,
+                horizontal: 10,
+              ),
+            ),
           ),
         ),
-      ),
+        if (hasError)
+          Padding(
+            padding: const EdgeInsets.only(left: 10, top: 5),
+            child: Text(
+              errorText,
+              style: const TextStyle(
+                color: Colors.redAccent,
+                fontSize: 11,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+      ],
     );
   }
 

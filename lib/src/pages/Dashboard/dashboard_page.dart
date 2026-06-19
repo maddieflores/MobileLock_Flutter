@@ -1045,6 +1045,10 @@ class _DashboardPageState extends State<DashboardPage> {
               selectedFontSize: 12,
               unselectedFontSize: 12,
               onTap: (index) {
+                if (index == 1) {
+                  Navigator.pushNamed(context, '/register_device');
+                  return;
+                }
                 setState(() => _selectedIndex = index);
                 if (index == 3) Navigator.pushNamed(context, '/profile');
               },
@@ -1054,8 +1058,8 @@ class _DashboardPageState extends State<DashboardPage> {
                   label: 'Inicio',
                 ),
                 BottomNavigationBarItem(
-                  icon: Icon(Icons.search),
-                  label: 'Buscar',
+                  icon: Icon(Icons.add_circle_outline_rounded),
+                  label: 'Registrar',
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(Icons.shield_outlined),

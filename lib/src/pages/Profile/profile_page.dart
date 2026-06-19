@@ -422,11 +422,18 @@ class _ProfilePageState extends State<ProfilePage> {
       selectedItemColor: Theme.of(context).colorScheme.primary,
       unselectedItemColor: Colors.white30,
       onTap: (index) {
-        if (index == 0) Navigator.pushReplacementNamed(context, '/dashboard');
+        if (index == 0) {
+          Navigator.pushReplacementNamed(context, '/dashboard');
+        } else if (index == 1) {
+          Navigator.pushNamed(context, '/register_device');
+        }
       },
       items: const [
         BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: 'Inicio'),
-        BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Buscar'),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.add_circle_outline_rounded),
+          label: 'Registrar',
+        ),
         BottomNavigationBarItem(
           icon: Icon(Icons.shield_outlined),
           label: 'Seguridad',
