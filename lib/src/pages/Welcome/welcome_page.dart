@@ -100,7 +100,10 @@ class _WelcomePageState extends State<WelcomePage>
                                       shape: BoxShape.circle,
                                       boxShadow: [
                                         BoxShadow(
-                                          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.15),
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary
+                                              .withValues(alpha: 0.15),
                                           blurRadius: 100,
                                           spreadRadius: 20,
                                         ),
@@ -111,12 +114,13 @@ class _WelcomePageState extends State<WelcomePage>
                                     'assets/images/phone-mobilelockai.png',
                                     height: 280,
                                     fit: BoxFit.contain,
-                                    errorBuilder: (context, error, stackTrace) =>
-                                        const Icon(
-                                      Icons.phonelink_lock_rounded,
-                                      size: 120,
-                                      color: Colors.cyanAccent,
-                                    ),
+                                    errorBuilder:
+                                        (context, error, stackTrace) =>
+                                            const Icon(
+                                              Icons.phonelink_lock_rounded,
+                                              size: 120,
+                                              color: Colors.cyanAccent,
+                                            ),
                                   ),
                                 ],
                               ),
@@ -141,7 +145,9 @@ class _WelcomePageState extends State<WelcomePage>
                               ),
                               TextSpan(
                                 text: 'inservibles',
-                                style: TextStyle(color: Theme.of(context).colorScheme.primary),
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
                               ),
                             ],
                           ),
@@ -186,7 +192,10 @@ class _WelcomePageState extends State<WelcomePage>
                                 decoration: BoxDecoration(
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .primary
+                                          .withValues(alpha: 0.3),
                                       blurRadius: 15,
                                       offset: const Offset(0, 5),
                                     ),
@@ -196,7 +205,9 @@ class _WelcomePageState extends State<WelcomePage>
                                   onPressed: () =>
                                       Navigator.pushNamed(context, '/register'),
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: Theme.of(context).colorScheme.primary,
+                                    backgroundColor: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
                                     foregroundColor: Colors.black,
                                     padding: const EdgeInsets.symmetric(
                                       vertical: 20,
@@ -223,7 +234,9 @@ class _WelcomePageState extends State<WelcomePage>
                                     Navigator.pushNamed(context, '/login'),
                                 style: OutlinedButton.styleFrom(
                                   side: const BorderSide(color: Colors.white12),
-                                  backgroundColor: Colors.white.withValues(alpha: 0.02),
+                                  backgroundColor: Colors.white.withValues(
+                                    alpha: 0.02,
+                                  ),
                                   padding: const EdgeInsets.symmetric(
                                     vertical: 20,
                                   ),
@@ -234,7 +247,9 @@ class _WelcomePageState extends State<WelcomePage>
                                 child: Text(
                                   'Iniciar sesión',
                                   style: TextStyle(
-                                    color: Theme.of(context).colorScheme.primary,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
                                     fontSize: 16,
                                   ),
                                 ),
@@ -273,10 +288,16 @@ class _WelcomePageState extends State<WelcomePage>
               color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
+                color: Theme.of(
+                  context,
+                ).colorScheme.primary.withValues(alpha: 0.2),
               ),
             ),
-            child: Icon(icon, color: Theme.of(context).colorScheme.primary, size: 30),
+            child: Icon(
+              icon,
+              color: Theme.of(context).colorScheme.primary,
+              size: 30,
+            ),
           ),
           const SizedBox(height: 15),
           Text(

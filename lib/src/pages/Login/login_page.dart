@@ -19,15 +19,12 @@ class _LoginPageState extends State<LoginPage>
   bool _obscureText = true;
   bool _isLoading = false;
 
-
-
   late AnimationController _controller;
   late Animation<double> _pulseAnimation;
 
   @override
   void initState() {
     super.initState();
-
 
     _controller = AnimationController(
       duration: const Duration(seconds: 2),
@@ -39,8 +36,6 @@ class _LoginPageState extends State<LoginPage>
       end: 1.08,
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
-
-
 
   @override
   void dispose() {
@@ -159,7 +154,7 @@ class _LoginPageState extends State<LoginPage>
                               ],
                             ),
                           ),
-                          const SizedBox(height: 20),
+                          const SizedBox(height: 35),
                         ],
                       ),
                     ),
@@ -411,8 +406,6 @@ class _LoginPageState extends State<LoginPage>
       ),
     );
   }
-
-
 }
 
 class AtmosphericGridPainter extends CustomPainter {

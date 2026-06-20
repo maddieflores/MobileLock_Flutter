@@ -41,11 +41,7 @@ class _RootPageState extends State<RootPage> {
   Widget build(BuildContext context) {
     return const Scaffold(
       backgroundColor: Color(0xFF121727),
-      body: Center(
-        child: CircularProgressIndicator(
-          color: Color(0xFF00F0FF),
-        ),
-      ),
+      body: Center(child: CircularProgressIndicator(color: Color(0xFF00F0FF))),
     );
   }
 }

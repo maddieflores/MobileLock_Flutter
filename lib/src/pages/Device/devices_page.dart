@@ -679,11 +679,7 @@ class _DevicesPageState extends State<DevicesPage> {
         child: Row(
           children: [
             if (isSelected) ...[
-              Icon(
-                Icons.check,
-                color: activeColor,
-                size: 14,
-              ),
+              Icon(Icons.check, color: activeColor, size: 14),
               const SizedBox(width: 6),
             ],
             Text(
@@ -708,7 +704,8 @@ class _DevicesPageState extends State<DevicesPage> {
       final status = (device['estado'] ?? 'LIBRE').toString();
 
       final matchesSearch = name.contains(query) || imei.contains(query);
-      final matchesStatus = _selectedStatusFilter == 'TODOS' || status == _selectedStatusFilter;
+      final matchesStatus =
+          _selectedStatusFilter == 'TODOS' || status == _selectedStatusFilter;
 
       return matchesSearch && matchesStatus;
     }).toList();

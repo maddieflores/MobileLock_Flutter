@@ -32,8 +32,12 @@ class _RegisterDevicePageState extends State<RegisterDevicePage> {
       final String marcaModeloStr = widget.deviceToEdit!['marca_modelo'] ?? '';
       if (marcaModeloStr.contains(' ')) {
         final int firstSpaceIndex = marcaModeloStr.indexOf(' ');
-        _brandController.text = marcaModeloStr.substring(0, firstSpaceIndex).trim();
-        _modelController.text = marcaModeloStr.substring(firstSpaceIndex + 1).trim();
+        _brandController.text = marcaModeloStr
+            .substring(0, firstSpaceIndex)
+            .trim();
+        _modelController.text = marcaModeloStr
+            .substring(firstSpaceIndex + 1)
+            .trim();
       } else {
         _brandController.text = marcaModeloStr;
         _modelController.text = '';
@@ -282,7 +286,8 @@ class _RegisterDevicePageState extends State<RegisterDevicePage> {
                                     final marca = _brandController.text.trim();
                                     final modelo = _modelController.text.trim();
                                     final imei = _imeiController.text.trim();
-                                    final hw = _hardwareIdController.text.trim();
+                                    final hw = _hardwareIdController.text
+                                        .trim();
 
                                     if (marca.isEmpty ||
                                         modelo.isEmpty ||
@@ -335,7 +340,8 @@ class _RegisterDevicePageState extends State<RegisterDevicePage> {
                                       ),
                                     );
 
-                                    final marcaModeloCompleto = "$marca $modelo";
+                                    final marcaModeloCompleto =
+                                        "$marca $modelo";
                                     final apiService = ApiService();
                                     final response = isEdit
                                         ? await apiService.updateDevice(
@@ -455,12 +461,13 @@ class _RegisterDevicePageState extends State<RegisterDevicePage> {
             keyboardType: keyboardType,
             inputFormatters: inputFormatters,
             maxLength: maxLength,
-            buildCounter: (
-              BuildContext context, {
-              required int currentLength,
-              required bool isFocused,
-              required int? maxLength,
-            }) => null,
+            buildCounter:
+                (
+                  BuildContext context, {
+                  required int currentLength,
+                  required bool isFocused,
+                  required int? maxLength,
+                }) => null,
             style: const TextStyle(color: Colors.white),
             decoration: InputDecoration(
               hintText: hint,
@@ -470,7 +477,9 @@ class _RegisterDevicePageState extends State<RegisterDevicePage> {
               ),
               prefixIcon: Icon(
                 icon,
-                color: hasError ? Colors.redAccent : Theme.of(context).colorScheme.primary,
+                color: hasError
+                    ? Colors.redAccent
+                    : Theme.of(context).colorScheme.primary,
                 size: 18,
               ),
               suffixIcon: onSuffixTap != null

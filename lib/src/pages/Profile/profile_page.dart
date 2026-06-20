@@ -19,10 +19,10 @@ class DeviceModel {
 
 // --- VARIABLES GLOBALES DE SESIÓN ---
 bool isLoggedIn = false;
-String globalToken = ""; 
+String globalToken = "";
 String currentEmail = "invitado@mail.com";
-String currentName = "Cargando datos..."; 
-String currentPlan = "Cargando plan..."; 
+String currentName = "Cargando datos...";
+String currentPlan = "Cargando plan...";
 
 // --- LISTA GLOBAL DE DISPOSITIVOS ---
 List<DeviceModel> globalDevices = [];
@@ -36,7 +36,7 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   final String userSince = "Abril 2026";
-  bool _isLoading = true; 
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -56,9 +56,10 @@ class _ProfilePageState extends State<ProfilePage> {
       if (response != null && response.statusCode == 200) {
         setState(() {
           final data = response.data;
-          
+
           String nombres = data['nombres'] ?? data['first_name'] ?? "";
-          String apPaterno = data['apellido_paterno'] ?? data['last_name'] ?? "";
+          String apPaterno =
+              data['apellido_paterno'] ?? data['last_name'] ?? "";
           String apMaterno = data['apellido_materno'] ?? "";
 
           currentName = "$nombres $apPaterno $apMaterno".trim();
@@ -96,7 +97,9 @@ class _ProfilePageState extends State<ProfilePage> {
                     Expanded(
                       child: !isLoggedIn
                           ? _buildEmptyState()
-                          : (_isLoading ? _buildLoading() : _buildProfileContent()),
+                          : (_isLoading
+                                ? _buildLoading()
+                                : _buildProfileContent()),
                     ),
                     _buildBottomNav(context),
                   ],
@@ -111,7 +114,9 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Widget _buildLoading() {
     return Center(
-      child: CircularProgressIndicator(color: Theme.of(context).colorScheme.primary),
+      child: CircularProgressIndicator(
+        color: Theme.of(context).colorScheme.primary,
+      ),
     );
   }
 
@@ -221,7 +226,11 @@ class _ProfilePageState extends State<ProfilePage> {
           CircleAvatar(
             radius: 40,
             backgroundColor: Colors.black.withValues(alpha: 0.3),
-            child: Icon(Icons.person, color: Theme.of(context).colorScheme.primary, size: 50),
+            child: Icon(
+              Icons.person,
+              color: Theme.of(context).colorScheme.primary,
+              size: 50,
+            ),
           ),
           const SizedBox(height: 15),
           Text(
@@ -231,7 +240,12 @@ class _ProfilePageState extends State<ProfilePage> {
               color: Colors.white,
               fontSize: 22,
               fontWeight: FontWeight.bold,
-              shadows: [Shadow(color: Theme.of(context).colorScheme.primary, blurRadius: 10)],
+              shadows: [
+                Shadow(
+                  color: Theme.of(context).colorScheme.primary,
+                  blurRadius: 10,
+                ),
+              ],
             ),
           ),
           Text(
@@ -247,13 +261,13 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _buildSectionHeader(String title) => Text(
-        title,
-        style: const TextStyle(
-          color: Colors.white,
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
-        ),
-      );
+    title,
+    style: const TextStyle(
+      color: Colors.white,
+      fontSize: 18,
+      fontWeight: FontWeight.bold,
+    ),
+  );
 
   Widget _buildInfoCard() {
     return Container(
@@ -268,7 +282,7 @@ class _ProfilePageState extends State<ProfilePage> {
           _buildInfoItem(
             Icons.verified_user_outlined,
             'Estado del Plan',
-            currentPlan, 
+            currentPlan,
           ),
           const Divider(color: Colors.white10, height: 25),
           _buildInfoItem(
@@ -288,7 +302,10 @@ class _ProfilePageState extends State<ProfilePage> {
         const SizedBox(width: 15),
         Text(
           label,
-          style: TextStyle(color: Colors.white.withValues(alpha: 0.6), fontSize: 14),
+          style: TextStyle(
+            color: Colors.white.withValues(alpha: 0.6),
+            fontSize: 14,
+          ),
         ),
         const Spacer(),
         Text(
@@ -331,7 +348,10 @@ class _ProfilePageState extends State<ProfilePage> {
                     color: Theme.of(context).colorScheme.surface,
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(icon, color: Theme.of(context).colorScheme.primary),
+                  child: Icon(
+                    icon,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
                 ),
                 const SizedBox(width: 15),
                 Expanded(
@@ -387,7 +407,7 @@ class _ProfilePageState extends State<ProfilePage> {
           await AuthStorage.deleteToken();
           setState(() {
             isLoggedIn = false;
-            globalToken = ""; 
+            globalToken = "";
             currentName = "Usuario";
             currentEmail = "invitado@mail.com";
           });
