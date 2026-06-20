@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'src/pages/Welcome/welcome_page.dart';
+import 'src/pages/Welcome/welcome_luminous_page.dart';
+import 'src/pages/Root/root_page.dart';
 import 'src/pages/Login/login_page.dart';
 import 'src/pages/Register/register_page.dart' as user;
 import 'src/pages/Dashboard/dashboard_page.dart';
@@ -75,21 +77,9 @@ class MyApp extends StatelessWidget {
             final isDark = Theme.of(context).brightness == Brightness.dark;
             return Container(
               decoration: BoxDecoration(
+                color: isDark ? const Color(0xFF121727) : null,
                 gradient: isDark
-                    ? const LinearGradient(
-                        colors: [
-                          Color(0xFF101533),
-                          Color(0xFF083a54),
-                          Color(0xFF0c445b),
-                          Color(0xFF629bad),
-                          Color(0xFF3e0842),
-                          Color(0xFF68075b),
-                          Color(0xFF920874),
-                          Color(0xFFc2c0c5),
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      )
+                    ? null
                     : const LinearGradient(
                         colors: [
                           Color(0xFF13e8f3),
@@ -105,10 +95,12 @@ class MyApp extends StatelessWidget {
             );
           },
 
-          initialRoute: '/login',
+          initialRoute: '/',
 
           routes: {
-            '/': (context) => const WelcomePage(),
+            '/': (context) => const RootPage(),
+            '/welcome': (context) => const WelcomePage(),
+            '/welcome_luminous': (context) => const WelcomeLuminousPage(),
             '/login': (context) => const LoginPage(),
             '/register': (context) => const user.RegisterPage(),
             '/dashboard': (context) => const DashboardPage(),
@@ -125,3 +117,4 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
