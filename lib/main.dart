@@ -35,17 +35,19 @@ class MyApp extends StatelessWidget {
             brightness: Brightness.light,
             scaffoldBackgroundColor: Colors.transparent,
             colorScheme: const ColorScheme.light(
-              primary: Color(0xFF13E8F3), // Bright Cyan
-              secondary: Color(0xFFE01AA9), // Magenta/Pink
-              surface: Color(0xFF99CAF1), // Light Blue for cards
-              onSurface: Color(0xFF101533),
+              primary: Color(
+                0xFF0A7E8C,
+              ), // Rich teal for premium readability on beige
+              secondary: Color(0xFFD81B60), // Deep Pink
+              surface: Color(0xFFFDFCFA), // Warm cream-white for cards
+              onSurface: Color(0xFF2C2520), // Dark warm slate-charcoal text
             ),
             appBarTheme: const AppBarTheme(
-              backgroundColor: Color(0xFFFFFFFF),
+              backgroundColor: Color(0xFFEFECE3),
               elevation: 0,
-              iconTheme: IconThemeData(color: Color(0xFF101533)),
+              iconTheme: IconThemeData(color: Color(0xFF2C2520)),
               titleTextStyle: TextStyle(
-                color: Color(0xFF101533),
+                color: Color(0xFF2C2520),
                 fontSize: 20,
                 fontWeight: FontWeight.w600,
               ),
@@ -82,13 +84,11 @@ class MyApp extends StatelessWidget {
                     ? null
                     : const LinearGradient(
                         colors: [
-                          Color(0xFF13e8f3),
-                          Color(0xFFe01aa9),
-                          Color(0xFF655eaf),
-                          Color(0xFFa682e8),
+                          Color(0xFFFAF8F5), // Soft Alabaster Cream
+                          Color(0xFFEFECE3), // Linen Warm Beige/Cream
                         ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
                       ),
               ),
               child: child,

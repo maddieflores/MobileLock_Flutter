@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../../../services/api_service.dart';
 import '../Profile/profile_page.dart';
 import '../../../main.dart';
+import '../../widgets/luminous_bottom_bar.dart';
+import '../../widgets/luminous_app_bar.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -50,14 +52,17 @@ class _DashboardPageState extends State<DashboardPage> {
         children: [
           Positioned.fill(child: CustomPaint(painter: GridPainter())),
 
-          SafeArea(
-            child: Align(
-              alignment: Alignment.topCenter,
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 420),
-                child: Column(
-                  children: [
-                    Expanded(
+          Align(
+            alignment: Alignment.topCenter,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 420),
+              child: Column(
+                children: [
+                  const LuminousAppBar(subtitle: 'Bienvenido de nuevo'),
+                  Expanded(
+                    child: SafeArea(
+                      top: false,
+                      bottom: false,
                       child: ListView(
                         physics: const BouncingScrollPhysics(),
                         padding: const EdgeInsets.symmetric(
@@ -65,103 +70,6 @@ class _DashboardPageState extends State<DashboardPage> {
                           vertical: 20,
                         ),
                         children: [
-                          Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.all(20),
-                            decoration: BoxDecoration(
-                              // CAMBIO: withValues
-                              color: Colors.white.withValues(alpha: 0.03),
-                              borderRadius: BorderRadius.circular(25),
-                              border: Border.all(
-                                color: Colors.white.withValues(alpha: 0.08),
-                              ),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Bienvenido de nuevo',
-                                      style: TextStyle(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onSurface
-                                            .withValues(alpha: 0.5),
-                                        fontSize: 13,
-                                      ),
-                                    ),
-                                    Text(
-                                      'Mi Panel',
-                                      style: TextStyle(
-                                        color: Theme.of(
-                                          context,
-                                        ).colorScheme.onSurface,
-                                        fontSize: 26,
-                                        fontWeight: FontWeight.bold,
-                                        shadows: [
-                                          Shadow(
-                                            color: Theme.of(
-                                              context,
-                                            ).colorScheme.primary,
-                                            blurRadius: 10,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    ValueListenableBuilder<ThemeMode>(
-                                      valueListenable: themeNotifier,
-                                      builder: (context, currentMode, _) {
-                                        final isDark =
-                                            currentMode == ThemeMode.dark;
-                                        return GestureDetector(
-                                          onTap: () {
-                                            themeNotifier.value = isDark
-                                                ? ThemeMode.light
-                                                : ThemeMode.dark;
-                                          },
-                                          child: Container(
-                                            padding: const EdgeInsets.all(12),
-                                            decoration: BoxDecoration(
-                                              color: Theme.of(
-                                                context,
-                                              ).colorScheme.surface,
-                                              borderRadius:
-                                                  BorderRadius.circular(15),
-                                              border: Border.all(
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .onSurface
-                                                    .withValues(alpha: 0.05),
-                                              ),
-                                            ),
-                                            child: Icon(
-                                              isDark
-                                                  ? Icons.light_mode
-                                                  : Icons.dark_mode,
-                                              color: Theme.of(
-                                                context,
-                                              ).colorScheme.primary,
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                    const SizedBox(width: 8),
-                                    _buildNotificationIcon(),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-
-                          const SizedBox(height: 20),
-
                           if (_isLoading)
                             Padding(
                               padding: EdgeInsets.all(40.0),
@@ -274,9 +182,9 @@ class _DashboardPageState extends State<DashboardPage> {
                         ],
                       ),
                     ),
-                    _buildBottomNav(),
-                  ],
-                ),
+                  ),
+                  _buildBottomNav(),
+                ],
               ),
             ),
           ),
@@ -347,14 +255,16 @@ class _DashboardPageState extends State<DashboardPage> {
                         Text(
                           etiquetaDispositivo,
                           style: TextStyle(
-                            color: Colors.white.withValues(alpha: 0.5),
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withValues(alpha: 0.5),
                             fontSize: 10,
                           ),
                         ),
                         Text(
                           deviceName,
-                          style: const TextStyle(
-                            color: Colors.white,
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onSurface,
                             fontWeight: FontWeight.bold,
                             fontSize: 18,
                           ),
@@ -378,8 +288,10 @@ class _DashboardPageState extends State<DashboardPage> {
                     ),
                     child: Text(
                       'IMEI: $deviceImei',
-                      style: const TextStyle(
-                        color: Colors.white70,
+                      style: TextStyle(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.7),
                         fontSize: 12,
                       ),
                     ),
@@ -394,8 +306,10 @@ class _DashboardPageState extends State<DashboardPage> {
                     ),
                     child: Text(
                       'Hardware ID: $deviceHardware',
-                      style: const TextStyle(
-                        color: Colors.white70,
+                      style: TextStyle(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.7),
                         fontSize: 12,
                       ),
                     ),
@@ -411,9 +325,14 @@ class _DashboardPageState extends State<DashboardPage> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
+                        Text(
                           'Huella IA:',
-                          style: TextStyle(color: Colors.white70, fontSize: 12),
+                          style: TextStyle(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withValues(alpha: 0.7),
+                            fontSize: 12,
+                          ),
                         ),
                         Text(
                           device['hash_visual'] != null &&
@@ -449,7 +368,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     Text(
                       'Certificado Blockchain',
                       style: TextStyle(
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.onSurface,
                         fontWeight: FontWeight.bold,
                         fontSize: 13,
                       ),
@@ -506,21 +425,26 @@ class _DashboardPageState extends State<DashboardPage> {
               ),
             ),
             const SizedBox(width: 15),
-            const Expanded(
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     'Mis Dispositivos',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.onSurface,
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
                     ),
                   ),
                   Text(
                     'Gestiona tus equipos vinculados',
-                    style: TextStyle(color: Colors.white54, fontSize: 12),
+                    style: TextStyle(
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.6),
+                      fontSize: 12,
+                    ),
                   ),
                 ],
               ),
@@ -575,10 +499,10 @@ class _DashboardPageState extends State<DashboardPage> {
             ),
           ),
           const SizedBox(height: 20),
-          const Text(
+          Text(
             'Sin dispositivos vinculados',
             style: TextStyle(
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.onSurface,
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
@@ -588,7 +512,9 @@ class _DashboardPageState extends State<DashboardPage> {
             'Vincula tu smartphone para empezar a protegerlo con MobileLock AI',
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: Colors.white.withValues(alpha: 0.4),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.6),
               fontSize: 13,
             ),
           ),
@@ -624,8 +550,8 @@ class _DashboardPageState extends State<DashboardPage> {
       children: [
         Text(
           title,
-          style: const TextStyle(
-            color: Colors.white,
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onSurface,
             fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
@@ -650,7 +576,9 @@ class _DashboardPageState extends State<DashboardPage> {
                     style: TextStyle(
                       color: title == 'Gestión de Equipos'
                           ? Theme.of(context).colorScheme.primary
-                          : Colors.white.withValues(alpha: 0.3),
+                          : Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withValues(alpha: 0.4),
                       fontSize: 12,
                       fontWeight: title == 'Gestión de Equipos'
                           ? FontWeight.bold
@@ -708,8 +636,8 @@ class _DashboardPageState extends State<DashboardPage> {
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
-                        color: Colors.white,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurface,
                         fontWeight: FontWeight.bold,
                         fontSize: 15,
                       ),
@@ -717,7 +645,9 @@ class _DashboardPageState extends State<DashboardPage> {
                     Text(
                       subtitle,
                       style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.4),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.5),
                         fontSize: 12,
                       ),
                     ),
@@ -746,8 +676,8 @@ class _DashboardPageState extends State<DashboardPage> {
             children: [
               Text(
                 title,
-                style: const TextStyle(
-                  color: Colors.white,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurface,
                   fontSize: 13,
                   fontWeight: FontWeight.w500,
                 ),
@@ -755,7 +685,9 @@ class _DashboardPageState extends State<DashboardPage> {
               Text(
                 subtitle,
                 style: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.3),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.4),
                   fontSize: 11,
                 ),
               ),
@@ -1167,66 +1099,26 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   Widget _buildBottomNav() {
-    return Container(
-      color: Theme.of(context).scaffoldBackgroundColor,
-      child: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 420),
-          child: Container(
-            decoration: BoxDecoration(
-              border: Border(
-                top: BorderSide(color: Colors.white.withValues(alpha: 0.05)),
-              ),
-            ),
-            child: BottomNavigationBar(
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              type: BottomNavigationBarType.fixed,
-              currentIndex: _selectedIndex,
-              selectedItemColor: Theme.of(context).colorScheme.primary,
-              unselectedItemColor: Colors.white30,
-              selectedFontSize: 12,
-              unselectedFontSize: 12,
-              onTap: (index) async {
-                if (index == 1) {
-                  Navigator.pushNamed(context, '/register_device');
-                  return;
-                }
-                if (index == 2) {
-                  _showQuickReportBottomSheet();
-                  return;
-                }
-                if (index == 3) {
-                  final result = await Navigator.pushNamed(context, '/profile');
-                  if (result == 'show_report') {
-                    _showQuickReportBottomSheet();
-                  }
-                  return;
-                }
-                setState(() => _selectedIndex = index);
-              },
-              items: const [
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.home_filled),
-                  label: 'Inicio',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.add_circle_outline_rounded),
-                  label: 'Registrar',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.warning_amber_rounded),
-                  label: 'Reportar Robo',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.person_outline),
-                  label: 'Perfil',
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
+    return LuminousBottomBar(
+      currentIndex: _selectedIndex,
+      onTap: (index) async {
+        if (index == 1) {
+          Navigator.pushNamed(context, '/register_device');
+          return;
+        }
+        if (index == 2) {
+          _showQuickReportBottomSheet();
+          return;
+        }
+        if (index == 3) {
+          final result = await Navigator.pushNamed(context, '/profile');
+          if (result == 'show_report') {
+            _showQuickReportBottomSheet();
+          }
+          return;
+        }
+        setState(() => _selectedIndex = index);
+      },
     );
   }
 }

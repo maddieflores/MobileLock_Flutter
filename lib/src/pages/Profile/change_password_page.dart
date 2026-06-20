@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../widgets/luminous_app_bar.dart';
 
 class ChangePasswordPage extends StatefulWidget {
   const ChangePasswordPage({super.key});
@@ -31,46 +32,32 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
       body: Stack(
         children: [
           Positioned.fill(
-            child: IgnorePointer(child: CustomPaint(painter: GridPainter())),
+            child: IgnorePointer(
+              child: CustomPaint(
+                painter: GridPainter(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white.withValues(alpha: 0.03)
+                      : Colors.black.withValues(alpha: 0.03),
+                ),
+              ),
+            ),
           ),
-          SafeArea(
-            child: Align(
-              alignment: Alignment.topCenter,
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 420),
-                child: Column(
-                  children: [
-                    // --- CABECERA ---
-                    Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: Row(
-                        children: [
-                          IconButton(
-                            icon: const Icon(
-                              Icons.arrow_back,
-                              color: Colors.white,
-                            ),
-                            onPressed: () => Navigator.pop(context),
-                          ),
-                          Text(
-                            'Seguridad',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              shadows: [
-                                Shadow(
-                                  color: Theme.of(context).colorScheme.primary,
-                                  blurRadius: 10,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    Expanded(
+          Align(
+            alignment: Alignment.topCenter,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 420),
+              child: Column(
+                children: [
+                  const LuminousAppBar(
+                    showBackButton: true,
+                    title: 'Seguridad',
+                    showThemeToggle: false,
+                    showNotifications: false,
+                  ),
+                  Expanded(
+                    child: SafeArea(
+                      top: false,
+                      bottom: false,
                       child: ListView(
                         physics: const BouncingScrollPhysics(),
                         padding: const EdgeInsets.symmetric(
@@ -80,17 +67,29 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                         children: [
                           // --- RECUADRO ESTILO CRISTAL ---
                           Container(
-                            padding: const EdgeInsets.all(25),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 25,
+                              vertical: 35,
+                            ),
                             decoration: BoxDecoration(
-                              // CAMBIO: withValues
-                              color: Colors.white.withValues(alpha: 0.03), 
-                              borderRadius: BorderRadius.circular(30),
+                              color: Theme.of(context).colorScheme.surface,
+                              borderRadius: BorderRadius.circular(20),
                               border: Border.all(
-                                color: Colors.white.withValues(alpha: 0.08),
+                                color:
+                                    Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? Colors.white.withValues(alpha: 0.08)
+                                    : Colors.black.withValues(alpha: 0.08),
                               ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.2),
+                                  color: Colors.black.withValues(
+                                    alpha:
+                                        Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? 0.2
+                                        : 0.04,
+                                  ),
                                   blurRadius: 20,
                                   spreadRadius: 2,
                                 ),
@@ -99,25 +98,6 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  'Actualizar Contraseña',
-                                  style: TextStyle(
-                                    color: Theme.of(context).colorScheme.primary,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const SizedBox(height: 12),
-                                const Text(
-                                  'Asegúrate de usar una combinación fuerte de letras, números y símbolos para mayor protección.',
-                                  style: TextStyle(
-                                    color: Colors.white54,
-                                    fontSize: 13,
-                                    height: 1.5,
-                                  ),
-                                ),
-                                const SizedBox(height: 35),
-
                                 // FORMULARIO
                                 _buildLabel('Contraseña actual'),
                                 _buildPasswordField(
@@ -154,37 +134,66 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                                   width: double.infinity,
                                   height: 55,
                                   decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(12),
+                                    gradient: const LinearGradient(
+                                      colors: [
+                                        Color(0xFF00F0FF),
+                                        Color(0xFF008AA3),
+                                      ],
+                                      begin: Alignment.centerLeft,
+                                      end: Alignment.centerRight,
+                                    ),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
-                                        blurRadius: 15,
-                                        offset: const Offset(0, 5),
+                                        color: const Color(
+                                          0xFF00F0FF,
+                                        ).withValues(alpha: 0.35),
+                                        blurRadius: 18,
+                                        offset: const Offset(0, 6),
                                       ),
                                     ],
                                   ),
                                   child: ElevatedButton(
                                     onPressed: () {
-                                      ScaffoldMessenger.of(context).showSnackBar(
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
                                         const SnackBar(
-                                          content: Text('Contraseña actualizada'),
+                                          content: Text(
+                                            'Contraseña actualizada',
+                                          ),
                                         ),
                                       );
                                       Navigator.pop(context);
                                     },
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: Theme.of(context).colorScheme.primary,
-                                      foregroundColor: Colors.black,
+                                      backgroundColor: Colors.transparent,
+                                      foregroundColor: Colors.white,
+                                      shadowColor: Colors.transparent,
                                       shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(15),
+                                        borderRadius: BorderRadius.circular(12),
                                       ),
                                       elevation: 0,
                                     ),
-                                    child: const Text(
-                                      'ACTUALIZAR CREDENCIALES',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        letterSpacing: 1.2,
-                                      ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: const [
+                                        Icon(
+                                          Icons.shield_outlined,
+                                          color: Colors.white,
+                                          size: 20,
+                                        ),
+                                        SizedBox(width: 8),
+                                        Text(
+                                          'ACTUALIZAR CONTRASEÑA',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                            letterSpacing: 1.0,
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ),
@@ -195,8 +204,8 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                         ],
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -206,11 +215,19 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
   }
 
   Widget _buildLabel(String text) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Padding(
-      padding: const EdgeInsets.only(left: 5, bottom: 8),
+      padding: const EdgeInsets.only(left: 0, bottom: 4),
       child: Text(
-        text,
-        style: const TextStyle(color: Colors.white70, fontSize: 14),
+        text.toUpperCase(),
+        style: TextStyle(
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.6)
+              : const Color(0xFF2C2520).withValues(alpha: 0.6),
+          fontSize: 11,
+          fontWeight: FontWeight.bold,
+          letterSpacing: 0.8,
+        ),
       ),
     );
   }
@@ -220,14 +237,20 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
     bool isObscured,
     VoidCallback toggleVisibility,
   ) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return TextField(
       controller: controller,
       obscureText: isObscured,
-      style: const TextStyle(color: Colors.white),
+      style: TextStyle(
+        color: isDark ? Colors.white : const Color(0xFF2C2520),
+        fontSize: 15,
+      ),
       decoration: InputDecoration(
         prefixIcon: Icon(
-          Icons.lock_outline,
-          color: Theme.of(context).colorScheme.primary,
+          Icons.lock_outline_rounded,
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.6)
+              : const Color(0xFF0A7E8C),
           size: 20,
         ),
         suffixIcon: IconButton(
@@ -235,20 +258,30 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
             isObscured
                 ? Icons.visibility_off_outlined
                 : Icons.visibility_outlined,
-            color: Colors.white30,
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.6)
+                : const Color(0xFF2C2520).withValues(alpha: 0.6),
             size: 20,
           ),
           onPressed: toggleVisibility,
         ),
         filled: true,
-        fillColor: Theme.of(context).colorScheme.surface,
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(15),
-          borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.05)),
+        fillColor: isDark ? Colors.transparent : const Color(0xFFFAF8F5),
+        contentPadding: const EdgeInsets.symmetric(
+          vertical: 12,
+          horizontal: 12,
         ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(15),
-          borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 1),
+        enabledBorder: UnderlineInputBorder(
+          borderSide: BorderSide(
+            color: isDark ? Colors.white24 : const Color(0xFFEFECE3),
+            width: 1.0,
+          ),
+        ),
+        focusedBorder: UnderlineInputBorder(
+          borderSide: BorderSide(
+            color: Theme.of(context).colorScheme.primary,
+            width: 1.5,
+          ),
         ),
       ),
     );
@@ -256,10 +289,13 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
 }
 
 class GridPainter extends CustomPainter {
+  final Color color;
+  GridPainter({required this.color});
+
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.03)
+      ..color = color
       ..strokeWidth = 1.0;
     for (double i = 0; i < size.width; i += 40) {
       canvas.drawLine(Offset(i, 0), Offset(i, size.height), paint);

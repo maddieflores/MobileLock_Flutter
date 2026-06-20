@@ -38,7 +38,15 @@ class _WelcomePageState extends State<WelcomePage>
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Stack(
         children: [
-          Positioned.fill(child: CustomPaint(painter: GridPainter())),
+          Positioned.fill(
+            child: CustomPaint(
+              painter: GridPainter(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white.withValues(alpha: 0.03)
+                    : Colors.black.withValues(alpha: 0.03),
+              ),
+            ),
+          ),
           SafeArea(
             child: Center(
               child: ConstrainedBox(
@@ -58,9 +66,18 @@ class _WelcomePageState extends State<WelcomePage>
                             vertical: 8,
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.05),
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                ? Colors.white.withValues(alpha: 0.05)
+                                : Colors.black.withValues(alpha: 0.04),
                             borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: Colors.white10),
+                            border: Border.all(
+                              color:
+                                  Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? Colors.white10
+                                  : Colors.black.withValues(alpha: 0.08),
+                            ),
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
@@ -70,11 +87,15 @@ class _WelcomePageState extends State<WelcomePage>
                                 color: Theme.of(context).colorScheme.primary,
                                 size: 28,
                               ),
-                              SizedBox(width: 10),
+                              const SizedBox(width: 10),
                               Text(
                                 'MobileLock AI',
                                 style: TextStyle(
-                                  color: Colors.white,
+                                  color:
+                                      Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Colors.white
+                                      : const Color(0xFF2C2520),
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -136,11 +157,15 @@ class _WelcomePageState extends State<WelcomePage>
                             style: TextStyle(
                               fontSize: 32,
                               fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                              color:
+                                  Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? Colors.white
+                                  : const Color(0xFF2C2520),
                               height: 1.2,
                             ),
                             children: [
-                              TextSpan(
+                              const TextSpan(
                                 text: 'Haz que los teléfonos\nrobados sean ',
                               ),
                               TextSpan(
@@ -155,11 +180,16 @@ class _WelcomePageState extends State<WelcomePage>
 
                         const SizedBox(height: 20),
 
-                        const Text(
+                        Text(
                           'Protege tu smartphone con identificación de hardware mediante IA y verificación de propiedad con blockchain',
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            color: Colors.white60,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                ? Colors.white60
+                                : const Color(
+                                    0xFF2C2520,
+                                  ).withValues(alpha: 0.6),
                             fontSize: 14,
                             height: 1.5,
                           ),
@@ -233,10 +263,18 @@ class _WelcomePageState extends State<WelcomePage>
                                 onPressed: () =>
                                     Navigator.pushNamed(context, '/login'),
                                 style: OutlinedButton.styleFrom(
-                                  side: const BorderSide(color: Colors.white12),
-                                  backgroundColor: Colors.white.withValues(
-                                    alpha: 0.02,
+                                  side: BorderSide(
+                                    color:
+                                        Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? Colors.white12
+                                        : Colors.black.withValues(alpha: 0.08),
                                   ),
+                                  backgroundColor:
+                                      Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Colors.white.withValues(alpha: 0.02)
+                                      : Colors.black.withValues(alpha: 0.02),
                                   padding: const EdgeInsets.symmetric(
                                     vertical: 20,
                                   ),
@@ -271,19 +309,24 @@ class _WelcomePageState extends State<WelcomePage>
   }
 
   Widget _buildFeatureCard(IconData icon, String title, String subtitle) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.only(bottom: 20),
-      padding: EdgeInsets.symmetric(vertical: 25, horizontal: 20),
+      padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 20),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+        border: Border.all(
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.05)
+              : Colors.black.withValues(alpha: 0.05),
+        ),
       ),
       child: Column(
         children: [
           Container(
-            padding: EdgeInsets.all(12),
+            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(12),
@@ -302,8 +345,8 @@ class _WelcomePageState extends State<WelcomePage>
           const SizedBox(height: 15),
           Text(
             title,
-            style: const TextStyle(
-              color: Colors.white,
+            style: TextStyle(
+              color: isDark ? Colors.white : const Color(0xFF2C2520),
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
@@ -312,7 +355,12 @@ class _WelcomePageState extends State<WelcomePage>
           Text(
             subtitle,
             textAlign: TextAlign.center,
-            style: const TextStyle(color: Colors.white38, fontSize: 13),
+            style: TextStyle(
+              color: isDark
+                  ? Colors.white38
+                  : const Color(0xFF2C2520).withValues(alpha: 0.5),
+              fontSize: 13,
+            ),
           ),
         ],
       ),
@@ -321,10 +369,13 @@ class _WelcomePageState extends State<WelcomePage>
 }
 
 class GridPainter extends CustomPainter {
+  final Color color;
+  GridPainter({required this.color});
+
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.03)
+      ..color = color
       ..strokeWidth = 1.0;
 
     const double step = 40.0;
@@ -337,5 +388,6 @@ class GridPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  bool shouldRepaint(covariant GridPainter oldDelegate) =>
+      oldDelegate.color != color;
 }

@@ -47,16 +47,28 @@ class _LoginPageState extends State<LoginPage>
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final brandColor = isDark
+        ? const Color(0xFF00F0FF)
+        : const Color(0xFF0A7E8C);
+    final brandShadows = isDark
+        ? const [Shadow(color: Color(0xFF00F0FF), blurRadius: 20)]
+        : null;
+
     return Scaffold(
-      backgroundColor: const Color(
-        0xFF121727,
-      ), // Solid slate blue, lighter than pure black
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Stack(
         children: [
           // Background Atmospheric Shader Grid
           Positioned.fill(
             child: IgnorePointer(
-              child: CustomPaint(painter: AtmosphericGridPainter()),
+              child: CustomPaint(
+                painter: AtmosphericGridPainter(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white.withValues(alpha: 0.05)
+                      : Colors.black.withValues(alpha: 0.05),
+                ),
+              ),
             ),
           ),
           SafeArea(
@@ -88,12 +100,12 @@ class _LoginPageState extends State<LoginPage>
                                 'assets/images/mobilelock-logo.png',
                                 height: 95,
                                 fit: BoxFit.contain,
-                                color: const Color(0xFF00F0FF),
+                                color: brandColor,
                                 colorBlendMode: BlendMode.srcIn,
                                 errorBuilder: (context, error, stackTrace) =>
-                                    const Icon(
+                                    Icon(
                                       Icons.shield_outlined,
-                                      color: Color(0xFF00F0FF),
+                                      color: brandColor,
                                       size: 80,
                                     ),
                               ),
@@ -101,21 +113,16 @@ class _LoginPageState extends State<LoginPage>
                           ),
                           const SizedBox(height: 20),
                           // Glowing Title (Luminous Sentinel Color)
-                          const Text(
+                          Text(
                             'MOBILELOCK AI',
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                              color: Color(0xFF00F0FF),
+                              color: brandColor,
                               fontFamily: 'Space Grotesk',
                               fontSize: 26,
                               fontWeight: FontWeight.bold,
                               letterSpacing: 1.5,
-                              shadows: [
-                                Shadow(
-                                  color: Color(0xFF00F0FF),
-                                  blurRadius: 20,
-                                ),
-                              ],
+                              shadows: brandShadows,
                             ),
                           ),
                           const SizedBox(height: 8),
@@ -127,13 +134,28 @@ class _LoginPageState extends State<LoginPage>
                               vertical: 28,
                             ),
                             decoration: BoxDecoration(
-                              color: const Color(0xFF1E293B).withValues(
-                                alpha: 0.45,
-                              ), // Slate neutral background
+                              color: Theme.of(context).colorScheme.surface,
                               borderRadius: BorderRadius.circular(16),
                               border: Border.all(
-                                color: Colors.white.withValues(alpha: 0.08),
+                                color:
+                                    Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? Colors.white.withValues(alpha: 0.08)
+                                    : Colors.black.withValues(alpha: 0.08),
                               ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(
+                                    alpha:
+                                        Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? 0.2
+                                        : 0.04,
+                                  ),
+                                  blurRadius: 15,
+                                  offset: const Offset(0, 5),
+                                ),
+                              ],
                             ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -169,10 +191,13 @@ class _LoginPageState extends State<LoginPage>
   }
 
   Widget _buildFormLabel(String text) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Text(
       text,
       style: TextStyle(
-        color: Colors.white.withValues(alpha: 0.6),
+        color: isDark
+            ? Colors.white.withValues(alpha: 0.6)
+            : const Color(0xFF2C2520).withValues(alpha: 0.6),
         fontFamily: 'Space Grotesk',
         fontSize: 11,
         fontWeight: FontWeight.bold,
@@ -182,25 +207,35 @@ class _LoginPageState extends State<LoginPage>
   }
 
   Widget _buildEmailField() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF0F172A), // Matches slate background
+        color: isDark ? const Color(0xFF0F172A) : const Color(0xFFFAF8F5),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+        border: Border.all(
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.08)
+              : Colors.black.withValues(alpha: 0.08),
+        ),
       ),
       child: TextField(
         controller: _emailController,
-        style: const TextStyle(color: Colors.white, fontSize: 15),
+        style: TextStyle(
+          color: isDark ? Colors.white : const Color(0xFF2C2520),
+          fontSize: 15,
+        ),
         decoration: InputDecoration(
-          hintText: 'usuario@gamil.com',
+          hintText: 'usuario@gmail.com',
           hintStyle: TextStyle(
-            color: Colors.white.withValues(alpha: 0.2),
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.2)
+                : Colors.black.withValues(alpha: 0.25),
             fontSize: 15,
           ),
           border: InputBorder.none,
-          prefixIcon: const Icon(
+          prefixIcon: Icon(
             Icons.alternate_email_rounded,
-            color: Colors.white30,
+            color: isDark ? Colors.white30 : const Color(0xFF0A7E8C),
             size: 20,
           ),
           contentPadding: const EdgeInsets.symmetric(
@@ -213,26 +248,36 @@ class _LoginPageState extends State<LoginPage>
   }
 
   Widget _buildPasswordField() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF0F172A),
+        color: isDark ? const Color(0xFF0F172A) : const Color(0xFFFAF8F5),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+        border: Border.all(
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.08)
+              : Colors.black.withValues(alpha: 0.08),
+        ),
       ),
       child: TextField(
         controller: _passwordController,
         obscureText: _obscureText,
-        style: const TextStyle(color: Colors.white, fontSize: 15),
+        style: TextStyle(
+          color: isDark ? Colors.white : const Color(0xFF2C2520),
+          fontSize: 15,
+        ),
         decoration: InputDecoration(
           hintText: '********',
           hintStyle: TextStyle(
-            color: Colors.white.withValues(alpha: 0.2),
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.2)
+                : Colors.black.withValues(alpha: 0.25),
             fontSize: 15,
           ),
           border: InputBorder.none,
-          prefixIcon: const Icon(
+          prefixIcon: Icon(
             Icons.lock_outline_rounded,
-            color: Colors.white30,
+            color: isDark ? Colors.white30 : const Color(0xFF0A7E8C),
             size: 20,
           ),
           suffixIcon: IconButton(
@@ -240,7 +285,9 @@ class _LoginPageState extends State<LoginPage>
               _obscureText
                   ? Icons.visibility_outlined
                   : Icons.visibility_off_outlined,
-              color: Colors.white30,
+              color: isDark
+                  ? Colors.white30
+                  : const Color(0xFF2C2520).withValues(alpha: 0.6),
               size: 20,
             ),
             onPressed: () => setState(() => _obscureText = !_obscureText),
@@ -358,18 +405,19 @@ class _LoginPageState extends State<LoginPage>
   }
 
   Widget _buildForgotPasswordLink() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Center(
       child: InkWell(
         onTap: () {
           // Password recovery handler placeholder
         },
         borderRadius: BorderRadius.circular(8),
-        child: const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           child: Text(
             '¿Olvidaste tu contraseña?',
             style: TextStyle(
-              color: Color(0xFF00F0FF),
+              color: isDark ? const Color(0xFF00F0FF) : const Color(0xFF0A7E8C),
               fontFamily: 'Space Grotesk',
               fontWeight: FontWeight.bold,
               fontSize: 13,
@@ -381,22 +429,29 @@ class _LoginPageState extends State<LoginPage>
   }
 
   Widget _buildRegisterLink() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Center(
       child: GestureDetector(
         onTap: () => Navigator.pushNamed(context, '/register'),
         child: RichText(
           textAlign: TextAlign.center,
           text: TextSpan(
-            style: TextStyle(fontSize: 13, fontFamily: 'Space Grotesk'),
+            style: const TextStyle(fontSize: 13, fontFamily: 'Space Grotesk'),
             children: [
               TextSpan(
                 text: '¿No tienes una cuenta? ',
-                style: TextStyle(color: Colors.white.withValues(alpha: 0.5)),
+                style: TextStyle(
+                  color: isDark
+                      ? Colors.white.withValues(alpha: 0.5)
+                      : const Color(0xFF2C2520).withValues(alpha: 0.6),
+                ),
               ),
-              const TextSpan(
+              TextSpan(
                 text: 'Crear cuenta nueva',
                 style: TextStyle(
-                  color: Color(0xFF00F0FF),
+                  color: isDark
+                      ? const Color(0xFF00F0FF)
+                      : const Color(0xFF0A7E8C),
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -409,11 +464,14 @@ class _LoginPageState extends State<LoginPage>
 }
 
 class AtmosphericGridPainter extends CustomPainter {
+  final Color color;
+  AtmosphericGridPainter({required this.color});
+
   @override
   void paint(Canvas canvas, Size size) {
     // Draw dot grid on solid background
     final paint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.05)
+      ..color = color
       ..style = PaintingStyle.fill;
 
     const double step = 25.0;
@@ -425,5 +483,6 @@ class AtmosphericGridPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  bool shouldRepaint(covariant AtmosphericGridPainter oldDelegate) =>
+      oldDelegate.color != color;
 }

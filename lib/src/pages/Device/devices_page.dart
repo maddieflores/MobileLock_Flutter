@@ -55,7 +55,15 @@ class _DevicesPageState extends State<DevicesPage> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Stack(
         children: [
-          Positioned.fill(child: CustomPaint(painter: GridPainter())),
+          Positioned.fill(
+            child: CustomPaint(
+              painter: GridPainter(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white.withValues(alpha: 0.03)
+                    : Colors.black.withValues(alpha: 0.03),
+              ),
+            ),
+          ),
           SafeArea(
             child: Align(
               alignment: Alignment.topCenter,
@@ -138,12 +146,14 @@ class _DevicesPageState extends State<DevicesPage> {
                   Text(
                     'Dispositivos',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.onSurface,
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
                       shadows: [
                         Shadow(
-                          color: Theme.of(context).colorScheme.primary,
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.primary.withValues(alpha: 0.5),
                           blurRadius: 10,
                         ),
                       ],
@@ -180,20 +190,28 @@ class _DevicesPageState extends State<DevicesPage> {
             padding: const EdgeInsets.all(30),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: Colors.white.withValues(alpha: 0.02),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.02),
+              border: Border.all(
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.05),
+              ),
             ),
             child: Icon(
               Icons.phonelink_erase_rounded,
               size: 80,
-              color: Colors.white.withValues(alpha: 0.1),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.1),
             ),
           ),
           const SizedBox(height: 30),
-          const Text(
+          Text(
             'No hay dispositivos',
             style: TextStyle(
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.onSurface,
               fontSize: 22,
               fontWeight: FontWeight.bold,
             ),
@@ -203,7 +221,9 @@ class _DevicesPageState extends State<DevicesPage> {
             'Aún no has registrado ningún equipo bajo la cuenta:\n$currentEmail',
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: Colors.white.withValues(alpha: 0.4),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.4),
               fontSize: 14,
               height: 1.5,
             ),
@@ -262,8 +282,8 @@ class _DevicesPageState extends State<DevicesPage> {
                         Expanded(
                           child: Text(
                             deviceName,
-                            style: const TextStyle(
-                              color: Colors.white,
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.onSurface,
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
                             ),
@@ -277,14 +297,18 @@ class _DevicesPageState extends State<DevicesPage> {
                     Text(
                       'IMEI: $deviceImei',
                       style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.5),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.5),
                         fontSize: 11,
                       ),
                     ),
                     Text(
                       'Hardware: $deviceHardware',
                       style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.3),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.3),
                         fontSize: 10,
                       ),
                       overflow: TextOverflow.ellipsis,
@@ -712,6 +736,7 @@ class _DevicesPageState extends State<DevicesPage> {
   }
 
   Widget _buildNoFilteredResultsState() {
+    final onSurface = Theme.of(context).colorScheme.onSurface;
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 40),
@@ -722,20 +747,20 @@ class _DevicesPageState extends State<DevicesPage> {
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.white.withValues(alpha: 0.02),
-                border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+                color: onSurface.withValues(alpha: 0.02),
+                border: Border.all(color: onSurface.withValues(alpha: 0.05)),
               ),
               child: Icon(
                 Icons.search_off_rounded,
                 size: 60,
-                color: Colors.white.withValues(alpha: 0.2),
+                color: onSurface.withValues(alpha: 0.2),
               ),
             ),
             const SizedBox(height: 20),
-            const Text(
+            Text(
               'Sin coincidencias',
               style: TextStyle(
-                color: Colors.white,
+                color: onSurface,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
@@ -745,7 +770,7 @@ class _DevicesPageState extends State<DevicesPage> {
               'No se encontraron dispositivos que coincidan con la búsqueda o el filtro de estado seleccionado.',
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: Colors.white.withValues(alpha: 0.4),
+                color: onSurface.withValues(alpha: 0.4),
                 fontSize: 13,
                 height: 1.5,
               ),
@@ -774,10 +799,13 @@ class _DevicesPageState extends State<DevicesPage> {
 }
 
 class GridPainter extends CustomPainter {
+  final Color color;
+  GridPainter({required this.color});
+
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.03)
+      ..color = color
       ..strokeWidth = 1.0;
     const double step = 40.0;
     for (double i = 0; i < size.width; i += step) {

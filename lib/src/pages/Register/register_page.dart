@@ -51,15 +51,29 @@ class _RegisterPageState extends State<RegisterPage>
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final brandColor = isDark
+        ? const Color(0xFF00F0FF)
+        : const Color(0xFF0A7E8C);
+    final brandShadows = isDark
+        ? const [Shadow(color: Color(0xFF00F0FF), blurRadius: 20)]
+        : null;
+
     return Scaffold(
-      backgroundColor: const Color(
-        0xFF121727,
-      ), // Solid slate blue matching Luminous Sentinel
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Stack(
         children: [
           // Background Dot Grid
           Positioned.fill(
-            child: IgnorePointer(child: CustomPaint(painter: DotGridPainter())),
+            child: IgnorePointer(
+              child: CustomPaint(
+                painter: DotGridPainter(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white.withValues(alpha: 0.05)
+                      : Colors.black.withValues(alpha: 0.05),
+                ),
+              ),
+            ),
           ),
           SafeArea(
             child: Center(
@@ -84,12 +98,12 @@ class _RegisterPageState extends State<RegisterPage>
                               'assets/images/mobilelock-logo.png',
                               height: 95,
                               fit: BoxFit.contain,
-                              color: const Color(0xFF00F0FF),
+                              color: brandColor,
                               colorBlendMode: BlendMode.srcIn,
                               errorBuilder: (context, error, stackTrace) =>
-                                  const Icon(
+                                  Icon(
                                     Icons.shield_outlined,
-                                    color: Color(0xFF00F0FF),
+                                    color: brandColor,
                                     size: 80,
                                   ),
                             ),
@@ -97,18 +111,16 @@ class _RegisterPageState extends State<RegisterPage>
                         ),
                         const SizedBox(height: 20),
                         // Glowing Title
-                        const Text(
+                        Text(
                           'MOBILELOCK AI',
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            color: Color(0xFF00F0FF),
+                            color: brandColor,
                             fontFamily: 'Space Grotesk',
                             fontSize: 26,
                             fontWeight: FontWeight.bold,
                             letterSpacing: 1.5,
-                            shadows: [
-                              Shadow(color: Color(0xFF00F0FF), blurRadius: 20),
-                            ],
+                            shadows: brandShadows,
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -120,13 +132,28 @@ class _RegisterPageState extends State<RegisterPage>
                             vertical: 28,
                           ),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF1E293B).withValues(
-                              alpha: 0.45,
-                            ), // Slate neutral background
+                            color: Theme.of(context).colorScheme.surface,
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(
-                              color: Colors.white.withValues(alpha: 0.08),
+                              color:
+                                  Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? Colors.white.withValues(alpha: 0.08)
+                                  : Colors.black.withValues(alpha: 0.08),
                             ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(
+                                  alpha:
+                                      Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? 0.2
+                                      : 0.04,
+                                ),
+                                blurRadius: 15,
+                                offset: const Offset(0, 5),
+                              ),
+                            ],
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -136,10 +163,12 @@ class _RegisterPageState extends State<RegisterPage>
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  const Text(
+                                  Text(
                                     'Crear Perfil',
                                     style: TextStyle(
-                                      color: Colors.white,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurface,
                                       fontFamily: 'Space Grotesk',
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
@@ -198,10 +227,14 @@ class _RegisterPageState extends State<RegisterPage>
                               _buildInputField(
                                 controller: _emailController,
                                 hint: 'usuario@gmail.com',
-                                suffix: const Text(
+                                suffix: Text(
                                   '@',
                                   style: TextStyle(
-                                    color: Colors.white30,
+                                    color: isDark
+                                        ? Colors.white30
+                                        : const Color(
+                                            0xFF0A7E8C,
+                                          ).withValues(alpha: 0.6),
                                     fontSize: 16,
                                     fontFamily: 'Space Grotesk',
                                   ),
@@ -223,7 +256,11 @@ class _RegisterPageState extends State<RegisterPage>
                                     _obscureText
                                         ? Icons.visibility_off_outlined
                                         : Icons.visibility_outlined,
-                                    color: Colors.white30,
+                                    color: isDark
+                                        ? Colors.white30
+                                        : const Color(
+                                            0xFF2C2520,
+                                          ).withValues(alpha: 0.4),
                                     size: 18,
                                   ),
                                 ),
@@ -251,10 +288,13 @@ class _RegisterPageState extends State<RegisterPage>
   }
 
   Widget _buildFormLabel(String text) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Text(
       text,
       style: TextStyle(
-        color: Colors.white.withValues(alpha: 0.6),
+        color: isDark
+            ? Colors.white.withValues(alpha: 0.6)
+            : const Color(0xFF2C2520).withValues(alpha: 0.6),
         fontFamily: 'Space Grotesk',
         fontSize: 10,
         fontWeight: FontWeight.bold,
@@ -269,19 +309,32 @@ class _RegisterPageState extends State<RegisterPage>
     Widget? suffix,
     bool obscureText = false,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return TextField(
       controller: controller,
       obscureText: obscureText,
-      style: const TextStyle(color: Colors.white, fontSize: 15),
+      style: TextStyle(
+        color: isDark ? Colors.white : const Color(0xFF2C2520),
+        fontSize: 15,
+      ),
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: const TextStyle(color: Colors.white24, fontSize: 14),
-        contentPadding: const EdgeInsets.symmetric(vertical: 10),
-        enabledBorder: const UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.white24, width: 1.0),
+        hintStyle: TextStyle(
+          color: isDark ? Colors.white24 : Colors.black.withValues(alpha: 0.25),
+          fontSize: 14,
         ),
-        focusedBorder: const UnderlineInputBorder(
-          borderSide: BorderSide(color: Color(0xFF00F0FF), width: 1.5),
+        contentPadding: const EdgeInsets.symmetric(vertical: 10),
+        enabledBorder: UnderlineInputBorder(
+          borderSide: BorderSide(
+            color: isDark ? Colors.white24 : const Color(0xFFEFECE3),
+            width: 1.0,
+          ),
+        ),
+        focusedBorder: UnderlineInputBorder(
+          borderSide: BorderSide(
+            color: Theme.of(context).colorScheme.primary,
+            width: 1.5,
+          ),
         ),
         suffixIcon: suffix,
         suffixIconConstraints: const BoxConstraints(
@@ -351,21 +404,28 @@ class _RegisterPageState extends State<RegisterPage>
   }
 
   Widget _buildLoginLink() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return GestureDetector(
       onTap: () => Navigator.pop(context),
       child: Center(
         child: RichText(
-          text: const TextSpan(
-            style: TextStyle(fontFamily: 'Space Grotesk', fontSize: 13),
+          text: TextSpan(
+            style: const TextStyle(fontFamily: 'Space Grotesk', fontSize: 13),
             children: [
               TextSpan(
                 text: 'Ya tengo una cuenta ',
-                style: TextStyle(color: Colors.white54),
+                style: TextStyle(
+                  color: isDark
+                      ? Colors.white54
+                      : const Color(0xFF2C2520).withValues(alpha: 0.6),
+                ),
               ),
               TextSpan(
                 text: 'Iniciar sesión',
                 style: TextStyle(
-                  color: Color(0xFF00F0FF),
+                  color: isDark
+                      ? const Color(0xFF00F0FF)
+                      : const Color(0xFF0A7E8C),
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -440,10 +500,13 @@ class _RegisterPageState extends State<RegisterPage>
 }
 
 class DotGridPainter extends CustomPainter {
+  final Color color;
+  DotGridPainter({required this.color});
+
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.05)
+      ..color = color
       ..style = PaintingStyle.fill;
 
     const double step = 25.0;
@@ -455,5 +518,6 @@ class DotGridPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  bool shouldRepaint(covariant DotGridPainter oldDelegate) =>
+      oldDelegate.color != color;
 }

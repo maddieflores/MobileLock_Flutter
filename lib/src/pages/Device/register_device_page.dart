@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import '../../../services/api_service.dart';
 import '../Profile/profile_page.dart';
 import 'scanner_page.dart';
+import '../../widgets/luminous_app_bar.dart';
 
 class RegisterDevicePage extends StatefulWidget {
   final Map<String, dynamic>? deviceToEdit;
@@ -91,324 +92,326 @@ class _RegisterDevicePageState extends State<RegisterDevicePage> {
         children: [
           Positioned.fill(child: CustomPaint(painter: GridPainter())),
 
-          SafeArea(
-            child: Align(
-              alignment: Alignment.topCenter,
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 420),
-                child: ListView(
-                  physics: const BouncingScrollPhysics(),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 20,
+          Align(
+            alignment: Alignment.topCenter,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 420),
+              child: Column(
+                children: [
+                  LuminousAppBar(
+                    showBackButton: true,
+                    title: widget.deviceToEdit != null
+                        ? 'Editar dispositivo'
+                        : 'Registrar dispositivo',
+                    showThemeToggle: false,
+                    showNotifications: false,
                   ),
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(25),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.03),
-                        borderRadius: BorderRadius.circular(30),
-                        border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.08),
+                  Expanded(
+                    child: SafeArea(
+                      top: false,
+                      bottom: false,
+                      child: ListView(
+                        physics: const BouncingScrollPhysics(),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 20,
                         ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.2),
-                            blurRadius: 20,
-                            offset: const Offset(0, 10),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Row(
-                            children: [
-                              IconButton(
-                                icon: const Icon(
-                                  Icons.arrow_back,
-                                  color: Colors.white,
-                                ),
-                                onPressed: () => Navigator.pop(context),
+                          Container(
+                            padding: const EdgeInsets.all(25),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: 0.03),
+                              borderRadius: BorderRadius.circular(30),
+                              border: Border.all(
+                                color: Colors.white.withValues(alpha: 0.08),
                               ),
-                              Expanded(
-                                child: Text(
-                                  widget.deviceToEdit != null
-                                      ? 'Editar dispositivo'
-                                      : 'Registrar dispositivo',
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.2),
+                                  blurRadius: 20,
+                                  offset: const Offset(0, 10),
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Introduce los detalles técnicos de tu equipo para activar la protección de MobileLock AI.',
                                   style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 22,
-                                    fontWeight: FontWeight.bold,
-                                    shadows: [
-                                      Shadow(
-                                        color: Theme.of(
-                                          context,
-                                        ).colorScheme.primary,
-                                        blurRadius: 15,
-                                      ),
-                                    ],
+                                    color: Colors.white.withValues(alpha: 0.5),
+                                    fontSize: 13,
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 15),
-                          Text(
-                            'Introduce los detalles técnicos de tu equipo para activar la protección de MobileLock AI.',
-                            style: TextStyle(
-                              color: Colors.white.withValues(alpha: 0.5),
-                              fontSize: 13,
-                            ),
-                          ),
-                          const SizedBox(height: 35),
+                                const SizedBox(height: 35),
 
-                          _buildLabel('Marca'),
-                          _buildTextField(
-                            _brandController,
-                            'Ej: Apple, Xiaomi, Samsung',
-                            Icons.branding_watermark_rounded,
-                          ),
-
-                          const SizedBox(height: 20),
-
-                          _buildLabel('Modelo'),
-                          _buildTextField(
-                            _modelController,
-                            'Ej: iPhone 15 Pro, Redmi 12C',
-                            Icons.phone_android_rounded,
-                          ),
-
-                          const SizedBox(height: 20),
-
-                          _buildLabel('IMEI'),
-                          _buildTextField(
-                            _imeiController,
-                            '15 dígitos',
-                            Icons.fingerprint_rounded,
-                            keyboardType: TextInputType.number,
-                            inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly,
-                            ],
-                            maxLength: 15,
-                            errorText: _imeiError,
-                            onSuffixTap: () async {
-                              final code = await Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const ScannerPage(),
+                                _buildLabel('Marca'),
+                                _buildTextField(
+                                  _brandController,
+                                  'Ej: Apple, Xiaomi, Samsung',
+                                  Icons.branding_watermark_rounded,
                                 ),
-                              );
-                              if (code != null && code is String) {
-                                setState(() {
-                                  _imeiController.text = code;
-                                });
-                              }
-                            },
-                          ),
 
-                          const SizedBox(height: 20),
+                                const SizedBox(height: 20),
 
-                          _buildLabel('Hardware ID'),
-                          _buildTextField(
-                            _hardwareIdController,
-                            'ID único del sistema',
-                            Icons.developer_board_rounded,
-                          ),
-
-                          const SizedBox(height: 20),
-
-                          _buildLabel('Fotografía del equipo'),
-                          GestureDetector(
-                            onTap: _pickImage,
-                            child: Container(
-                              height: 120,
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).colorScheme.surface,
-                                borderRadius: BorderRadius.circular(15),
-                                border: Border.all(
-                                  color: Colors.white.withValues(alpha: 0.05),
+                                _buildLabel('Modelo'),
+                                _buildTextField(
+                                  _modelController,
+                                  'Ej: iPhone 15 Pro, Redmi 12C',
+                                  Icons.phone_android_rounded,
                                 ),
-                              ),
-                              child: _imageFile != null
-                                  ? ClipRRect(
-                                      borderRadius: BorderRadius.circular(15),
-                                      child: Image.file(
-                                        File(_imageFile!.path),
-                                        fit: BoxFit.cover,
-                                        width: double.infinity,
-                                      ),
-                                    )
-                                  : Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Icon(
-                                          Icons.camera_alt_outlined,
-                                          color: Colors.white.withValues(
-                                            alpha: 0.3,
-                                          ),
-                                          size: 30,
-                                        ),
-                                        const SizedBox(height: 10),
-                                        Text(
-                                          'Toca para capturar imagen',
-                                          style: TextStyle(
-                                            color: Colors.white.withValues(
-                                              alpha: 0.3,
-                                            ),
-                                            fontSize: 13,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                            ),
-                          ),
 
-                          const SizedBox(height: 40),
+                                const SizedBox(height: 20),
 
-                          Row(
-                            children: [
-                              Expanded(
-                                child: _buildSecondaryButton(
-                                  'Cancelar',
-                                  () => Navigator.pop(context),
-                                ),
-                              ),
-                              const SizedBox(width: 15),
-                              Expanded(
-                                child: _buildPrimaryButton(
-                                  widget.deviceToEdit != null
-                                      ? 'Actualizar'
-                                      : 'Registrar',
-                                  () async {
-                                    final marca = _brandController.text.trim();
-                                    final modelo = _modelController.text.trim();
-                                    final imei = _imeiController.text.trim();
-                                    final hw = _hardwareIdController.text
-                                        .trim();
-
-                                    if (marca.isEmpty ||
-                                        modelo.isEmpty ||
-                                        imei.isEmpty ||
-                                        hw.isEmpty) {
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        const SnackBar(
-                                          content: Text(
-                                            'Por favor, completa todos los campos',
-                                          ),
-                                          backgroundColor: Colors.redAccent,
-                                        ),
-                                      );
-                                      return;
-                                    }
-
-                                    // Validar que el IMEI tenga exactamente 15 dígitos numéricos
-                                    final imeiRegex = RegExp(r'^\d{15}$');
-                                    if (!imeiRegex.hasMatch(imei)) {
-                                      setState(() {
-                                        _imeiError = imei.isEmpty
-                                            ? 'El IMEI no puede estar vacío'
-                                            : 'El IMEI debe tener exactamente 15 dígitos';
-                                      });
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        const SnackBar(
-                                          content: Text(
-                                            'El IMEI debe tener exactamente 15 dígitos numéricos',
-                                          ),
-                                          backgroundColor: Colors.redAccent,
-                                        ),
-                                      );
-                                      return;
-                                    }
-
-                                    final isEdit = widget.deviceToEdit != null;
-
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text(
-                                          isEdit
-                                              ? 'Actualizando equipo...'
-                                              : 'Registrando equipo...',
-                                        ),
-                                        duration: const Duration(seconds: 1),
+                                _buildLabel('IMEI'),
+                                _buildTextField(
+                                  _imeiController,
+                                  '15 dígitos',
+                                  Icons.fingerprint_rounded,
+                                  keyboardType: TextInputType.number,
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly,
+                                  ],
+                                  maxLength: 15,
+                                  errorText: _imeiError,
+                                  onSuffixTap: () async {
+                                    final code = await Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            const ScannerPage(),
                                       ),
                                     );
-
-                                    final marcaModeloCompleto =
-                                        "$marca $modelo";
-                                    final apiService = ApiService();
-                                    final response = isEdit
-                                        ? await apiService.updateDevice(
-                                            globalToken,
-                                            widget
-                                                .deviceToEdit!['id_dispositivo'],
-                                            marcaModeloCompleto,
-                                            imei,
-                                            hw,
-                                            imagePath: _imageFile?.path,
-                                          )
-                                        : await apiService.registerDevice(
-                                            globalToken,
-                                            marcaModeloCompleto,
-                                            imei,
-                                            hw,
-                                            imagePath: _imageFile?.path,
-                                          );
-
-                                    if (mounted) {
-                                      if (response != null &&
-                                          (response.statusCode == 200 ||
-                                              response.statusCode == 201)) {
-                                        ScaffoldMessenger.of(
-                                          context,
-                                        ).showSnackBar(
-                                          SnackBar(
-                                            content: Text(
-                                              isEdit
-                                                  ? '¡Equipo actualizado con éxito!'
-                                                  : '¡Equipo registrado con éxito!',
-                                            ),
-                                            backgroundColor: Colors.green,
-                                          ),
-                                        );
-                                        Navigator.pop(context);
-                                      } else {
-                                        String mensajeError = isEdit
-                                            ? 'No se pudo actualizar el dispositivo'
-                                            : 'No se pudo registrar el dispositivo';
-                                        if (response?.data != null &&
-                                            response?.data is Map) {
-                                          mensajeError =
-                                              response?.data['detail'] ??
-                                              response?.data.toString();
-                                        }
-
-                                        ScaffoldMessenger.of(
-                                          context,
-                                        ).showSnackBar(
-                                          SnackBar(
-                                            content: Text(mensajeError),
-                                            backgroundColor: Colors.redAccent,
-                                          ),
-                                        );
-                                      }
+                                    if (code != null && code is String) {
+                                      setState(() {
+                                        _imeiController.text = code;
+                                      });
                                     }
                                   },
                                 ),
-                              ),
-                            ],
+
+                                const SizedBox(height: 20),
+
+                                _buildLabel('Hardware ID'),
+                                _buildTextField(
+                                  _hardwareIdController,
+                                  'ID único del sistema',
+                                  Icons.developer_board_rounded,
+                                ),
+
+                                const SizedBox(height: 20),
+
+                                _buildLabel('Fotografía del equipo'),
+                                GestureDetector(
+                                  onTap: _pickImage,
+                                  child: Container(
+                                    height: 120,
+                                    width: double.infinity,
+                                    decoration: BoxDecoration(
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.surface,
+                                      borderRadius: BorderRadius.circular(15),
+                                      border: Border.all(
+                                        color: Colors.white.withValues(
+                                          alpha: 0.05,
+                                        ),
+                                      ),
+                                    ),
+                                    child: _imageFile != null
+                                        ? ClipRRect(
+                                            borderRadius: BorderRadius.circular(
+                                              15,
+                                            ),
+                                            child: Image.file(
+                                              File(_imageFile!.path),
+                                              fit: BoxFit.cover,
+                                              width: double.infinity,
+                                            ),
+                                          )
+                                        : Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Icon(
+                                                Icons.camera_alt_outlined,
+                                                color: Colors.white.withValues(
+                                                  alpha: 0.3,
+                                                ),
+                                                size: 30,
+                                              ),
+                                              const SizedBox(height: 10),
+                                              Text(
+                                                'Toca para capturar imagen',
+                                                style: TextStyle(
+                                                  color: Colors.white
+                                                      .withValues(alpha: 0.3),
+                                                  fontSize: 13,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                  ),
+                                ),
+
+                                const SizedBox(height: 40),
+
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: _buildSecondaryButton(
+                                        'Cancelar',
+                                        () => Navigator.pop(context),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 15),
+                                    Expanded(
+                                      child: _buildPrimaryButton(
+                                        widget.deviceToEdit != null
+                                            ? 'Actualizar'
+                                            : 'Registrar',
+                                        () async {
+                                          final marca = _brandController.text
+                                              .trim();
+                                          final modelo = _modelController.text
+                                              .trim();
+                                          final imei = _imeiController.text
+                                              .trim();
+                                          final hw = _hardwareIdController.text
+                                              .trim();
+
+                                          if (marca.isEmpty ||
+                                              modelo.isEmpty ||
+                                              imei.isEmpty ||
+                                              hw.isEmpty) {
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              const SnackBar(
+                                                content: Text(
+                                                  'Por favor, completa todos los campos',
+                                                ),
+                                                backgroundColor:
+                                                    Colors.redAccent,
+                                              ),
+                                            );
+                                            return;
+                                          }
+
+                                          // Validar que el IMEI tenga exactamente 15 dígitos numéricos
+                                          final imeiRegex = RegExp(r'^\d{15}$');
+                                          if (!imeiRegex.hasMatch(imei)) {
+                                            setState(() {
+                                              _imeiError = imei.isEmpty
+                                                  ? 'El IMEI no puede estar vacío'
+                                                  : 'El IMEI debe tener exactamente 15 dígitos';
+                                            });
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              const SnackBar(
+                                                content: Text(
+                                                  'El IMEI debe tener exactamente 15 dígitos numéricos',
+                                                ),
+                                                backgroundColor:
+                                                    Colors.redAccent,
+                                              ),
+                                            );
+                                            return;
+                                          }
+
+                                          final isEdit =
+                                              widget.deviceToEdit != null;
+
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                isEdit
+                                                    ? 'Actualizando equipo...'
+                                                    : 'Registrando equipo...',
+                                              ),
+                                              duration: const Duration(
+                                                seconds: 1,
+                                              ),
+                                            ),
+                                          );
+
+                                          final marcaModeloCompleto =
+                                              "$marca $modelo";
+                                          final apiService = ApiService();
+                                          final response = isEdit
+                                              ? await apiService.updateDevice(
+                                                  globalToken,
+                                                  widget
+                                                      .deviceToEdit!['id_dispositivo'],
+                                                  marcaModeloCompleto,
+                                                  imei,
+                                                  hw,
+                                                  imagePath: _imageFile?.path,
+                                                )
+                                              : await apiService.registerDevice(
+                                                  globalToken,
+                                                  marcaModeloCompleto,
+                                                  imei,
+                                                  hw,
+                                                  imagePath: _imageFile?.path,
+                                                );
+
+                                          if (mounted) {
+                                            if (response != null &&
+                                                (response.statusCode == 200 ||
+                                                    response.statusCode ==
+                                                        201)) {
+                                              ScaffoldMessenger.of(
+                                                context,
+                                              ).showSnackBar(
+                                                SnackBar(
+                                                  content: Text(
+                                                    isEdit
+                                                        ? '¡Equipo actualizado con éxito!'
+                                                        : '¡Equipo registrado con éxito!',
+                                                  ),
+                                                  backgroundColor: Colors.green,
+                                                ),
+                                              );
+                                              Navigator.pop(context);
+                                            } else {
+                                              String mensajeError = isEdit
+                                                  ? 'No se pudo actualizar el dispositivo'
+                                                  : 'No se pudo registrar el dispositivo';
+                                              if (response?.data != null &&
+                                                  response?.data is Map) {
+                                                mensajeError =
+                                                    response?.data['detail'] ??
+                                                    response?.data.toString();
+                                              }
+
+                                              ScaffoldMessenger.of(
+                                                context,
+                                              ).showSnackBar(
+                                                SnackBar(
+                                                  content: Text(mensajeError),
+                                                  backgroundColor:
+                                                      Colors.redAccent,
+                                                ),
+                                              );
+                                            }
+                                          }
+                                        },
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),

@@ -34,15 +34,29 @@ class _WelcomeLuminousPageState extends State<WelcomeLuminousPage>
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final brandColor = isDark
+        ? const Color(0xFF00F0FF)
+        : const Color(0xFF0A7E8C);
+    final brandShadows = isDark
+        ? const [Shadow(color: Color(0xFF00F0FF), blurRadius: 20)]
+        : null;
+
     return Scaffold(
-      backgroundColor: const Color(
-        0xFF121727,
-      ), // Solid slate blue matches Luminous Sentinel
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Stack(
         children: [
           // Background Dot Grid
           Positioned.fill(
-            child: IgnorePointer(child: CustomPaint(painter: DotGridPainter())),
+            child: IgnorePointer(
+              child: CustomPaint(
+                painter: DotGridPainter(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white.withValues(alpha: 0.05)
+                      : Colors.black.withValues(alpha: 0.05),
+                ),
+              ),
+            ),
           ),
           SafeArea(
             child: Center(
@@ -68,12 +82,12 @@ class _WelcomeLuminousPageState extends State<WelcomeLuminousPage>
                               'assets/images/mobilelock-logo.png',
                               height: 120,
                               fit: BoxFit.contain,
-                              color: const Color(0xFF00F0FF), // Tint logo cian
+                              color: brandColor,
                               colorBlendMode: BlendMode.srcIn,
                               errorBuilder: (context, error, stackTrace) =>
-                                  const Icon(
+                                  Icon(
                                     Icons.shield_outlined,
-                                    color: Color(0xFF00F0FF),
+                                    color: brandColor,
                                     size: 100,
                                   ),
                             ),
@@ -81,18 +95,16 @@ class _WelcomeLuminousPageState extends State<WelcomeLuminousPage>
                         ),
                         const SizedBox(height: 40),
                         // Glowing Title styled like Login Page
-                        const Text(
+                        Text(
                           'MOBILELOCK AI',
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            color: Color(0xFF00F0FF),
+                            color: brandColor,
                             fontFamily: 'Space Grotesk',
                             fontSize: 32,
                             fontWeight: FontWeight.bold,
                             letterSpacing: 1.8,
-                            shadows: [
-                              Shadow(color: Color(0xFF00F0FF), blurRadius: 20),
-                            ],
+                            shadows: brandShadows,
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -101,11 +113,15 @@ class _WelcomeLuminousPageState extends State<WelcomeLuminousPage>
                         _buildStartButton(),
                         const SizedBox(height: 60),
                         // Neural Cipher Activation Info Footer
-                        const Text(
+                        Text(
                           'Protocolo de cifrado neural activado.',
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            color: Colors.white38,
+                            color: isDark
+                                ? Colors.white38
+                                : const Color(
+                                    0xFF2C2520,
+                                  ).withValues(alpha: 0.4),
                             fontFamily: 'Space Grotesk',
                             fontSize: 12,
                             fontStyle: FontStyle.italic,
@@ -179,10 +195,13 @@ class _WelcomeLuminousPageState extends State<WelcomeLuminousPage>
 }
 
 class DotGridPainter extends CustomPainter {
+  final Color color;
+  DotGridPainter({required this.color});
+
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.05)
+      ..color = color
       ..style = PaintingStyle.fill;
 
     const double step = 25.0;
@@ -194,5 +213,6 @@ class DotGridPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  bool shouldRepaint(covariant DotGridPainter oldDelegate) =>
+      oldDelegate.color != color;
 }

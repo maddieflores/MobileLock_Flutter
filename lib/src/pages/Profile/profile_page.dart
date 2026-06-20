@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../../services/api_service.dart';
 import '../../../services/auth_storage.dart';
+import '../../widgets/luminous_bottom_bar.dart';
+import '../../widgets/luminous_app_bar.dart';
 
 // --- MODELO DE DATOS PARA DISPOSITIVOS ---
 class DeviceModel {
@@ -41,6 +43,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     super.initState();
+
     if (isLoggedIn && globalToken.isNotEmpty) {
       _fetchUserData();
     } else {
@@ -84,26 +87,46 @@ class _ProfilePageState extends State<ProfilePage> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Stack(
         children: [
+          // Background atmospheric cyan square grid
           Positioned.fill(
-            child: IgnorePointer(child: CustomPaint(painter: GridPainter())),
+            child: IgnorePointer(
+              child: CustomPaint(
+                painter: LuminousGridPainter(
+                  lineColor: Theme.of(context).brightness == Brightness.dark
+                      ? const Color(0xFF00F0FF).withValues(alpha: 0.04)
+                      : const Color(0xFF0A7E8C).withValues(alpha: 0.04),
+                  dotColor: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white.withValues(alpha: 0.05)
+                      : Colors.black.withValues(alpha: 0.04),
+                ),
+              ),
+            ),
           ),
-          SafeArea(
-            child: Align(
-              alignment: Alignment.topCenter,
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 420),
-                child: Column(
-                  children: [
-                    Expanded(
+          Align(
+            alignment: Alignment.topCenter,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 420),
+              child: Column(
+                children: [
+                  if (isLoggedIn)
+                    const LuminousAppBar(
+                      title: 'Perfil de Usuario',
+                      showLogo: false,
+                      showThemeToggle: false,
+                    ),
+                  Expanded(
+                    child: SafeArea(
+                      top: !isLoggedIn,
+                      bottom: false,
                       child: !isLoggedIn
                           ? _buildEmptyState()
                           : (_isLoading
                                 ? _buildLoading()
                                 : _buildProfileContent()),
                     ),
-                    _buildBottomNav(context),
-                  ],
-                ),
+                  ),
+                  _buildBottomNav(context),
+                ],
               ),
             ),
           ),
@@ -113,14 +136,13 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _buildLoading() {
-    return Center(
-      child: CircularProgressIndicator(
-        color: Theme.of(context).colorScheme.primary,
-      ),
+    return const Center(
+      child: CircularProgressIndicator(color: Color(0xFF00F0FF)),
     );
   }
 
   Widget _buildEmptyState() {
+    final onSurface = Theme.of(context).colorScheme.onSurface;
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 40),
@@ -131,20 +153,21 @@ class _ProfilePageState extends State<ProfilePage> {
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.white.withValues(alpha: 0.02),
-                border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+                color: onSurface.withValues(alpha: 0.02),
+                border: Border.all(color: onSurface.withValues(alpha: 0.05)),
               ),
               child: Icon(
                 Icons.lock_person_outlined,
                 size: 80,
-                color: Colors.white.withValues(alpha: 0.1),
+                color: onSurface.withValues(alpha: 0.1),
               ),
             ),
             const SizedBox(height: 30),
-            const Text(
+            Text(
               'Perfil No Disponible',
               style: TextStyle(
-                color: Colors.white,
+                color: onSurface,
+                fontFamily: 'Space Grotesk',
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
               ),
@@ -154,25 +177,45 @@ class _ProfilePageState extends State<ProfilePage> {
               'Debes iniciar sesión en MobileLock AI para gestionar tu cuenta.',
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: Colors.white.withValues(alpha: 0.4),
+                color: onSurface.withValues(alpha: 0.4),
+                fontFamily: 'Space Grotesk',
                 fontSize: 14,
                 height: 1.5,
               ),
             ),
             const SizedBox(height: 40),
-            ElevatedButton(
-              onPressed: () => Navigator.pushNamed(context, '/login'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).colorScheme.primary,
-                foregroundColor: Colors.black,
-                minimumSize: const Size(200, 55),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
+            Container(
+              height: 55,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                gradient: LinearGradient(
+                  colors: [
+                    Theme.of(context).colorScheme.primary,
+                    Theme.of(context).brightness == Brightness.dark
+                        ? const Color(0xFF008AA3)
+                        : const Color(0xFF0A7E8C),
+                  ],
                 ),
               ),
-              child: const Text(
-                'INICIAR SESIÓN',
-                style: TextStyle(fontWeight: FontWeight.bold),
+              child: ElevatedButton(
+                onPressed: () => Navigator.pushNamed(context, '/login'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.transparent,
+                  foregroundColor: Colors.white,
+                  shadowColor: Colors.transparent,
+                  minimumSize: const Size(200, 55),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: const Text(
+                  'INICIAR SESIÓN',
+                  style: TextStyle(
+                    fontFamily: 'Space Grotesk',
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.0,
+                  ),
+                ),
               ),
             ),
           ],
@@ -184,14 +227,14 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget _buildProfileContent() {
     return ListView(
       physics: const BouncingScrollPhysics(),
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
       children: [
         _buildHeader(),
-        const SizedBox(height: 30),
+        const SizedBox(height: 35),
         _buildSectionHeader('Información General'),
         const SizedBox(height: 15),
         _buildInfoCard(),
-        const SizedBox(height: 30),
+        const SizedBox(height: 35),
         _buildSectionHeader('Ajustes de Cuenta'),
         const SizedBox(height: 15),
         _buildActionCard(
@@ -206,117 +249,198 @@ class _ProfilePageState extends State<ProfilePage> {
           'Actualiza tus credenciales',
           onTap: () => Navigator.pushNamed(context, '/change_password'),
         ),
-        const SizedBox(height: 30),
+        const SizedBox(height: 35),
         _buildLogoutButton(),
-        const SizedBox(height: 40),
+        const SizedBox(height: 20),
       ],
     );
   }
 
   Widget _buildHeader() {
-    return Container(
-      padding: const EdgeInsets.all(25),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.03),
-        borderRadius: BorderRadius.circular(25),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
-      ),
-      child: Column(
-        children: [
-          CircleAvatar(
-            radius: 40,
-            backgroundColor: Colors.black.withValues(alpha: 0.3),
-            child: Icon(
-              Icons.person,
-              color: Theme.of(context).colorScheme.primary,
-              size: 50,
-            ),
-          ),
-          const SizedBox(height: 15),
-          Text(
-            currentName,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-              shadows: [
-                Shadow(
-                  color: Theme.of(context).colorScheme.primary,
-                  blurRadius: 10,
-                ),
-              ],
-            ),
-          ),
-          Text(
-            currentEmail,
-            style: TextStyle(
-              color: Colors.white.withValues(alpha: 0.6),
-              fontSize: 14,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSectionHeader(String title) => Text(
-    title,
-    style: const TextStyle(
-      color: Colors.white,
-      fontSize: 18,
-      fontWeight: FontWeight.bold,
-    ),
-  );
-
-  Widget _buildInfoCard() {
-    return Container(
-      padding: EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
-      ),
-      child: Column(
-        children: [
-          _buildInfoItem(
-            Icons.verified_user_outlined,
-            'Estado del Plan',
-            currentPlan,
-          ),
-          const Divider(color: Colors.white10, height: 25),
-          _buildInfoItem(
-            Icons.calendar_today_outlined,
-            'Miembro desde',
-            userSince,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildInfoItem(IconData icon, String label, String value) {
-    return Row(
+    final primaryColor = Theme.of(context).colorScheme.primary;
+    final onSurface = Theme.of(context).colorScheme.onSurface;
+    return Column(
       children: [
-        Icon(icon, color: Theme.of(context).colorScheme.primary, size: 18),
-        const SizedBox(width: 15),
-        Text(
-          label,
-          style: TextStyle(
-            color: Colors.white.withValues(alpha: 0.6),
-            fontSize: 14,
+        const SizedBox(height: 10),
+        Center(
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Container(
+                width: 100,
+                height: 100,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surface,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: primaryColor, width: 1.5),
+                  boxShadow: [
+                    BoxShadow(
+                      color: primaryColor.withValues(alpha: 0.15),
+                      blurRadius: 15,
+                    ),
+                  ],
+                ),
+                child: Icon(
+                  Icons.person_outline_rounded,
+                  color: primaryColor,
+                  size: 50,
+                ),
+              ),
+              Positioned(
+                bottom: -5,
+                right: -5,
+                child: Container(
+                  padding: const EdgeInsets.all(5),
+                  decoration: BoxDecoration(
+                    color: primaryColor,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.check_rounded,
+                    color: Colors.white,
+                    size: 16,
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
-        const Spacer(),
+        const SizedBox(height: 20),
         Text(
-          value,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
+          currentName,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: onSurface,
+            fontFamily: 'Space Grotesk',
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          currentEmail,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: onSurface.withValues(alpha: 0.6),
+            fontFamily: 'Space Grotesk',
+            fontSize: 13,
+            letterSpacing: 0.5,
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildSectionHeader(String title) {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Text(
+        title.toUpperCase(),
+        style: TextStyle(
+          color: Theme.of(context).colorScheme.primary,
+          fontFamily: 'Space Grotesk',
+          fontSize: 11,
+          fontWeight: FontWeight.bold,
+          letterSpacing: 1.5,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoCard() {
+    final onSurface = Theme.of(context).colorScheme.onSurface;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 22),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Theme.of(context).brightness == Brightness.dark
+              ? Colors.white.withValues(alpha: 0.08)
+              : Colors.black.withValues(alpha: 0.08),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(
+              alpha: Theme.of(context).brightness == Brightness.dark
+                  ? 0.2
+                  : 0.04,
+            ),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.shield_outlined,
+                color: onSurface.withValues(alpha: 0.7),
+                size: 22,
+              ),
+              const SizedBox(width: 16),
+              Text(
+                'Estado del Plan',
+                style: TextStyle(
+                  color: onSurface,
+                  fontFamily: 'Space Grotesk',
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const Spacer(),
+              Text(
+                currentPlan.toUpperCase(),
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.primary,
+                  fontFamily: 'Space Grotesk',
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                  letterSpacing: 0.5,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 18),
+          Divider(
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.white10
+                : Colors.black.withValues(alpha: 0.06),
+            height: 1,
+          ),
+          const SizedBox(height: 18),
+          Row(
+            children: [
+              Icon(
+                Icons.calendar_today_outlined,
+                color: onSurface.withValues(alpha: 0.7),
+                size: 20,
+              ),
+              const SizedBox(width: 16),
+              Text(
+                'Miembro desde',
+                style: TextStyle(
+                  color: onSurface,
+                  fontFamily: 'Space Grotesk',
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const Spacer(),
+              Text(
+                userSince,
+                style: TextStyle(
+                  color: onSurface.withValues(alpha: 0.7),
+                  fontFamily: 'Space Grotesk',
+                  fontSize: 13,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
@@ -326,50 +450,63 @@ class _ProfilePageState extends State<ProfilePage> {
     String subtitle, {
     required VoidCallback onTap,
   }) {
+    final onSurface = Theme.of(context).colorScheme.onSurface;
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Theme.of(context).brightness == Brightness.dark
+              ? Colors.white.withValues(alpha: 0.08)
+              : Colors.black.withValues(alpha: 0.08),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(
+              alpha: Theme.of(context).brightness == Brightness.dark
+                  ? 0.2
+                  : 0.04,
+            ),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(20),
-          child: Container(
-            padding: EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surface,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
-            ),
+          borderRadius: BorderRadius.circular(16),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
             child: Row(
               children: [
-                Container(
-                  padding: EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surface,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(
-                    icon,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
+                Icon(
+                  icon,
+                  color: Theme.of(context).colorScheme.primary,
+                  size: 24,
                 ),
-                const SizedBox(width: 15),
+                const SizedBox(width: 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         title,
-                        style: const TextStyle(
-                          color: Colors.white,
+                        style: TextStyle(
+                          color: onSurface,
+                          fontFamily: 'Space Grotesk',
                           fontWeight: FontWeight.bold,
                           fontSize: 15,
                         ),
                       ),
+                      const SizedBox(height: 2),
                       Text(
                         subtitle,
                         style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.4),
+                          color: onSurface.withValues(alpha: 0.4),
+                          fontFamily: 'Space Grotesk',
                           fontSize: 12,
                         ),
                       ),
@@ -377,9 +514,9 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
                 Icon(
-                  Icons.arrow_forward_ios_rounded,
-                  color: Colors.white.withValues(alpha: 0.2),
-                  size: 16,
+                  Icons.chevron_right_rounded,
+                  color: onSurface.withValues(alpha: 0.3),
+                  size: 22,
                 ),
               ],
             ),
@@ -391,20 +528,26 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Widget _buildLogoutButton() {
     return Container(
-      width: double.infinity,
-      height: 55,
+      height: 58,
       decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        gradient: const LinearGradient(
+          colors: [Color(0xFF00F0FF), Color(0xFF008AA3)],
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
-            blurRadius: 15,
-            offset: const Offset(0, 5),
+            color: const Color(0xFF00F0FF).withValues(alpha: 0.35),
+            blurRadius: 18,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
       child: ElevatedButton(
         onPressed: () async {
           await AuthStorage.deleteToken();
+          if (!mounted) return;
           setState(() {
             isLoggedIn = false;
             globalToken = "";
@@ -418,29 +561,37 @@ class _ProfilePageState extends State<ProfilePage> {
           );
         },
         style: ElevatedButton.styleFrom(
-          backgroundColor: Theme.of(context).colorScheme.primary,
-          foregroundColor: Colors.black,
+          backgroundColor: Colors.transparent,
+          foregroundColor: Colors.white,
+          shadowColor: Colors.transparent,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
+            borderRadius: BorderRadius.circular(12),
           ),
           elevation: 0,
         ),
-        child: const Text(
-          'Cerrar Sesión',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: const [
+            Icon(Icons.logout_rounded, size: 20, color: Colors.white),
+            SizedBox(width: 8),
+            Text(
+              'Cerrar Sesión',
+              style: TextStyle(
+                fontFamily: 'Space Grotesk',
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+                letterSpacing: 1.0,
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
   Widget _buildBottomNav(BuildContext context) {
-    return BottomNavigationBar(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      elevation: 0,
-      type: BottomNavigationBarType.fixed,
+    return LuminousBottomBar(
       currentIndex: 3,
-      selectedItemColor: Theme.of(context).colorScheme.primary,
-      unselectedItemColor: Colors.white30,
       onTap: (index) {
         if (index == 0) {
           Navigator.pop(context);
@@ -450,33 +601,38 @@ class _ProfilePageState extends State<ProfilePage> {
           Navigator.pop(context, 'show_report');
         }
       },
-      items: const [
-        BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: 'Inicio'),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.add_circle_outline_rounded),
-          label: 'Registrar',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.warning_amber_rounded),
-          label: 'Reportar Robo',
-        ),
-        BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Perfil'),
-      ],
     );
   }
 }
 
-class GridPainter extends CustomPainter {
+class LuminousGridPainter extends CustomPainter {
+  final Color lineColor;
+  final Color dotColor;
+
+  LuminousGridPainter({required this.lineColor, required this.dotColor});
+
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.03)
-      ..strokeWidth = 1.0;
-    for (double i = 0; i < size.width; i += 40) {
-      canvas.drawLine(Offset(i, 0), Offset(i, size.height), paint);
+    final linePaint = Paint()
+      ..color = lineColor
+      ..strokeWidth = 0.8;
+    final dotPaint = Paint()
+      ..color = dotColor
+      ..style = PaintingStyle.fill;
+
+    const double step = 25.0;
+    // Draw cyan lines grid
+    for (double i = 0; i < size.width; i += step) {
+      canvas.drawLine(Offset(i, 0), Offset(i, size.height), linePaint);
     }
-    for (double i = 0; i < size.height; i += 40) {
-      canvas.drawLine(Offset(0, i), Offset(size.width, i), paint);
+    for (double j = 0; j < size.height; j += step) {
+      canvas.drawLine(Offset(0, j), Offset(size.width, j), linePaint);
+    }
+    // Draw dot grid
+    for (double i = 0; i < size.width; i += step) {
+      for (double j = 0; j < size.height; j += step) {
+        canvas.drawCircle(Offset(i, j), 0.8, dotPaint);
+      }
     }
   }
 
