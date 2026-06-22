@@ -979,7 +979,7 @@ class _VerifyDevicePageState extends State<VerifyDevicePage> {
 
     String url = path;
     if (!path.startsWith('http://') && !path.startsWith('https://')) {
-      final host = kIsWeb ? 'http://localhost:8000' : 'http://192.168.0.3:8000';
+      final host = kIsWeb ? 'http://localhost:8000' : 'http://192.168.0.16:8000';
       final prefix = path.startsWith('/') ? '' : '/';
       url = '$host$prefix$path';
     }

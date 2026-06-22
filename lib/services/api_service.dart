@@ -2,7 +2,9 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
 class ApiService {
-  static final String _baseUrl = 'http://192.168.0.3:8000/api/';
+  static final String _baseUrl = kIsWeb
+      ? 'http://localhost:8000/api/'
+      : 'http://192.168.0.16:8000/api/';
 
   final Dio _dio = Dio(
     BaseOptions(
