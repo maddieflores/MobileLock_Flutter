@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../main.dart';
+import '../pages/Device/pending_transfers_page.dart';
 
 class LuminousAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool showBackButton;
@@ -128,7 +129,10 @@ class LuminousAppBar extends StatelessWidget implements PreferredSizeWidget {
                 size: 20,
               ),
               onPressed: () {
-                // Notification action
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const PendingTransfersPage()),
+                );
               },
               constraints: const BoxConstraints(),
               padding: const EdgeInsets.only(left: 8),

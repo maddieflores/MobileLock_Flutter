@@ -6,6 +6,7 @@ import '../../../services/api_service.dart';
 import '../Profile/profile_page.dart';
 import 'scanner_page.dart';
 import '../../widgets/luminous_app_bar.dart';
+import 'assisted_camera_page.dart';
 
 class RegisterDevicePage extends StatefulWidget {
   final Map<String, dynamic>? deviceToEdit;
@@ -50,12 +51,18 @@ class _RegisterDevicePageState extends State<RegisterDevicePage> {
   }
 
   Future<void> _pickImage() async {
-    final XFile? image = await _picker.pickImage(source: ImageSource.camera);
-    if (image != null) {
-      setState(() {
-        _imageFile = image;
-      });
-    }
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AssistedCameraPage(
+          onPictureTaken: (imagePath) {
+            setState(() {
+              _imageFile = XFile(imagePath);
+            });
+          },
+        ),
+      ),
+    );
   }
 
   void _validateImei() {

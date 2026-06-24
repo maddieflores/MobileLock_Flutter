@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 class ApiService {
   static final String _baseUrl = kIsWeb
       ? 'http://localhost:8000/api/'
-      : 'http://192.168.0.16:8000/api/';
+      : 'http://192.168.0.9:8000/api/';
 
   final Dio _dio = Dio(
     BaseOptions(
@@ -250,6 +250,72 @@ class ApiService {
       debugPrint(
         "Error al verificar dispositivo físicamente: ${e.response?.data ?? e.message}",
       );
+      return e.response;
+    }
+  }
+
+  Future<Response?> verifyPassword(String token, String password) async {
+    try {
+      _dio.options.headers['Authorization'] = 'Bearer $token';
+      return await _dio.post(
+        'users/auth/verify-password/',
+        data: {'password': password},
+      );
+    } on DioException catch (e) {
+      debugPrint("Error al verificar contraseña: ${e.response?.data ?? e.message}");
+      return e.response;
+    }
+  }
+
+  Future<Response?> initiateTransfer(String token, int deviceId, String emailDestino) async {
+    try {
+      _dio.options.headers['Authorization'] = 'Bearer $token';
+      return await _dio.post(
+        'devices/transfer/initiate/$deviceId/',
+        data: {'email_destino': emailDestino},
+      );
+    } on DioException catch (e) {
+      debugPrint("Error al iniciar transferencia: ${e.response?.data ?? e.message}");
+      return e.response;
+    }
+  }
+
+  Future<Response?> getPendingTransfers(String token) async {
+    try {
+      _dio.options.headers['Authorization'] = 'Bearer $token';
+      return await _dio.get('devices/transfer/pending/');
+    } on DioException catch (e) {
+      debugPrint("Error al obtener transferencias: ${e.response?.data ?? e.message}");
+      return e.response;
+    }
+  }
+
+  Future<Response?> acceptTransfer(String token, int transferId) async {
+    try {
+      _dio.options.headers['Authorization'] = 'Bearer $token';
+      return await _dio.post('devices/transfer/accept/$transferId/');
+    } on DioException catch (e) {
+      debugPrint("Error al aceptar transferencia: ${e.response?.data ?? e.message}");
+      return e.response;
+    }
+  }
+
+  Future<Response?> rejectTransfer(String token, int transferId) async {
+    try {
+      _dio.options.headers['Authorization'] = 'Bearer $token';
+      return await _dio.post('devices/transfer/reject/$transferId/');
+    } on DioException catch (e) {
+      debugPrint("Error al rechazar transferencia: ${e.response?.data ?? e.message}");
+      return e.response;
+    }
+  }
+
+  Future<Response?> getDeviceTraceability(String token, int deviceId) async {
+    try {
+      _dio.options.headers['Authorization'] = 'Bearer $token';
+      return await _dio.get('devices/traceability/$deviceId/');
+    } on DioException catch (e) {
+      debugPrint("Error al obtener trazabilidad: ${e.response?.data ?? e.message}");
       return e.response;
     }
   }

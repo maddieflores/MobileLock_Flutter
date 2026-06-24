@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import '../../../services/api_service.dart';
 import '../Profile/profile_page.dart';
 import 'register_device_page.dart';
+import 'device_history_page.dart';
+import 'device_details_page.dart';
+import 'transfer_device_page.dart';
 
 class DevicesPage extends StatefulWidget {
   const DevicesPage({super.key});
@@ -335,6 +338,49 @@ class _DevicesPageState extends State<DevicesPage> {
                       _fetchDevices(); // Recargar la lista después de editar
                     },
                   ),
+                  _buildActionButton(
+                    'Detalles',
+                    Colors.blueAccent,
+                    Icons.info_outline,
+                    () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DeviceDetailsPage(device: device),
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 8),
+                  _buildActionButton(
+                    'Historial',
+                    Colors.purpleAccent,
+                    Icons.history,
+                    () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DeviceHistoryPage(device: device),
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 8),
+                  _buildActionButton(
+                    'Transferir',
+                    const Color(0xFF00CEE6),
+                    Icons.swap_horiz,
+                    () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => TransferDevicePage(deviceId: device['id_dispositivo'], marcaModelo: device['marca_modelo']),
+                        ),
+                      ).then((value) {
+                        if (value == true) _fetchDevices();
+                      });
+                    },
+                  ),
                   const SizedBox(height: 8),
                   _buildActionButton(
                     'Eliminar',
@@ -519,7 +565,7 @@ class _DevicesPageState extends State<DevicesPage> {
                   desc: 'El equipo fue robado y quieres bloquearlo.',
                   color: Colors.redAccent,
                   onTap: () =>
-                      _updateDeviceState(device['id_dispositivo'], 'ROBADO'),
+                      _confirmAndReport(device['id_dispositivo'], 'ROBADO'),
                 ),
                 const SizedBox(height: 12),
                 _buildReportOption(
@@ -527,7 +573,7 @@ class _DevicesPageState extends State<DevicesPage> {
                   label: 'Reportado como EXTRAVIADO',
                   desc: 'Perdiste el equipo y quieres alertar.',
                   color: Colors.amber,
-                  onTap: () => _updateDeviceState(
+                  onTap: () => _confirmAndReport(
                     device['id_dispositivo'],
                     'EXTRAVIADO',
                   ),
@@ -590,6 +636,65 @@ class _DevicesPageState extends State<DevicesPage> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  void _confirmAndReport(int deviceId, String newState) {
+    final passwordController = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF1c1c2a),
+        title: const Text('Confirmar Seguridad', style: TextStyle(color: Colors.white)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('Para marcar este dispositivo como $newState, ingresa tu contraseña.', style: TextStyle(color: Colors.white70)),
+            const SizedBox(height: 15),
+            TextField(
+              controller: passwordController,
+              obscureText: true,
+              style: const TextStyle(color: Colors.white),
+              decoration: InputDecoration(
+                hintText: 'Contraseña',
+                hintStyle: const TextStyle(color: Colors.white30),
+                filled: true,
+                fillColor: Colors.white.withOpacity(0.05),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancelar', style: TextStyle(color: Colors.white54)),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              if (passwordController.text.isNotEmpty) {
+                setState(() => _isLoading = true);
+                final apiService = ApiService();
+                final response = await apiService.verifyPassword(globalToken, passwordController.text);
+                
+                if (response != null && response.statusCode == 200) {
+                  _updateDeviceState(deviceId, newState);
+                } else {
+                  setState(() => _isLoading = false);
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Contraseña incorrecta ❌'), backgroundColor: Colors.redAccent),
+                    );
+                  }
+                }
+              }
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
+            child: const Text('Confirmar', style: TextStyle(color: Colors.white)),
+          ),
+        ],
       ),
     );
   }

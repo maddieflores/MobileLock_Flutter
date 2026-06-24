@@ -36,20 +36,20 @@ class _TransferDevicePageState extends State<TransferDevicePage> {
     });
 
     final apiService = ApiService();
-    final response = await apiService.transferDevice(globalToken, widget.deviceId, email);
+    final response = await apiService.initiateTransfer(globalToken, widget.deviceId, email);
 
     if (mounted) {
       setState(() {
         _isTransferring = false;
       });
 
-      if (response != null && response.statusCode == 200) {
+      if (response != null && response.statusCode == 201) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('¡Transferencia completada con éxito!'), backgroundColor: Colors.green),
+          const SnackBar(content: Text('Solicitud de transferencia enviada. El nuevo dueño debe aceptarla.'), backgroundColor: Colors.green),
         );
         Navigator.pop(context, true); // Devuelve true para recargar la lista
       } else {
-        String errMsg = 'No se pudo transferir el equipo';
+        String errMsg = 'No se pudo iniciar la transferencia';
         if (response?.data != null && response?.data is Map) {
           errMsg = response?.data['detail'] ?? errMsg;
         }
